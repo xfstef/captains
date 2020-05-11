@@ -1,0 +1,30 @@
+{
+    "name": "test1",
+    "description": "...",
+    "numberOfPlayers": 2,
+    "playerStartRules": [
+        {
+            "canBeHuman": true,
+            "forcedFaction": 0,
+            "forcedCaptain": 0,
+            "forcedStartBonus": 0,
+            "startingAlliance": 0
+        },
+        {
+            "canBeHuman": false,
+            "forcedFaction": 2,
+            "forcedCaptain": 0,
+            "forcedStartBonus": 1,
+            "startingAlliance": 0
+        }
+    ],
+    "winConditions": [0],
+    "lossContions": [0, 1],
+    "width": 8,
+    "height": 8,
+    "tiles": [
+        [ 1, 0, true ],
+        [ 5, 3, false ],
+        "..."
+    ]
+}
