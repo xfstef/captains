@@ -20,11 +20,12 @@
     ],
     "winConditions": [0],
     "lossContions": [0, 1],
-    "width": 8,
-    "height": 8,
+    "width": 4,
+    "height": 4,
     "tiles": [
-        [ 1, 0, true ],
-        [ 5, 3, false ],
-        "..."
+        [ [ 1, 0, true ], [ 1, 0, true ], [ 2, 0, true ], [ 3, 0, true ] ],
+        [ [ 5, 0, true ], [ 0, 0, true ], [ 0, 0, true ], [ 0, 0, true ] ],
+        [ [ 2, 0, true ], [ 2, 0, true ], [ 5, 0, true ], [ 5, 0, true ] ],
+        [ [ 3, 0, true ], [ 4, 0, true ], [ 4, 0, true ], [ 3, 0, true ] ]
     ]
 }

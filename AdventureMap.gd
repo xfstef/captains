@@ -5,11 +5,15 @@ extends Node2D
 # var b = "text"
 var mapPath = "res://Maps/test1.json"
 
-var mapGroundMatrix = null;
+var mapGroundMatrix = []
+var mapWidth = 0
+var mapHeight = 0
+var groundTileMap
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	loadMapData();
+	groundTileMap = get_node("TM-Ground")
+	loadMapData()
 	
 func loadMapData():
 	var file = File.new()
@@ -20,7 +24,16 @@ func loadMapData():
 	file.open(mapPath, File.READ)
 	
 	var payload = parse_json(file.get_as_text())
-	print(payload.width)
+	mapWidth = payload.width
+	mapHeight = payload.height
+	
+	for y in range(mapHeight):
+		mapGroundMatrix.append([])
+		mapGroundMatrix[y] = []
+		for x in range(mapWidth):
+			mapGroundMatrix[y].append([])
+			mapGroundMatrix[y][x] = payload.tiles[y][x][0]
+			groundTileMap.set_cell(x, y, mapGroundMatrix[y][x])
 	
 	file.close()
 
