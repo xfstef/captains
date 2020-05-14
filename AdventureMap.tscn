@@ -1,12 +1,24 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://AdventureMap.tres" type="TileSet" id=1]
+[ext_resource path="res://TMGround.tres" type="TileSet" id=1]
 [ext_resource path="res://AdventureMap.gd" type="Script" id=2]
+[ext_resource path="res://TMProps.tres" type="TileSet" id=3]
+[ext_resource path="res://interactable.tres" type="TileSet" id=4]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource( 2 )
 
 [node name="TM-Ground" type="TileMap" parent="."]
 tile_set = ExtResource( 1 )
+cell_size = Vector2( 96, 96 )
+format = 1
+
+[node name="TM-Props" type="TileMap" parent="."]
+tile_set = ExtResource( 3 )
+cell_size = Vector2( 96, 96 )
+format = 1
+
+[node name="TM-Interactable" type="TileMap" parent="."]
+tile_set = ExtResource( 4 )
 cell_size = Vector2( 96, 96 )
 format = 1
