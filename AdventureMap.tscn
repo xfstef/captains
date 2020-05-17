@@ -11,16 +11,20 @@ script = ExtResource( 2 )
 [node name="TM-Ground" type="TileMap" parent="."]
 tile_set = ExtResource( 1 )
 cell_size = Vector2( 96, 96 )
+cell_tile_origin = 1
 format = 1
+tile_data = PoolIntArray( 0, 4, 0 )
 
 [node name="TM-Props" type="TileMap" parent="."]
 tile_set = ExtResource( 3 )
 cell_size = Vector2( 96, 96 )
+cell_tile_origin = 1
 format = 1
 
 [node name="TM-Interactable" type="TileMap" parent="."]
 tile_set = ExtResource( 4 )
 cell_size = Vector2( 96, 96 )
+cell_tile_origin = 1
 format = 1
 
 [node name="info" type="Label" parent="."]
@@ -33,3 +37,24 @@ text = "Test
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="saveMapName" type="LineEdit" parent="."]
+margin_left = 10.0
+margin_top = 544.0
+margin_right = 262.0
+margin_bottom = 586.0
+max_length = 20
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="saveMapButton" type="Button" parent="."]
+margin_left = 271.671
+margin_top = 548.738
+margin_right = 347.671
+margin_bottom = 581.738
+text = "Save Map"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="pressed" from="saveMapButton" to="." method="_on_saveMapButton_pressed"]

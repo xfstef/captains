@@ -1,10 +1,7 @@
 extends Node2D
 
 # Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
 var mapPath = "res://Maps/test1.json"
-
 var mapGroundMatrix = []
 var mapPropsMatrix = []
 var info
@@ -13,27 +10,61 @@ var mapHeight = 0
 var groundTileMap
 var propsTileMap
 
+var data = {
+	"name": "",
+	"description": "...",
+	"numberOfPlayers": 2,
+	"playerStartRules": [
+		{
+			"canBeHuman": true,
+			"forcedFaction": 0,
+			"forcedCaptain": 0,
+			"forcedStartBonus": 0,
+			"startingAlliance": 0
+		},
+		{
+			"canBeHuman": false,
+			"forcedFaction": 2,
+			"forcedCaptain": 0,
+			"forcedStartBonus": 1,
+			"startingAlliance": 0
+		}
+	],
+	"winConditions": [0],
+	"lossConditions": [0, 1],
+	"width": 16,
+	"height": 16,
+	"tiles": []
+}
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	groundTileMap = get_node("TM-Ground")
 	propsTileMap = get_node("TM-Props")
 	info = get_node("info")
-	loadMapData()
-	set_process_input(true)
+	#loadMapData()
+	initPaintedMatrix()
 	
-func _input(event):
-	if Input.is_mouse_button_pressed(BUTTON_LEFT):
-		var mouse_pos = get_global_mouse_position()
-		var tile = groundTileMap.world_to_map(mouse_pos)
-		var text = "screen: %s\ntile: %s" % [mouse_pos, tile]
-		info.set_text(text)
+func _on_saveMapButton_pressed():
+	var saveNameInput = get_node("saveMapName")
+	var saveName = "test1"
+	if saveNameInput.text != "":
+		saveName = saveNameInput.text
+	var filePath = str("res://Maps/", saveName, ".json")
+	
+	data.name = saveName
+	print(data.name)
+	
+	var file
+	file = File.new()
+	file.open(filePath, File.WRITE)
+	file.store_line(to_json(data))
+	file.close()
 	
 func loadMapData():
 	var file = File.new()
-	
 	if not file.file_exists(mapPath):
 		return
-		
 	file.open(mapPath, File.READ)
 	
 	var payload = parse_json(file.get_as_text())
@@ -55,6 +86,23 @@ func loadMapData():
 	
 	file.close()
 
+func initPaintedMatrix():
+	for y in range(data.width):
+		mapGroundMatrix.append([])
+		mapGroundMatrix[y] = []
+		mapPropsMatrix.append([])
+		mapPropsMatrix[y] = []
+		for x in range(data.height):
+			mapGroundMatrix[y].append([])
+			mapGroundMatrix[y][x] = groundTileMap.get_cell(x, y)
+			mapPropsMatrix[y].append([])
+			mapPropsMatrix[y][x] = propsTileMap.get_cell(x, y)
+			
+	print(mapGroundMatrix)
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+func _process(delta):
+	var mouse_pos = get_global_mouse_position()
+	var tile = groundTileMap.world_to_map(mouse_pos)
+	var text = "tile: %s" % [tile]
+	info.set_text(text)
