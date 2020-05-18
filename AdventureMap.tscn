@@ -9,21 +9,25 @@
 script = ExtResource( 2 )
 
 [node name="TM-Ground" type="TileMap" parent="."]
+mode = 1
 tile_set = ExtResource( 1 )
-cell_size = Vector2( 96, 96 )
+cell_size = Vector2( 96, 64 )
 cell_tile_origin = 1
 format = 1
-tile_data = PoolIntArray( 0, 4, 0 )
+tile_data = PoolIntArray( -458743, 0, 0, -458742, 0, 0, -393208, 0, 0, -393207, 0, 0, -393206, 0, 0, -327673, 0, 0, -327672, 0, 0, -327671, 0, 0, -327670, 0, 0, -327669, 0, 0, -262138, 0, 0, -262137, 0, 0, -262135, 0, 0, -262134, 0, 0, -262133, 0, 0, -196602, 0, 0, -196601, 0, 0, -196600, 0, 0, -196599, 0, 0, -196598, 0, 0, -196597, 0, 0, -131066, 0, 0, -131065, 0, 0, -131064, 0, 0, -131063, 0, 0, -65530, 0, 0, -65528, 0, 0, 7, 0, 0, 8, 0, 0 )
 
 [node name="TM-Props" type="TileMap" parent="."]
+mode = 1
 tile_set = ExtResource( 3 )
-cell_size = Vector2( 96, 96 )
+cell_size = Vector2( 96, 64 )
 cell_tile_origin = 1
 format = 1
+tile_data = PoolIntArray( -393207, 3, 0, -327672, 1, 0, -262136, 2, 0, -262135, 1, 0, -131064, 1, 0 )
 
 [node name="TM-Interactable" type="TileMap" parent="."]
+mode = 1
 tile_set = ExtResource( 4 )
-cell_size = Vector2( 96, 96 )
+cell_size = Vector2( 96, 64 )
 cell_tile_origin = 1
 format = 1
 

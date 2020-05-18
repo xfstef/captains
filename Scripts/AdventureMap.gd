@@ -1,7 +1,7 @@
 extends Node2D
 
 # Declare member variables here. Examples:
-var mapPath = "res://Maps/test1.json"
+var mapPath = "res://Maps/test3.json"
 var mapGroundMatrix = []
 var mapPropsMatrix = []
 var info
@@ -42,8 +42,8 @@ func _ready():
 	groundTileMap = get_node("TM-Ground")
 	propsTileMap = get_node("TM-Props")
 	info = get_node("info")
-	#loadMapData()
-	initPaintedMatrix()
+	loadMapData()
+	#initPaintedMatrix()
 	
 func _on_saveMapButton_pressed():
 	var saveNameInput = get_node("saveMapName")
@@ -53,7 +53,13 @@ func _on_saveMapButton_pressed():
 	var filePath = str("res://Maps/", saveName, ".json")
 	
 	data.name = saveName
-	print(data.name)
+	
+	for y in range(data.width):
+		data.tiles.append([])
+		data.tiles[y] = []
+		for x in range(data.height):
+			data.tiles[y].append([])
+			data.tiles[y][x] = [mapGroundMatrix[y][x], mapPropsMatrix[y][x], -1]
 	
 	var file
 	file = File.new()
@@ -97,8 +103,6 @@ func initPaintedMatrix():
 			mapGroundMatrix[y][x] = groundTileMap.get_cell(x, y)
 			mapPropsMatrix[y].append([])
 			mapPropsMatrix[y][x] = propsTileMap.get_cell(x, y)
-			
-	print(mapGroundMatrix)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
