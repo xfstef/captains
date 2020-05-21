@@ -9,6 +9,7 @@ var mapWidth = 0
 var mapHeight = 0
 var groundTileMap
 var propsTileMap
+var camera
 
 var data = {
 	"name": "",
@@ -39,14 +40,15 @@ var data = {
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	camera = get_node("Camera2D")
 	groundTileMap = get_node("TM-Ground")
 	propsTileMap = get_node("TM-Props")
-	info = get_node("info")
+	info = get_node("UI/info")
 	loadMapData()
 	#initPaintedMatrix()
 	
 func _on_saveMapButton_pressed():
-	var saveNameInput = get_node("saveMapName")
+	var saveNameInput = get_node("UI/saveMapName")
 	var saveName = "test1"
 	if saveNameInput.text != "":
 		saveName = saveNameInput.text
