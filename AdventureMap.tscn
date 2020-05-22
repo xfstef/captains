@@ -12,8 +12,6 @@ script = ExtResource( 2 )
 [node name="Camera2D" type="Camera2D" parent="."]
 offset = Vector2( 0, 300 )
 current = true
-limit_top = -400
-limit_smoothed = true
 smoothing_enabled = true
 script = ExtResource( 5 )
 
@@ -69,44 +67,6 @@ margin_top = 548.837
 margin_right = 348.349
 margin_bottom = 581.837
 text = "Save Map"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="LT" type="Control" parent="UI"]
-margin_right = 20.0
-margin_bottom = 20.0
-mouse_filter = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="LB" type="Control" parent="UI"]
-margin_left = 0.0377121
-margin_top = 579.74
-margin_right = 20.0377
-margin_bottom = 599.74
-mouse_filter = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="RT" type="Control" parent="UI"]
-margin_left = 1004.14
-margin_top = 0.646545
-margin_right = 1024.14
-margin_bottom = 20.6465
-mouse_filter = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="RB" type="Control" parent="UI"]
-margin_left = 1003.76
-margin_top = 579.978
-margin_right = 1023.76
-margin_bottom = 599.978
-mouse_filter = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }

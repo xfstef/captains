@@ -1,13 +1,9 @@
 extends Camera2D
 
-var move_vector = Vector2()
-var mouse_pos
-var viewport_size
-
 func _process(delta):
-	move_vector = Vector2()
-	mouse_pos = get_viewport().get_mouse_position()
-	viewport_size = get_viewport().size
+	var move_vector = Vector2()
+	var mouse_pos = get_viewport().get_mouse_position()
+	var viewport_size = get_viewport().size
 	
 	if Input.is_action_pressed("map_left"):
 		move_vector.x -= 1
@@ -24,22 +20,13 @@ func _process(delta):
 		self.zoom.x -= 0.25
 		self.zoom.y -= 0.25
 	
-	if mouse_pos.x < 40 && mouse_pos.y < 40:
+	if mouse_pos.x < 50:
 		move_vector.x = -1
-		move_vector.y = -1
-	elif mouse_pos.x < 40 && mouse_pos.y > viewport_size.y - 40:
-		move_vector.x = -1
-		move_vector.y = 1
-	elif mouse_pos.x > viewport_size.x - 40 && mouse_pos.y < 40:
+	elif mouse_pos.x > viewport_size.x - 50:
 		move_vector.x = 1
+	if mouse_pos.y < 50:
 		move_vector.y = -1
-	elif mouse_pos.x > viewport_size.x - 40 && mouse_pos.y > viewport_size.y - 40:
-		move_vector.x = 1
+	elif mouse_pos.y > viewport_size.y - 50:
 		move_vector.y = 1
 	
-	if move_vector.x != 0 || move_vector.y != 0:
-		print(move_vector)
-	
-	self.position += move_vector * delta * 300
-	#global_translate(move_vector * delta * 300)
-	#translate(move_vector * delta * 300)
+	global_translate(move_vector * delta * 300 * self.zoom.x)
