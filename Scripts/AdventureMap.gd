@@ -1,7 +1,7 @@
 extends Node2D
 
 # Declare member variables here. Examples:
-var mapPath = "res://Maps/test3.json"
+var mapPath = "res://Maps/test4.json"
 var mapGroundMatrix = []
 var mapPropsMatrix = []
 var info
@@ -78,6 +78,11 @@ func loadMapData():
 	var payload = parse_json(file.get_as_text())
 	mapWidth = payload.width
 	mapHeight = payload.height
+	
+	camera.limit_left = ((mapWidth / 2) * -96) - 200
+	camera.limit_top = -400
+	camera.limit_right = ((mapWidth / 2) * 96) + 200
+	camera.limit_bottom = ((mapHeight / 2) * 64) + 400
 	
 	for y in range(mapHeight):
 		mapGroundMatrix.append([])
