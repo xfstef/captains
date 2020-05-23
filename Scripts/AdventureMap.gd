@@ -79,10 +79,10 @@ func loadMapData():
 	mapWidth = payload.width
 	mapHeight = payload.height
 	
-	camera.limit_left = ((mapWidth / 2) * -96) - 200
+	camera.limit_left = ((mapWidth / 2) * -144) - 200
 	camera.limit_top = -400
-	camera.limit_right = ((mapWidth / 2) * 96) + 200
-	camera.limit_bottom = ((mapHeight / 2) * 64) + 400
+	camera.limit_right = ((mapWidth / 2) * 144) + 200
+	camera.limit_bottom = mapHeight * 72
 	
 	for y in range(mapHeight):
 		mapGroundMatrix.append([])

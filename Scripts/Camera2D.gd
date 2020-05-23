@@ -20,13 +20,13 @@ func _process(delta):
 		self.zoom.x -= 0.25
 		self.zoom.y -= 0.25
 	
-	if mouse_pos.x < 50:
+	if mouse_pos.x < 30:
 		move_vector.x = -1
-	elif mouse_pos.x > viewport_size.x - 50:
+	elif mouse_pos.x > viewport_size.x - 30:
 		move_vector.x = 1
-	if mouse_pos.y < 50:
+	if mouse_pos.y < 30:
 		move_vector.y = -1
-	elif mouse_pos.y > viewport_size.y - 50:
+	elif mouse_pos.y > viewport_size.y - 30:
 		move_vector.y = 1
 	
 	global_translate(move_vector * delta * 300 * self.zoom.x)
