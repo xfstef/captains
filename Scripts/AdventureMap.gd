@@ -69,6 +69,17 @@ func _on_saveMapButton_pressed():
 	file.store_line(to_json(data))
 	file.close()
 	
+func prepCamera(width, height):
+	var half_width_pixels = (width / 2) * 144
+	var half_height_pixels = (height / 2) * 72
+	# Use the player starting tile to calculate camera position
+	camera.position.y = half_height_pixels
+	
+	camera.limit_left = (half_width_pixels * -1) - 200
+	camera.limit_top = -120
+	camera.limit_right = half_width_pixels + 200
+	camera.limit_bottom = mapHeight * 72 + 192
+	
 func loadMapData():
 	var file = File.new()
 	if not file.file_exists(mapPath):
@@ -78,11 +89,8 @@ func loadMapData():
 	var payload = parse_json(file.get_as_text())
 	mapWidth = payload.width
 	mapHeight = payload.height
-	
-	camera.limit_left = ((mapWidth / 2) * -144) - 200
-	camera.limit_top = -400
-	camera.limit_right = ((mapWidth / 2) * 144) + 200
-	camera.limit_bottom = mapHeight * 72
+	#TODO load / calculate player starting position
+	prepCamera(mapWidth, mapHeight)
 	
 	for y in range(mapHeight):
 		mapGroundMatrix.append([])
