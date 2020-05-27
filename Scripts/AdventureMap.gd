@@ -13,8 +13,10 @@ var groundTileMap
 var propsTileMap
 var interactableTileMap
 var camera
+var armyNode
 
 var playersArmies = []
+var army_instances = []
 
 var data = {
 	"name": "",
@@ -61,6 +63,7 @@ func _ready():
 	propsTileMap = get_node("TM-Props")
 	interactableTileMap = get_node("TM-Interactable")
 	info = get_node("UI/info")
+	armyNode = get_node("Army")
 	loadMapData()
 	#initPaintedMatrix()
 	
@@ -148,15 +151,22 @@ func initPaintedMatrix():
 func instantiate_player_armies(player_nr, player_data):
 	playersArmies.append([])
 	playersArmies[player_nr] = []
-	var genericArmy = get_node("Army")
+	army_instances.append([])
+	army_instances[player_nr] = []
 	for h in range(player_data.size()):
 		playersArmies[player_nr].append([])
 		playersArmies[player_nr][h] = player_data[h]
-		var armyInstance = genericArmy.instance()
+		army_instances[player_nr].append(armyNode.duplicate())
+		var pos = Vector2(player_data[h].x, player_data[h].y)
+		army_instances[player_nr][0].position = interactableTileMap.map_to_world(pos)
+#		army_instances[player_nr][0].position.x += 72
+#		army_instances[player_nr][0].position.y += 36
+		print(interactableTileMap.map_to_world(pos))
+		add_child(army_instances[player_nr][0])
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	var mouse_pos = get_global_mouse_position()
 	var tile = groundTileMap.world_to_map(mouse_pos)
-	var text = "tile: %s" % [tile]
+	var text = "tile: %s, mouse_pos: %s" % [tile, mouse_pos]
 	info.set_text(text)
