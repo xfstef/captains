@@ -65,3 +65,16 @@ func _process(delta):
 	
 	global_translate(move_vector * delta * 300 * self.zoom.x)
 	
+func followNode(node):
+	var move_vector = Vector2(node.position.x, node.position.y)
+	
+	if move_vector.x - w_h_times_zoom < self.limit_left:
+		move_vector.x += self.limit_left + (move_vector.x - w_h_times_zoom) * -1
+	elif move_vector.x + w_h_times_zoom > self.limit_right:
+		move_vector.x -= move_vector.x + w_h_times_zoom - self.limit_right
+	if move_vector.y - h_h_times_zoom < self.limit_top:
+		move_vector.y += self.limit_top + (move_vector.y - h_h_times_zoom) * -1
+	elif move_vector.y + h_h_times_zoom > self.limit_bottom:
+		move_vector.y -= move_vector.y + h_h_times_zoom - self.limit_bottom
+	
+	global_translate(move_vector)

@@ -32,8 +32,8 @@ var data = {
 			"color": 0,
 			"armies": [
 				{
-					"x": 2,
-					"y": 2,
+					"x": 0,
+					"y": 0,
 					"cameraStartPosition": true,
 					"heroId": 0
 				}
@@ -158,15 +158,14 @@ func instantiate_player_armies(player_nr, player_data):
 		playersArmies[player_nr][h] = player_data[h]
 		army_instances[player_nr].append(armyNode.duplicate())
 		var pos = Vector2(player_data[h].x, player_data[h].y)
-		army_instances[player_nr][0].position = interactableTileMap.map_to_world(pos)
-#		army_instances[player_nr][0].position.x += 72
-#		army_instances[player_nr][0].position.y += 36
-		print(interactableTileMap.map_to_world(pos))
-		add_child(army_instances[player_nr][0])
+		army_instances[player_nr][h].position = interactableTileMap.map_to_world(pos)
+		add_child(army_instances[player_nr][h])
+		if player_data[h].get("cameraStartPosition") && player_data[h].cameraStartPosition == true:
+			camera.followNode(army_instances[player_nr][h])
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	var mouse_pos = get_global_mouse_position()
 	var tile = groundTileMap.world_to_map(mouse_pos)
-	var text = "tile: %s, mouse_pos: %s" % [tile, mouse_pos]
+	var text = "tile: %s" % [tile]
 	info.set_text(text)
