@@ -2,14 +2,19 @@ extends Node2D
 
 # Declare member variables here. Examples:
 var mapPath = "res://Maps/test4.json"
+var interactablesPath = "res://Data/mapInteractables.json"
 var mapGroundMatrix = []
 var mapPropsMatrix = []
+var mapInteractableMatrix = []
 var info
 var mapWidth = 0
 var mapHeight = 0
 var groundTileMap
 var propsTileMap
+var interactableTileMap
 var camera
+
+var playersArmies = []
 
 var data = {
 	"name": "",
@@ -21,14 +26,25 @@ var data = {
 			"forcedFaction": 0,
 			"forcedCaptain": 0,
 			"forcedStartBonus": 0,
-			"startingAlliance": 0
+			"startingAlliance": 0,
+			"color": 0,
+			"armies": [
+				{
+					"x": 2,
+					"y": 2,
+					"cameraStartPosition": true,
+					"heroId": 0
+				}
+			],
+			"castles": []
 		},
 		{
 			"canBeHuman": false,
 			"forcedFaction": 2,
 			"forcedCaptain": 0,
 			"forcedStartBonus": 1,
-			"startingAlliance": 0
+			"startingAlliance": 0,
+			"color": 1
 		}
 	],
 	"winConditions": [0],
@@ -43,6 +59,7 @@ func _ready():
 	camera = get_node("Camera2D")
 	groundTileMap = get_node("TM-Ground")
 	propsTileMap = get_node("TM-Props")
+	interactableTileMap = get_node("TM-Interactable")
 	info = get_node("UI/info")
 	loadMapData()
 	#initPaintedMatrix()
@@ -61,7 +78,7 @@ func _on_saveMapButton_pressed():
 		data.tiles[y] = []
 		for x in range(data.height):
 			data.tiles[y].append([])
-			data.tiles[y][x] = [mapGroundMatrix[y][x], mapPropsMatrix[y][x], -1]
+			data.tiles[y][x] = [mapGroundMatrix[y][x], mapPropsMatrix[y][x], mapInteractableMatrix[y][x]]
 	
 	var file
 	file = File.new()
@@ -69,12 +86,8 @@ func _on_saveMapButton_pressed():
 	file.store_line(to_json(data))
 	file.close()
 	
-func prepCamera(width, height):
-	var half_width_pixels = (width / 2) * 144
-	var half_height_pixels = (height / 2) * 72
-	# Use the player starting tile to calculate camera position
-	camera.position.y = half_height_pixels
-	
+func prepCamera():
+	var half_width_pixels = (mapWidth / 2) * 144
 	camera.limit_left = (half_width_pixels * -1) - 200
 	camera.limit_top = -120
 	camera.limit_right = half_width_pixels + 200
@@ -89,14 +102,15 @@ func loadMapData():
 	var payload = parse_json(file.get_as_text())
 	mapWidth = payload.width
 	mapHeight = payload.height
-	#TODO load / calculate player starting position
-	prepCamera(mapWidth, mapHeight)
+	prepCamera()
 	
 	for y in range(mapHeight):
 		mapGroundMatrix.append([])
 		mapGroundMatrix[y] = []
 		mapPropsMatrix.append([])
 		mapPropsMatrix[y] = []
+		mapInteractableMatrix.append([])
+		mapInteractableMatrix[y] = []
 		for x in range(mapWidth):
 			mapGroundMatrix[y].append([])
 			mapGroundMatrix[y][x] = payload.tiles[y][x][0]
@@ -104,20 +118,41 @@ func loadMapData():
 			mapPropsMatrix[y].append([])
 			mapPropsMatrix[y][x] = payload.tiles[y][x][1]
 			propsTileMap.set_cell(x, y, mapPropsMatrix[y][x])
+			mapInteractableMatrix[y].append([])
+			mapInteractableMatrix[y][x] = payload.tiles[y][x][2]
+			interactableTileMap.set_cell(x, y, mapInteractableMatrix[y][x])
+			
+	for z in range(payload.playerStartRules.size()):
+		if payload.playerStartRules[z].get("armies"):
+			instantiate_player_armies(z, payload.playerStartRules[z].armies)
 	
 	file.close()
 
+# Temporary function used to save maps made with Godot before starting the game.
 func initPaintedMatrix():
 	for y in range(data.width):
 		mapGroundMatrix.append([])
 		mapGroundMatrix[y] = []
 		mapPropsMatrix.append([])
 		mapPropsMatrix[y] = []
+		mapInteractableMatrix.append([])
+		mapInteractableMatrix[y] = []
 		for x in range(data.height):
 			mapGroundMatrix[y].append([])
 			mapGroundMatrix[y][x] = groundTileMap.get_cell(x, y)
 			mapPropsMatrix[y].append([])
 			mapPropsMatrix[y][x] = propsTileMap.get_cell(x, y)
+			mapInteractableMatrix[y].append([])
+			mapInteractableMatrix[y][x] = interactableTileMap.get_cell(x, y)
+			
+func instantiate_player_armies(player_nr, player_data):
+	playersArmies.append([])
+	playersArmies[player_nr] = []
+	var genericArmy = get_node("Army")
+	for h in range(player_data.size()):
+		playersArmies[player_nr].append([])
+		playersArmies[player_nr][h] = player_data[h]
+		var armyInstance = genericArmy.instance()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

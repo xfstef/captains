@@ -64,3 +64,4 @@ func _process(delta):
 		move_vector.y = 1
 	
 	global_translate(move_vector * delta * 300 * self.zoom.x)
+	

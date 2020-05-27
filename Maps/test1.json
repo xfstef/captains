@@ -8,14 +8,27 @@
             "forcedFaction": 0,
             "forcedCaptain": 0,
             "forcedStartBonus": 0,
-            "startingAlliance": 0
+            "startingAlliance": 0,
+            "color": 0,
+            "armies": [
+                {
+                    "x": 2,
+                    "y": 2,
+                    "startingHero": true,
+                    "heroId": 0
+                }
+            ],
+            "castles": [
+
+            ]
         },
         {
             "canBeHuman": false,
             "forcedFaction": 2,
             "forcedCaptain": 0,
             "forcedStartBonus": 1,
-            "startingAlliance": 0
+            "startingAlliance": 0,
+            "color": 1
         }
     ],
     "winConditions": [0],
