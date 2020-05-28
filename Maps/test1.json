@@ -12,9 +12,10 @@
             "color": 0,
             "armies": [
                 {
-                    "x": 2,
-                    "y": 2,
+                    "x": 6,
+                    "y": 6,
                     "startingHero": true,
+					"selected": true,
                     "heroId": 0
                 }
             ],

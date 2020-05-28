@@ -27,7 +27,7 @@ func _process(delta):
 		move_vector.y -= 1
 	elif Input.is_action_pressed("map_down") && self.position.y + h_h_times_zoom < self.limit_bottom:
 		move_vector.y += 1
-	if Input.is_action_just_released("wheel_down") && self.zoom.x < 1.5:
+	if Input.is_action_just_released("wheel_down") && self.zoom.x < 2:
 		self.zoom.x += 0.25
 		self.zoom.y += 0.25
 		viewport_size = get_viewport().size
@@ -47,7 +47,7 @@ func _process(delta):
 		elif self.position.y + h_h_times_zoom > self.limit_bottom:
 			zoom_dif_v = self.position.y + h_h_times_zoom - self.limit_bottom
 			self.position.y -= zoom_dif_v
-	elif Input.is_action_just_released("wheel_up") && self.zoom.x > 0.5:
+	elif Input.is_action_just_released("wheel_up") && self.zoom.x > 1:
 		self.zoom.x -= 0.25
 		self.zoom.y -= 0.25
 		viewport_size = get_viewport().size

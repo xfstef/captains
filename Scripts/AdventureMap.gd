@@ -17,6 +17,7 @@ var armyNode
 
 var playersArmies = []
 var army_instances = []
+var selected_army = Vector2()
 
 var data = {
 	"name": "",
@@ -32,9 +33,10 @@ var data = {
 			"color": 0,
 			"armies": [
 				{
-					"x": 0,
-					"y": 0,
+					"x": 6,
+					"y": 6,
 					"cameraStartPosition": true,
+					"selected": true,
 					"heroId": 0
 				}
 			],
@@ -148,20 +150,23 @@ func initPaintedMatrix():
 			mapInteractableMatrix[y].append([])
 			mapInteractableMatrix[y][x] = interactableTileMap.get_cell(x, y)
 			
-func instantiate_player_armies(player_nr, player_data):
+func instantiate_player_armies(player_nr, player_armies):
 	playersArmies.append([])
 	playersArmies[player_nr] = []
 	army_instances.append([])
 	army_instances[player_nr] = []
-	for h in range(player_data.size()):
+	for h in range(player_armies.size()):
 		playersArmies[player_nr].append([])
-		playersArmies[player_nr][h] = player_data[h]
+		playersArmies[player_nr][h] = player_armies[h]
 		army_instances[player_nr].append(armyNode.duplicate())
-		var pos = Vector2(player_data[h].x, player_data[h].y)
+		var pos = Vector2(player_armies[h].x, player_armies[h].y)
 		army_instances[player_nr][h].position = interactableTileMap.map_to_world(pos)
 		add_child(army_instances[player_nr][h])
-		if player_data[h].get("cameraStartPosition") && player_data[h].cameraStartPosition == true:
+		if player_armies[h].get("cameraStartPosition") && player_armies[h].cameraStartPosition == true:
 			camera.followNode(army_instances[player_nr][h])
+		if player_armies[h].get("selected") && player_armies[h].selected == true:
+			selected_army.x = player_nr
+			selected_army.y = h
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -169,3 +174,12 @@ func _process(delta):
 	var tile = groundTileMap.world_to_map(mouse_pos)
 	var text = "tile: %s" % [tile]
 	info.set_text(text)
+	
+func _input(event):
+	var selected_army_pos
+	if Input.is_action_just_released("army_left"):
+		playersArmies[selected_army.x][selected_army.y].x -= 1
+		playersArmies[selected_army.x][selected_army.y].y += 1
+		selected_army_pos = interactableTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
+		army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
+		camera.followNode(army_instances[selected_army.x][selected_army.y])
