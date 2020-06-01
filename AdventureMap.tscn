@@ -40,6 +40,8 @@ limit_smoothed = true
 smoothing_enabled = true
 script = ExtResource( 5 )
 
+[node name="Tween" type="Tween" parent="Camera2D"]
+
 [node name="TM-Ground" type="TileMap" parent="."]
 mode = 1
 tile_set = ExtResource( 1 )
@@ -105,7 +107,7 @@ position = Vector2( -500, -500 )
 script = ExtResource( 7 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="Army"]
-position = Vector2( 0.752075, -22.7571 )
+position = Vector2( 0, -38 )
 frames = SubResource( 4 )
 offset = Vector2( 0, 18 )
 

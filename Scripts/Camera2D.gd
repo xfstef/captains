@@ -7,7 +7,7 @@ var zoom_dif_v
 var viewport_size
 var w_h_times_zoom
 var h_h_times_zoom
-#var follow_node_enabled = false
+var tween
 
 func _ready():
 	viewport_size = get_viewport().size
@@ -16,6 +16,7 @@ func _ready():
 	height_half = viewport_size.y / 2
 	w_h_times_zoom = width_half * self.zoom.x
 	h_h_times_zoom = height_half * self.zoom.y
+	tween = get_node("Tween")
 
 func _process(delta):
 	var move_vector = Vector2()
@@ -67,21 +68,7 @@ func _process(delta):
 	
 	if move_vector.x != 0 || move_vector.y != 0:
 		global_translate(move_vector * delta * 300 * self.zoom.x)
-		#follow_node_enabled = false
 	
-func followNode(node):
-	#follow_node_enabled = true
-	print(self.position, self.get_camera_screen_center())
-	var move_vector = Vector2(node.position.x, node.position.y)
-
-	if move_vector.x - w_h_times_zoom < self.limit_left:
-		move_vector.x += self.limit_left + (move_vector.x - w_h_times_zoom) * -1
-	elif move_vector.x + w_h_times_zoom > self.limit_right:
-		move_vector.x -= move_vector.x + w_h_times_zoom - self.limit_right
-	if move_vector.y - h_h_times_zoom < self.limit_top:
-		move_vector.y += self.limit_top + (move_vector.y - h_h_times_zoom) * -1
-	elif move_vector.y + h_h_times_zoom > self.limit_bottom:
-		move_vector.y -= move_vector.y + h_h_times_zoom - self.limit_bottom
-	
-	if move_vector.x != 0 || move_vector.y != 0:
-		global_translate(move_vector)
+func followNode(target_pos):
+	tween.interpolate_property(self, 'position', self.position, target_pos, 1, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+	tween.start()

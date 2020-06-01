@@ -164,10 +164,7 @@ func instantiate_player_armies(player_nr, player_armies):
 		army_instances[player_nr][h].position.y += 36
 		propsTileMap.add_child(army_instances[player_nr][h])
 		if player_armies[h].get("cameraStartPosition") && player_armies[h].cameraStartPosition == true:
-#			self.remove_child(camera)
-#			army_instances[player_nr][h].add_child(camera)
-#			camera.set_owner(army_instances[player_nr][h])
-			camera.followNode(army_instances[player_nr][h])
+			camera.followNode(army_instances[player_nr][h].position)
 		if player_armies[h].get("selected") && player_armies[h].selected == true:
 			selected_army.x = player_nr
 			selected_army.y = h
@@ -180,40 +177,42 @@ func _process(delta):
 	info.set_text(text)
 	
 func _input(event):
-	var selected_army_pos
+	var command_given = false
 	if Input.is_action_just_released("army_left"):
 		playersArmies[selected_army.x][selected_army.y].x -= 1
 		playersArmies[selected_army.x][selected_army.y].y += 1
-		selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
-		army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
+		command_given = true
 	if Input.is_action_just_released("army_right"):
 		playersArmies[selected_army.x][selected_army.y].x += 1
 		playersArmies[selected_army.x][selected_army.y].y -= 1
-		selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
-		army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
+		command_given = true
 	if Input.is_action_just_released("army_up"):
 		playersArmies[selected_army.x][selected_army.y].x -= 1
 		playersArmies[selected_army.x][selected_army.y].y -= 1
-		selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
-		army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
+		command_given = true
 	if Input.is_action_just_released("army_down"):
 		playersArmies[selected_army.x][selected_army.y].x += 1
 		playersArmies[selected_army.x][selected_army.y].y += 1
-		selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
-		army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
+		command_given = true
 	if Input.is_action_just_released("army_up_left"):
 		playersArmies[selected_army.x][selected_army.y].x -= 1
-		selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
-		army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
+		command_given = true
 	if Input.is_action_just_released("army_up_right"):
 		playersArmies[selected_army.x][selected_army.y].y -= 1
-		selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
-		army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
+		command_given = true
 	if Input.is_action_just_released("army_down_left"):
 		playersArmies[selected_army.x][selected_army.y].y += 1
-		selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
-		army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
+		command_given = true
 	if Input.is_action_just_released("army_down_right"):
 		playersArmies[selected_army.x][selected_army.y].x += 1
-		selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
-		army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
+		command_given = true
+	
+	if command_given:
+		executeMoveArmyCommand()
+		command_given = false
+		
+func executeMoveArmyCommand():
+	var selected_army_pos
+	selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
+	army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
+	camera.followNode(selected_army_pos)
