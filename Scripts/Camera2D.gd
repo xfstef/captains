@@ -7,9 +7,11 @@ var zoom_dif_v
 var viewport_size
 var w_h_times_zoom
 var h_h_times_zoom
+#var follow_node_enabled = false
 
 func _ready():
 	viewport_size = get_viewport().size
+	print(viewport_size)
 	width_half = viewport_size.x / 2
 	height_half = viewport_size.y / 2
 	w_h_times_zoom = width_half * self.zoom.x
@@ -63,11 +65,15 @@ func _process(delta):
 	elif mouse_pos.y > viewport_size.y - 30 && self.position.y + h_h_times_zoom < self.limit_bottom:
 		move_vector.y = 1
 	
-	global_translate(move_vector * delta * 300 * self.zoom.x)
+	if move_vector.x != 0 || move_vector.y != 0:
+		global_translate(move_vector * delta * 300 * self.zoom.x)
+		#follow_node_enabled = false
 	
 func followNode(node):
+	#follow_node_enabled = true
+	print(self.position, self.get_camera_screen_center())
 	var move_vector = Vector2(node.position.x, node.position.y)
-	
+
 	if move_vector.x - w_h_times_zoom < self.limit_left:
 		move_vector.x += self.limit_left + (move_vector.x - w_h_times_zoom) * -1
 	elif move_vector.x + w_h_times_zoom > self.limit_right:
@@ -77,4 +83,5 @@ func followNode(node):
 	elif move_vector.y + h_h_times_zoom > self.limit_bottom:
 		move_vector.y -= move_vector.y + h_h_times_zoom - self.limit_bottom
 	
-	global_translate(move_vector)
+	if move_vector.x != 0 || move_vector.y != 0:
+		global_translate(move_vector)

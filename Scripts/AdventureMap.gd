@@ -5,13 +5,13 @@ var mapPath = "res://Maps/test4.json"
 var interactablesPath = "res://Data/mapInteractables.json"
 var mapGroundMatrix = []
 var mapPropsMatrix = []
-var mapInteractableMatrix = []
+var mapDoodadsMatrix = []
 var info
 var mapWidth = 0
 var mapHeight = 0
 var groundTileMap
 var propsTileMap
-var interactableTileMap
+var doodadsTileMap
 var camera
 var armyNode
 
@@ -63,7 +63,7 @@ func _ready():
 	camera = get_node("Camera2D")
 	groundTileMap = get_node("TM-Ground")
 	propsTileMap = get_node("TM-Props")
-	interactableTileMap = get_node("TM-Interactable")
+	doodadsTileMap = get_node("TM-Doodads")
 	info = get_node("UI/info")
 	armyNode = get_node("Army")
 	loadMapData()
@@ -83,7 +83,7 @@ func _on_saveMapButton_pressed():
 		data.tiles[y] = []
 		for x in range(data.height):
 			data.tiles[y].append([])
-			data.tiles[y][x] = [mapGroundMatrix[y][x], mapPropsMatrix[y][x], mapInteractableMatrix[y][x]]
+			data.tiles[y][x] = [mapGroundMatrix[y][x], mapDoodadsMatrix[y][x], mapPropsMatrix[y][x]]
 	
 	var file
 	file = File.new()
@@ -114,18 +114,18 @@ func loadMapData():
 		mapGroundMatrix[y] = []
 		mapPropsMatrix.append([])
 		mapPropsMatrix[y] = []
-		mapInteractableMatrix.append([])
-		mapInteractableMatrix[y] = []
+		mapDoodadsMatrix.append([])
+		mapDoodadsMatrix[y] = []
 		for x in range(mapWidth):
 			mapGroundMatrix[y].append([])
 			mapGroundMatrix[y][x] = payload.tiles[y][x][0]
 			groundTileMap.set_cell(x, y, mapGroundMatrix[y][x])
+			mapDoodadsMatrix[y].append([])
+			mapDoodadsMatrix[y][x] = payload.tiles[y][x][1]
+			doodadsTileMap.set_cell(x, y, mapDoodadsMatrix[y][x])
 			mapPropsMatrix[y].append([])
-			mapPropsMatrix[y][x] = payload.tiles[y][x][1]
+			mapPropsMatrix[y][x] = payload.tiles[y][x][2]
 			propsTileMap.set_cell(x, y, mapPropsMatrix[y][x])
-			mapInteractableMatrix[y].append([])
-			mapInteractableMatrix[y][x] = payload.tiles[y][x][2]
-			interactableTileMap.set_cell(x, y, mapInteractableMatrix[y][x])
 			
 	for z in range(payload.playerStartRules.size()):
 		if payload.playerStartRules[z].get("armies"):
@@ -140,15 +140,15 @@ func initPaintedMatrix():
 		mapGroundMatrix[y] = []
 		mapPropsMatrix.append([])
 		mapPropsMatrix[y] = []
-		mapInteractableMatrix.append([])
-		mapInteractableMatrix[y] = []
+		mapDoodadsMatrix.append([])
+		mapDoodadsMatrix[y] = []
 		for x in range(data.height):
 			mapGroundMatrix[y].append([])
 			mapGroundMatrix[y][x] = groundTileMap.get_cell(x, y)
+			mapDoodadsMatrix[y].append([])
+			mapDoodadsMatrix[y][x] = doodadsTileMap.get_cell(x, y)
 			mapPropsMatrix[y].append([])
 			mapPropsMatrix[y][x] = propsTileMap.get_cell(x, y)
-			mapInteractableMatrix[y].append([])
-			mapInteractableMatrix[y][x] = interactableTileMap.get_cell(x, y)
 			
 func instantiate_player_armies(player_nr, player_armies):
 	playersArmies.append([])
@@ -161,8 +161,12 @@ func instantiate_player_armies(player_nr, player_armies):
 		army_instances[player_nr].append(armyNode.duplicate())
 		var pos = Vector2(player_armies[h].x, player_armies[h].y)
 		army_instances[player_nr][h].position = propsTileMap.map_to_world(pos)
+		army_instances[player_nr][h].position.y += 36
 		propsTileMap.add_child(army_instances[player_nr][h])
 		if player_armies[h].get("cameraStartPosition") && player_armies[h].cameraStartPosition == true:
+#			self.remove_child(camera)
+#			army_instances[player_nr][h].add_child(camera)
+#			camera.set_owner(army_instances[player_nr][h])
 			camera.followNode(army_instances[player_nr][h])
 		if player_armies[h].get("selected") && player_armies[h].selected == true:
 			selected_army.x = player_nr
@@ -172,7 +176,7 @@ func instantiate_player_armies(player_nr, player_armies):
 func _process(delta):
 	var mouse_pos = get_global_mouse_position()
 	var tile = groundTileMap.world_to_map(mouse_pos)
-	var text = "tile: %s" % [tile]
+	var text = "tile: %s, pos: %s" % [tile, mouse_pos]
 	info.set_text(text)
 	
 func _input(event):
@@ -182,7 +186,6 @@ func _input(event):
 		playersArmies[selected_army.x][selected_army.y].y += 1
 		selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
 		army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
-		#camera.followNode(army_instances[selected_army.x][selected_army.y])
 	if Input.is_action_just_released("army_right"):
 		playersArmies[selected_army.x][selected_army.y].x += 1
 		playersArmies[selected_army.x][selected_army.y].y -= 1
