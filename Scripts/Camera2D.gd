@@ -11,7 +11,6 @@ var tween
 
 func _ready():
 	viewport_size = get_viewport().size
-	print(viewport_size)
 	width_half = viewport_size.x / 2
 	height_half = viewport_size.y / 2
 	w_h_times_zoom = width_half * self.zoom.x

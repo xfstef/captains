@@ -18,6 +18,7 @@ var armyNode
 var playersArmies = []
 var army_instances = []
 var selected_army = Vector2()
+var command_given = false
 
 var data = {
 	"name": "",
@@ -119,6 +120,7 @@ func loadMapData():
 		for x in range(mapWidth):
 			mapGroundMatrix[y].append([])
 			mapGroundMatrix[y][x] = payload.tiles[y][x][0]
+			#mapGroundMatrix[y][x].selected = false
 			groundTileMap.set_cell(x, y, mapGroundMatrix[y][x])
 			mapDoodadsMatrix[y].append([])
 			mapDoodadsMatrix[y][x] = payload.tiles[y][x][1]
@@ -177,7 +179,9 @@ func _process(delta):
 	info.set_text(text)
 	
 func _input(event):
-	var command_given = false
+	if camera.tween.is_active():
+		return
+		
 	if Input.is_action_just_released("army_left"):
 		playersArmies[selected_army.x][selected_army.y].x -= 1
 		playersArmies[selected_army.x][selected_army.y].y += 1
@@ -206,13 +210,19 @@ func _input(event):
 	if Input.is_action_just_released("army_down_right"):
 		playersArmies[selected_army.x][selected_army.y].x += 1
 		command_given = true
-	
+	if Input.is_action_just_released("select_tile"):
+		var tile = groundTileMap.world_to_map(get_global_mouse_position())
+		#if mapGroundMatrix[tile.x][tile.y].selected:
+			
+		
 	if command_given:
 		executeMoveArmyCommand()
 		command_given = false
 		
+
 func executeMoveArmyCommand():
 	var selected_army_pos
 	selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
 	army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
 	camera.followNode(selected_army_pos)
+	
