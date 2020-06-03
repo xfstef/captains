@@ -3,6 +3,7 @@ extends Node2D
 # Declare member variables here. Examples:
 var mapPath = "res://Maps/test4.json"
 var interactablesPath = "res://Data/mapInteractables.json"
+var tileWalkProp = "res://Data/tileWalkableProperties.json"
 var mapGroundMatrix = []
 var mapPropsMatrix = []
 var mapDoodadsMatrix = []
@@ -14,6 +15,7 @@ var propsTileMap
 var doodadsTileMap
 var camera
 var armyNode
+var paths_matrix = []
 
 var playersArmies = []
 var army_instances = []
@@ -120,7 +122,6 @@ func loadMapData():
 		for x in range(mapWidth):
 			mapGroundMatrix[y].append([])
 			mapGroundMatrix[y][x] = payload.tiles[y][x][0]
-			#mapGroundMatrix[y][x].selected = false
 			groundTileMap.set_cell(x, y, mapGroundMatrix[y][x])
 			mapDoodadsMatrix[y].append([])
 			mapDoodadsMatrix[y][x] = payload.tiles[y][x][1]
