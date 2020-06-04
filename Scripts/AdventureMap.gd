@@ -3,7 +3,7 @@ extends Node2D
 # Declare member variables here. Examples:
 var mapPath = "res://Maps/test4.json"
 var interactablesPath = "res://Data/mapInteractables.json"
-var tileWalkProp = "res://Data/tileWalkableProperties.json"
+var groundWalkProp = "res://Data/groundWalkableProperties.json"
 var mapGroundMatrix = []
 var mapPropsMatrix = []
 var mapDoodadsMatrix = []
@@ -15,7 +15,8 @@ var propsTileMap
 var doodadsTileMap
 var camera
 var armyNode
-var paths_matrix = []
+var tile_travel_properties
+var tile_travel_expenses_matrix = []
 
 var playersArmies = []
 var army_instances = []
@@ -69,6 +70,8 @@ func _ready():
 	doodadsTileMap = get_node("TM-Doodads")
 	info = get_node("UI/info")
 	armyNode = get_node("Army")
+	tile_travel_properties = loadFilePayload(groundWalkProp)
+	print(tile_travel_properties)
 	loadMapData()
 	#initPaintedMatrix()
 	
@@ -101,13 +104,17 @@ func prepCamera():
 	camera.limit_right = half_width_pixels + 200
 	camera.limit_bottom = mapHeight * 72 + 192
 	
-func loadMapData():
+func loadFilePayload(fileName):
 	var file = File.new()
-	if not file.file_exists(mapPath):
+	if not file.file_exists(fileName):
 		return
-	file.open(mapPath, File.READ)
-	
+	file.open(fileName, File.READ)
 	var payload = parse_json(file.get_as_text())
+	file.close()
+	return payload
+	
+func loadMapData():
+	var payload = loadFilePayload(mapPath)
 	mapWidth = payload.width
 	mapHeight = payload.height
 	prepCamera()
@@ -133,8 +140,6 @@ func loadMapData():
 	for z in range(payload.playerStartRules.size()):
 		if payload.playerStartRules[z].get("armies"):
 			instantiate_player_armies(z, payload.playerStartRules[z].armies)
-	
-	file.close()
 
 # Temporary function used to save maps made with Godot before starting the game.
 func initPaintedMatrix():
@@ -145,6 +150,8 @@ func initPaintedMatrix():
 		mapPropsMatrix[y] = []
 		mapDoodadsMatrix.append([])
 		mapDoodadsMatrix[y] = []
+		tile_travel_expenses_matrix.append([])
+		tile_travel_expenses_matrix[y] = []
 		for x in range(data.height):
 			mapGroundMatrix[y].append([])
 			mapGroundMatrix[y][x] = groundTileMap.get_cell(x, y)
@@ -152,6 +159,9 @@ func initPaintedMatrix():
 			mapDoodadsMatrix[y][x] = doodadsTileMap.get_cell(x, y)
 			mapPropsMatrix[y].append([])
 			mapPropsMatrix[y][x] = propsTileMap.get_cell(x, y)
+			tile_travel_expenses_matrix[y].append([])
+			tile_travel_expenses_matrix[y][x] = []
+			tile_travel_expenses_matrix[y][x][0] = tile_travel_properties[mapGroundMatrix[y][x]]
 			
 func instantiate_player_armies(player_nr, player_armies):
 	playersArmies.append([])
@@ -184,35 +194,44 @@ func _input(event):
 		return
 		
 	if Input.is_action_just_released("army_left"):
-		playersArmies[selected_army.x][selected_army.y].x -= 1
-		playersArmies[selected_army.x][selected_army.y].y += 1
-		command_given = true
+		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x - 1, playersArmies[selected_army.x][selected_army.y].y + 1):
+			playersArmies[selected_army.x][selected_army.y].x -= 1
+			playersArmies[selected_army.x][selected_army.y].y += 1
+			command_given = true
 	if Input.is_action_just_released("army_right"):
-		playersArmies[selected_army.x][selected_army.y].x += 1
-		playersArmies[selected_army.x][selected_army.y].y -= 1
-		command_given = true
+		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x + 1, playersArmies[selected_army.x][selected_army.y].y - 1):
+			playersArmies[selected_army.x][selected_army.y].x += 1
+			playersArmies[selected_army.x][selected_army.y].y -= 1
+			command_given = true
 	if Input.is_action_just_released("army_up"):
-		playersArmies[selected_army.x][selected_army.y].x -= 1
-		playersArmies[selected_army.x][selected_army.y].y -= 1
-		command_given = true
+		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x - 1, playersArmies[selected_army.x][selected_army.y].y - 1):
+			playersArmies[selected_army.x][selected_army.y].x -= 1
+			playersArmies[selected_army.x][selected_army.y].y -= 1
+			command_given = true
 	if Input.is_action_just_released("army_down"):
-		playersArmies[selected_army.x][selected_army.y].x += 1
-		playersArmies[selected_army.x][selected_army.y].y += 1
-		command_given = true
+		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x + 1, playersArmies[selected_army.x][selected_army.y].y + 1):
+			playersArmies[selected_army.x][selected_army.y].x += 1
+			playersArmies[selected_army.x][selected_army.y].y += 1
+			command_given = true
 	if Input.is_action_just_released("army_up_left"):
-		playersArmies[selected_army.x][selected_army.y].x -= 1
-		command_given = true
+		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x - 1, playersArmies[selected_army.x][selected_army.y].y):
+			playersArmies[selected_army.x][selected_army.y].x -= 1
+			command_given = true
 	if Input.is_action_just_released("army_up_right"):
-		playersArmies[selected_army.x][selected_army.y].y -= 1
-		command_given = true
+		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y - 1):
+			playersArmies[selected_army.x][selected_army.y].y -= 1
+			command_given = true
 	if Input.is_action_just_released("army_down_left"):
-		playersArmies[selected_army.x][selected_army.y].y += 1
-		command_given = true
+		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y + 1):
+			playersArmies[selected_army.x][selected_army.y].y += 1
+			command_given = true
 	if Input.is_action_just_released("army_down_right"):
-		playersArmies[selected_army.x][selected_army.y].x += 1
-		command_given = true
+		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x + 1, playersArmies[selected_army.x][selected_army.y].y):
+			playersArmies[selected_army.x][selected_army.y].x += 1
+			command_given = true
 	if Input.is_action_just_released("select_tile"):
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
+		#if isTileAccessible(tile.x, tile.y):
 		#if mapGroundMatrix[tile.x][tile.y].selected:
 			
 		
@@ -226,4 +245,12 @@ func executeMoveArmyCommand():
 	selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
 	army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
 	camera.followNode(selected_army_pos)
+	
+func isTileAccessible(x, y):
+	if x < 0 || x >= mapWidth || y < 0 || y >= mapHeight:
+		return false
+	elif army_instances[selected_army].travel_type < tile_travel_expenses_matrix[x][y][0]:
+		return false
+	else:
+		return true
 	

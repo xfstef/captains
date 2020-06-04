@@ -4,11 +4,14 @@ var my_animation
 var target_coords
 var tween
 var camera
+var travel_type = 0
 
 func _ready():
 	my_animation = get_node("AnimatedSprite")
 	target_coords = Vector2(self.position.x, self.position.y)
 	tween = get_node("Tween")
+	# TODO: Add a means of loading what type of travel this army does: Land march, Sailing, Flying, Tunneling.
+	travel_type = 0
 
 func _process(delta):
 	if !tween.is_active():
@@ -23,3 +26,5 @@ func moveTo(x_y):
 	tween.start()
 	my_animation.playing = true
 	
+func changeTravelTyep(new_travel_type):
+	travel_type = new_travel_type
