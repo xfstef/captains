@@ -16,7 +16,6 @@ var doodadsTileMap
 var camera
 var armyNode
 var tile_travel_properties
-var tile_travel_expenses_matrix = []
 
 var playersArmies = []
 var army_instances = []
@@ -71,7 +70,6 @@ func _ready():
 	info = get_node("UI/info")
 	armyNode = get_node("Army")
 	tile_travel_properties = loadFilePayload(groundWalkProp)
-	print(tile_travel_properties)
 	loadMapData()
 	#initPaintedMatrix()
 	
@@ -119,49 +117,44 @@ func loadMapData():
 	mapHeight = payload.height
 	prepCamera()
 	
-	for y in range(mapHeight):
+	for x in range(mapHeight):
 		mapGroundMatrix.append([])
-		mapGroundMatrix[y] = []
+		mapGroundMatrix[x] = []
 		mapPropsMatrix.append([])
-		mapPropsMatrix[y] = []
+		mapPropsMatrix[x] = []
 		mapDoodadsMatrix.append([])
-		mapDoodadsMatrix[y] = []
-		for x in range(mapWidth):
-			mapGroundMatrix[y].append([])
-			mapGroundMatrix[y][x] = payload.tiles[y][x][0]
-			groundTileMap.set_cell(x, y, mapGroundMatrix[y][x])
-			mapDoodadsMatrix[y].append([])
-			mapDoodadsMatrix[y][x] = payload.tiles[y][x][1]
-			doodadsTileMap.set_cell(x, y, mapDoodadsMatrix[y][x])
-			mapPropsMatrix[y].append([])
-			mapPropsMatrix[y][x] = payload.tiles[y][x][2]
-			propsTileMap.set_cell(x, y, mapPropsMatrix[y][x])
-			
+		mapDoodadsMatrix[x] = []
+		for y in range(mapWidth):
+			mapGroundMatrix[x].append([])
+			mapGroundMatrix[x][y] = payload.tiles[x][y][0]
+			groundTileMap.set_cell(x, y, mapGroundMatrix[x][y])
+			mapDoodadsMatrix[x].append([])
+			mapDoodadsMatrix[x][y] = payload.tiles[x][y][1]
+			doodadsTileMap.set_cell(x, y, mapDoodadsMatrix[x][y])
+			mapPropsMatrix[x].append([])
+			mapPropsMatrix[x][y] = payload.tiles[x][y][2]
+			propsTileMap.set_cell(x, y, mapPropsMatrix[x][y])
+	
 	for z in range(payload.playerStartRules.size()):
 		if payload.playerStartRules[z].get("armies"):
 			instantiate_player_armies(z, payload.playerStartRules[z].armies)
 
 # Temporary function used to save maps made with Godot before starting the game.
 func initPaintedMatrix():
-	for y in range(data.width):
+	for x in range(data.width):
 		mapGroundMatrix.append([])
-		mapGroundMatrix[y] = []
+		mapGroundMatrix[x] = []
 		mapPropsMatrix.append([])
-		mapPropsMatrix[y] = []
+		mapPropsMatrix[x] = []
 		mapDoodadsMatrix.append([])
-		mapDoodadsMatrix[y] = []
-		tile_travel_expenses_matrix.append([])
-		tile_travel_expenses_matrix[y] = []
-		for x in range(data.height):
-			mapGroundMatrix[y].append([])
-			mapGroundMatrix[y][x] = groundTileMap.get_cell(x, y)
-			mapDoodadsMatrix[y].append([])
-			mapDoodadsMatrix[y][x] = doodadsTileMap.get_cell(x, y)
-			mapPropsMatrix[y].append([])
-			mapPropsMatrix[y][x] = propsTileMap.get_cell(x, y)
-			tile_travel_expenses_matrix[y].append([])
-			tile_travel_expenses_matrix[y][x] = []
-			tile_travel_expenses_matrix[y][x][0] = tile_travel_properties[mapGroundMatrix[y][x]]
+		mapDoodadsMatrix[x] = []
+		for y in range(data.height):
+			mapGroundMatrix[x].append([])
+			mapGroundMatrix[x][y] = groundTileMap.get_cell(x, y)
+			mapDoodadsMatrix[x].append([])
+			mapDoodadsMatrix[x][y] = doodadsTileMap.get_cell(x, y)
+			mapPropsMatrix[x].append([])
+			mapPropsMatrix[x][y] = propsTileMap.get_cell(x, y)
 			
 func instantiate_player_armies(player_nr, player_armies):
 	playersArmies.append([])
@@ -249,7 +242,7 @@ func executeMoveArmyCommand():
 func isTileAccessible(x, y):
 	if x < 0 || x >= mapWidth || y < 0 || y >= mapHeight:
 		return false
-	elif army_instances[selected_army].travel_type < tile_travel_expenses_matrix[x][y][0]:
+	elif army_instances[selected_army.x][selected_army.y].travel_type != tile_travel_properties[mapGroundMatrix[x][y]][0]:
 		return false
 	else:
 		return true
