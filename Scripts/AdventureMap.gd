@@ -4,18 +4,20 @@ extends Node2D
 var mapPath = "res://Maps/test4.json"
 var interactablesPath = "res://Data/mapInteractables.json"
 var groundWalkProp = "res://Data/groundWalkableProperties.json"
+var propsBlockedTiles = "res://Data/propsBlockedTiles.json"
 var mapGroundMatrix = []
 var mapPropsMatrix = []
-var mapDoodadsMatrix = []
+var mapMovementMatrix = []
 var info
 var mapWidth = 0
 var mapHeight = 0
 var groundTileMap
 var propsTileMap
-var doodadsTileMap
+var movementTileMap
 var camera
 var armyNode
-var tile_travel_properties
+var ground_travel_properties
+var props_blocked_tiles
 
 var playersArmies = []
 var army_instances = []
@@ -66,10 +68,11 @@ func _ready():
 	camera = get_node("Camera2D")
 	groundTileMap = get_node("TM-Ground")
 	propsTileMap = get_node("TM-Props")
-	doodadsTileMap = get_node("TM-Doodads")
+	movementTileMap = get_node("TM-Movement")
 	info = get_node("UI/info")
 	armyNode = get_node("Army")
-	tile_travel_properties = loadFilePayload(groundWalkProp)
+	ground_travel_properties = loadFilePayload(groundWalkProp)
+	props_blocked_tiles = loadFilePayload(propsBlockedTiles)
 	loadMapData()
 	#initPaintedMatrix()
 	
@@ -87,7 +90,7 @@ func _on_saveMapButton_pressed():
 		data.tiles[y] = []
 		for x in range(data.height):
 			data.tiles[y].append([])
-			data.tiles[y][x] = [mapGroundMatrix[y][x], mapDoodadsMatrix[y][x], mapPropsMatrix[y][x]]
+			data.tiles[y][x] = [mapGroundMatrix[y][x], mapPropsMatrix[y][x], mapMovementMatrix[y][x]]
 	
 	var file
 	file = File.new()
@@ -122,15 +125,15 @@ func loadMapData():
 		mapGroundMatrix[x] = []
 		mapPropsMatrix.append([])
 		mapPropsMatrix[x] = []
-		mapDoodadsMatrix.append([])
-		mapDoodadsMatrix[x] = []
+		mapMovementMatrix.append([])
+		mapMovementMatrix[x] = []
 		for y in range(mapWidth):
 			mapGroundMatrix[x].append([])
 			mapGroundMatrix[x][y] = payload.tiles[x][y][0]
 			groundTileMap.set_cell(x, y, mapGroundMatrix[x][y])
-			mapDoodadsMatrix[x].append([])
-			mapDoodadsMatrix[x][y] = payload.tiles[x][y][1]
-			doodadsTileMap.set_cell(x, y, mapDoodadsMatrix[x][y])
+			mapMovementMatrix[x].append([])
+			mapMovementMatrix[x][y] = payload.tiles[x][y][1]
+			movementTileMap.set_cell(x, y, mapMovementMatrix[x][y])
 			mapPropsMatrix[x].append([])
 			mapPropsMatrix[x][y] = payload.tiles[x][y][2]
 			propsTileMap.set_cell(x, y, mapPropsMatrix[x][y])
@@ -146,13 +149,13 @@ func initPaintedMatrix():
 		mapGroundMatrix[x] = []
 		mapPropsMatrix.append([])
 		mapPropsMatrix[x] = []
-		mapDoodadsMatrix.append([])
-		mapDoodadsMatrix[x] = []
+		mapMovementMatrix.append([])
+		mapMovementMatrix[x] = []
 		for y in range(data.height):
 			mapGroundMatrix[x].append([])
 			mapGroundMatrix[x][y] = groundTileMap.get_cell(x, y)
-			mapDoodadsMatrix[x].append([])
-			mapDoodadsMatrix[x][y] = doodadsTileMap.get_cell(x, y)
+			mapMovementMatrix[x].append([])
+			movementTileMap[x][y] = movementTileMap.get_cell(x, y)
 			mapPropsMatrix[x].append([])
 			mapPropsMatrix[x][y] = propsTileMap.get_cell(x, y)
 			
@@ -242,7 +245,7 @@ func executeMoveArmyCommand():
 func isTileAccessible(x, y):
 	if x < 0 || x >= mapWidth || y < 0 || y >= mapHeight:
 		return false
-	elif army_instances[selected_army.x][selected_army.y].travel_type != tile_travel_properties[mapGroundMatrix[x][y]][0]:
+	elif army_instances[selected_army.x][selected_army.y].travel_type != ground_travel_properties[mapGroundMatrix[x][y]][0]:
 		return false
 	else:
 		return true
