@@ -19,7 +19,7 @@ func _process(delta):
 		my_animation.frame = 0
 
 func moveTo(x_y):
-	x_y.y += 38
+	x_y.y += 37
 	target_coords = x_y
 
 	tween.interpolate_property(self, 'position', self.position, target_coords, 1, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
