@@ -24,45 +24,6 @@ var army_instances = []
 var selected_army = Vector2()
 var command_given = false
 
-var data = {
-	"name": "",
-	"description": "...",
-	"numberOfPlayers": 2,
-	"playerStartRules": [
-		{
-			"canBeHuman": true,
-			"forcedFaction": 0,
-			"forcedCaptain": 0,
-			"forcedStartBonus": 0,
-			"startingAlliance": 0,
-			"color": 0,
-			"armies": [
-				{
-					"x": 6,
-					"y": 7,
-					"cameraStartPosition": true,
-					"selected": true,
-					"heroId": 0
-				}
-			],
-			"castles": []
-		},
-		{
-			"canBeHuman": false,
-			"forcedFaction": 2,
-			"forcedCaptain": 0,
-			"forcedStartBonus": 1,
-			"startingAlliance": 0,
-			"color": 1
-		}
-	],
-	"winConditions": [0],
-	"lossConditions": [0, 1],
-	"width": 16,
-	"height": 16,
-	"tiles": []
-}
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	camera = get_node("Camera2D")
@@ -74,37 +35,14 @@ func _ready():
 	ground_travel_properties = loadFilePayload(groundWalkProp)
 	props_blocked_tiles = loadFilePayload(propsBlockedTiles)
 	loadMapData()
-	#initPaintedMatrix()
-	
-func _on_saveMapButton_pressed():
-	var saveNameInput = get_node("UI/saveMapName")
-	var saveName = "test1"
-	if saveNameInput.text != "":
-		saveName = saveNameInput.text
-	var filePath = str("res://Maps/", saveName, ".json")
-	
-	data.name = saveName
-	
-	for y in range(data.width):
-		data.tiles.append([])
-		data.tiles[y] = []
-		for x in range(data.height):
-			data.tiles[y].append([])
-			data.tiles[y][x] = [mapGroundMatrix[y][x], mapPropsMatrix[y][x], mapMovementMatrix[y][x]]
-	
-	var file
-	file = File.new()
-	file.open(filePath, File.WRITE)
-	file.store_line(to_json(data))
-	file.close()
-	
+
 func prepCamera():
 	var half_width_pixels = (mapWidth / 2) * 144
 	camera.limit_left = (half_width_pixels * -1) - 200
 	camera.limit_top = -120
 	camera.limit_right = half_width_pixels + 200
 	camera.limit_bottom = mapHeight * 72 + 192
-	
+
 func loadFilePayload(fileName):
 	var file = File.new()
 	if not file.file_exists(fileName):
@@ -113,7 +51,7 @@ func loadFilePayload(fileName):
 	var payload = parse_json(file.get_as_text())
 	file.close()
 	return payload
-	
+
 func loadMapData():
 	var payload = loadFilePayload(mapPath)
 	mapWidth = payload.width
@@ -131,34 +69,17 @@ func loadMapData():
 			mapGroundMatrix[x].append([])
 			mapGroundMatrix[x][y] = payload.tiles[x][y][0]
 			groundTileMap.set_cell(x, y, mapGroundMatrix[x][y])
-			mapMovementMatrix[x].append([])
-			mapMovementMatrix[x][y] = payload.tiles[x][y][1]
-			movementTileMap.set_cell(x, y, mapMovementMatrix[x][y])
 			mapPropsMatrix[x].append([])
-			mapPropsMatrix[x][y] = payload.tiles[x][y][2]
+			mapPropsMatrix[x][y] = payload.tiles[x][y][1]
 			propsTileMap.set_cell(x, y, mapPropsMatrix[x][y])
+			mapMovementMatrix[x].append([])
+			mapMovementMatrix[x][y] = payload.tiles[x][y][2]
+			movementTileMap.set_cell(x, y, mapMovementMatrix[x][y])
 	
 	for z in range(payload.playerStartRules.size()):
 		if payload.playerStartRules[z].get("armies"):
 			instantiate_player_armies(z, payload.playerStartRules[z].armies)
 
-# Temporary function used to save maps made with Godot before starting the game.
-func initPaintedMatrix():
-	for x in range(data.width):
-		mapGroundMatrix.append([])
-		mapGroundMatrix[x] = []
-		mapPropsMatrix.append([])
-		mapPropsMatrix[x] = []
-		mapMovementMatrix.append([])
-		mapMovementMatrix[x] = []
-		for y in range(data.height):
-			mapGroundMatrix[x].append([])
-			mapGroundMatrix[x][y] = groundTileMap.get_cell(x, y)
-			mapMovementMatrix[x].append([])
-			movementTileMap[x][y] = movementTileMap.get_cell(x, y)
-			mapPropsMatrix[x].append([])
-			mapPropsMatrix[x][y] = propsTileMap.get_cell(x, y)
-			
 func instantiate_player_armies(player_nr, player_armies):
 	playersArmies.append([])
 	playersArmies[player_nr] = []
