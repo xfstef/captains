@@ -51,6 +51,7 @@ func _ready():
 	movementTileMap = get_node("../TM-Movement")
 
 func _on_saveMapButton_pressed():
+	movementTileMap.determineCells()
 	initPaintedMatrix()
 	var saveNameInput = get_node("saveMapName")
 	var saveName = "test1"

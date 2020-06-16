@@ -68,13 +68,17 @@ func loadMapData():
 		for y in range(mapWidth):
 			mapGroundMatrix[x].append([])
 			mapGroundMatrix[x][y] = payload.tiles[x][y][0]
-			groundTileMap.set_cell(x, y, mapGroundMatrix[x][y])
 			mapPropsMatrix[x].append([])
 			mapPropsMatrix[x][y] = payload.tiles[x][y][1]
-			propsTileMap.set_cell(x, y, mapPropsMatrix[x][y])
 			mapMovementMatrix[x].append([])
 			mapMovementMatrix[x][y] = payload.tiles[x][y][2]
-			movementTileMap.set_cell(x, y, mapMovementMatrix[x][y])
+	
+	groundTileMap.setSize(mapWidth, mapHeight)
+	propsTileMap.setSize(mapWidth, mapHeight)
+	movementTileMap.setSize(mapWidth, mapHeight)
+	groundTileMap.setCells(mapGroundMatrix)
+	propsTileMap.setCells(mapPropsMatrix)
+	movementTileMap.setCells(mapMovementMatrix)
 	
 	for z in range(payload.playerStartRules.size()):
 		if payload.playerStartRules[z].get("armies"):
