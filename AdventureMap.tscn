@@ -7,10 +7,10 @@
 [ext_resource path="res://Scripts/Camera2D.gd" type="Script" id=5]
 [ext_resource path="res://Assets/Sprites/army.png" type="Texture" id=6]
 [ext_resource path="res://Army.gd" type="Script" id=7]
-[ext_resource path="res://TM-Movement.gd" type="Script" id=8]
-[ext_resource path="res://mapCreator.gd" type="Script" id=9]
-[ext_resource path="res://TM-Props.gd" type="Script" id=10]
-[ext_resource path="res://TM-Ground.gd" type="Script" id=11]
+[ext_resource path="res://Scripts/TM-Movement.gd" type="Script" id=8]
+[ext_resource path="res://Scripts/mapCreator.gd" type="Script" id=9]
+[ext_resource path="res://Scripts/TM-Props.gd" type="Script" id=10]
+[ext_resource path="res://Scripts/TM-Ground.gd" type="Script" id=11]
 
 [sub_resource type="AtlasTexture" id=1]
 flags = 4
