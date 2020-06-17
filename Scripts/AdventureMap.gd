@@ -3,8 +3,6 @@ extends Node2D
 # Declare member variables here. Examples:
 var mapPath = "res://Maps/test4.json"
 var interactablesPath = "res://Data/mapInteractables.json"
-var groundWalkProp = "res://Data/groundWalkableProperties.json"
-var propsBlockedTiles = "res://Data/propsBlockedTiles.json"
 var mapGroundMatrix = []
 var mapPropsMatrix = []
 var mapMovementMatrix = []
@@ -16,8 +14,6 @@ var propsTileMap
 var movementTileMap
 var camera
 var armyNode
-var ground_travel_properties
-var props_blocked_tiles
 
 var playersArmies = []
 var army_instances = []
@@ -32,8 +28,6 @@ func _ready():
 	movementTileMap = get_node("TM-Movement")
 	info = get_node("UI/info")
 	armyNode = get_node("Army")
-	ground_travel_properties = loadFilePayload(groundWalkProp)
-	props_blocked_tiles = loadFilePayload(propsBlockedTiles)
 	loadMapData()
 
 func prepCamera():
@@ -170,8 +164,16 @@ func executeMoveArmyCommand():
 func isTileAccessible(x, y):
 	if x < 0 || x >= mapWidth || y < 0 || y >= mapHeight:
 		return false
-	elif army_instances[selected_army.x][selected_army.y].travel_type != ground_travel_properties[mapGroundMatrix[x][y]][0]:
-		return false
+	elif army_instances[selected_army.x][selected_army.y].travel_type == 0:
+		if movementTileMap.get_cell(x,y) == 0 || movementTileMap.get_cell(x,y) == 3:
+			return true
+		else:
+			return false
+	elif army_instances[selected_army.x][selected_army.y].travel_type == 1:
+		if movementTileMap.get_cell(x,y) == 1 || movementTileMap.get_cell(x,y) == 3:
+			return true
+		else:
+			return false
 	else:
-		return true
+		return false
 	
