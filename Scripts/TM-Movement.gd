@@ -9,6 +9,7 @@ var groundWalkProp = "res://Data/groundWalkableProperties.json"
 var ground_travel_properties
 var propsBlockedTiles = "res://Data/propsBlockedTiles.json"
 var props_blocked_tiles
+var tile_move_expense
 
 func _ready():
 	groundTileMap = get_node("../TM-Ground")

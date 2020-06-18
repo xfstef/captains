@@ -148,7 +148,6 @@ func _input(event):
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
 		#if isTileAccessible(tile.x, tile.y):
 		#if mapGroundMatrix[tile.x][tile.y].selected:
-			
 		
 	if command_given:
 		executeMoveArmyCommand()
