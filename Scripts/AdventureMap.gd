@@ -101,6 +101,18 @@ func instantiate_player_armies(player_nr, player_armies):
 func _process(delta):
 	var mouse_pos = get_global_mouse_position()
 	var tile = groundTileMap.world_to_map(mouse_pos)
+	var move_tile = movementTileMap.get_cell(tile.x, tile.y)
+	if tile.x == playersArmies[selected_army.x][selected_army.y].x && tile.y == playersArmies[selected_army.x][selected_army.y].y:
+		Input.set_default_cursor_shape(Input.CURSOR_HELP)
+	elif move_tile == 0:
+		Input.set_default_cursor_shape(Input.CURSOR_MOVE)
+	elif move_tile == 1:
+		Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
+	elif move_tile == 2:
+		Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
+	elif move_tile == 3:
+		Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
+	# TODO: Finish implementing the mouse cursor changes.
 	var text = "tile: %s, pos: %s" % [tile, mouse_pos]
 	info.set_text(text)
 	
