@@ -1,14 +1,15 @@
 extends Node2D
 
 var my_animation
-var target_coords
+var move_coords
+var selected_coords
 var tween
 var camera
 var travel_type = 0
 
 func _ready():
 	my_animation = get_node("AnimatedSprite")
-	target_coords = Vector2(self.position.x, self.position.y)
+	move_coords = Vector2(self.position.x, self.position.y)
 	tween = get_node("Tween")
 	# TODO: Add a means of loading what type of travel this army does: Land march, Sailing, Flying, Tunneling.
 	travel_type = 0
@@ -20,9 +21,9 @@ func _process(delta):
 
 func moveTo(x_y):
 	x_y.y += 37
-	target_coords = x_y
+	move_coords = x_y
 
-	tween.interpolate_property(self, 'position', self.position, target_coords, 1, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+	tween.interpolate_property(self, 'position', self.position, move_coords, 1, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 	tween.start()
 	my_animation.playing = true
 	

@@ -1,8 +1,9 @@
 extends Node2D
 
-# Declare member variables here. Examples:
+# Paths
 var mapPath = "res://Maps/test4.json"
 var interactablesPath = "res://Data/mapInteractables.json"
+# Other
 var mapGroundMatrix = []
 var mapPropsMatrix = []
 var mapMovementMatrix = []
@@ -14,11 +15,12 @@ var propsTileMap
 var movementTileMap
 var camera
 var armyNode
-
 var playersArmies = []
 var army_instances = []
 var selected_army = Vector2()
 var command_given = false
+var m_pointer_go = preload("res://Assets/Sprites/pointerGo.png")
+var m_pointer_blocked = preload("res://Assets/Sprites/pointerBlocked.png")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -105,11 +107,14 @@ func _process(delta):
 	if tile.x == playersArmies[selected_army.x][selected_army.y].x && tile.y == playersArmies[selected_army.x][selected_army.y].y:
 		Input.set_default_cursor_shape(Input.CURSOR_HELP)
 	elif move_tile == 0:
-		Input.set_default_cursor_shape(Input.CURSOR_MOVE)
+		#Input.set_default_cursor_shape(Input.CURSOR_MOVE)
+		Input.set_custom_mouse_cursor(m_pointer_go)
 	elif move_tile == 1:
-		Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
+		#Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
+		Input.set_custom_mouse_cursor(m_pointer_blocked)
 	elif move_tile == 2:
-		Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
+		#Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
+		Input.set_custom_mouse_cursor(m_pointer_blocked)
 	elif move_tile == 3:
 		Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
 	# TODO: Finish implementing the mouse cursor changes.
@@ -158,7 +163,9 @@ func _input(event):
 			command_given = true
 	if Input.is_action_just_released("select_tile"):
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
-		#if isTileAccessible(tile.x, tile.y):
+		if (tile.x != playersArmies[selected_army.x][selected_army.y].x && tile.y != playersArmies[selected_army.x][selected_army.y].y) && isTileAccessible(tile.x, tile.y):
+			army_instances[selected_army.x][selected_army.y].selected_coords = tile
+			print(army_instances[selected_army.x][selected_army.y].selected_coords)
 		#if mapGroundMatrix[tile.x][tile.y].selected:
 		
 	if command_given:
