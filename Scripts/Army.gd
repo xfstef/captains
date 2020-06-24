@@ -6,6 +6,8 @@ var selected_coords
 var tween
 var camera
 var travel_type = 0
+var signal_stopped = true
+var my_flood_fill
 
 func _ready():
 	my_animation = get_node("AnimatedSprite")
@@ -18,6 +20,9 @@ func _process(delta):
 	if !tween.is_active():
 		my_animation.playing = false
 		my_animation.frame = 0
+	if signal_stopped == true:
+		signal_stopped = false
+		#floodFillMap()
 
 func moveTo(x_y):
 	x_y.y += 37
@@ -27,5 +32,8 @@ func moveTo(x_y):
 	tween.start()
 	my_animation.playing = true
 	
-func changeTravelTyep(new_travel_type):
+func changeTravelType(new_travel_type):
 	travel_type = new_travel_type
+
+#func floodFillMap():
+	

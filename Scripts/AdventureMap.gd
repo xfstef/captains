@@ -163,15 +163,15 @@ func _input(event):
 			command_given = true
 	if Input.is_action_just_released("select_tile"):
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
-		if (tile.x != playersArmies[selected_army.x][selected_army.y].x && tile.y != playersArmies[selected_army.x][selected_army.y].y) && isTileAccessible(tile.x, tile.y):
-			army_instances[selected_army.x][selected_army.y].selected_coords = tile
-			print(army_instances[selected_army.x][selected_army.y].selected_coords)
-		#if mapGroundMatrix[tile.x][tile.y].selected:
+		if (tile.x != playersArmies[selected_army.x][selected_army.y].x || tile.y != playersArmies[selected_army.x][selected_army.y].y) && isTileAccessible(tile.x, tile.y):
+			if army_instances[selected_army.x][selected_army.y].selected_coords == tile:
+				command_given = true
+			else:
+				army_instances[selected_army.x][selected_army.y].selected_coords = tile
 		
 	if command_given:
 		executeMoveArmyCommand()
 		command_given = false
-		
 
 func executeMoveArmyCommand():
 	var selected_army_pos
