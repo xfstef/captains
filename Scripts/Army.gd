@@ -3,11 +3,12 @@ extends Node2D
 var my_animation
 var move_coords
 var selected_coords
+var my_coords
 var tween
 var camera
 var travel_type = 0
-var signal_stopped = true
-var my_flood_fill
+var fastest_path
+var adventure_map
 
 func _ready():
 	my_animation = get_node("AnimatedSprite")
@@ -15,14 +16,13 @@ func _ready():
 	tween = get_node("Tween")
 	# TODO: Add a means of loading what type of travel this army does: Land march, Sailing, Flying, Tunneling.
 	travel_type = 0
+	adventure_map = get_node("/root/AdventureMap")
 
 func _process(delta):
-	if !tween.is_active():
+	if !tween.is_active() && my_animation.playing:
 		my_animation.playing = false
 		my_animation.frame = 0
-	if signal_stopped == true:
-		signal_stopped = false
-		#floodFillMap()
+		my_coords = adventure_map.propsTileMap.world_to_map(self.position)
 
 func moveTo(x_y):
 	x_y.y += 37
@@ -35,5 +35,6 @@ func moveTo(x_y):
 func changeTravelType(new_travel_type):
 	travel_type = new_travel_type
 
-#func floodFillMap():
+func calculateFastestPath(target_tile):
+	var shortest_path_found = 1000
 	

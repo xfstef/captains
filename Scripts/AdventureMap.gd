@@ -3,6 +3,9 @@ extends Node2D
 # Paths
 var mapPath = "res://Maps/test4.json"
 var interactablesPath = "res://Data/mapInteractables.json"
+# Preloaded resources
+var m_pointer_go = preload("res://Assets/Sprites/pointerGo.png")
+var m_pointer_blocked = preload("res://Assets/Sprites/pointerBlocked.png")
 # Other
 var mapGroundMatrix = []
 var mapPropsMatrix = []
@@ -19,8 +22,6 @@ var playersArmies = []
 var army_instances = []
 var selected_army = Vector2()
 var command_given = false
-var m_pointer_go = preload("res://Assets/Sprites/pointerGo.png")
-var m_pointer_blocked = preload("res://Assets/Sprites/pointerBlocked.png")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -90,6 +91,7 @@ func instantiate_player_armies(player_nr, player_armies):
 		playersArmies[player_nr][h] = player_armies[h]
 		army_instances[player_nr].append(armyNode.duplicate())
 		var pos = Vector2(player_armies[h].x, player_armies[h].y)
+		army_instances[player_nr][h].my_coords = pos
 		army_instances[player_nr][h].position = propsTileMap.map_to_world(pos)
 		army_instances[player_nr][h].position.y += 36
 		propsTileMap.add_child(army_instances[player_nr][h])
