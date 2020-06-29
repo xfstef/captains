@@ -127,49 +127,60 @@ func _input(event):
 	if camera.tween.is_active():
 		return
 		
+	var p_a_s_x = army_instances[selected_army.x][selected_army.y].my_coords.x
+	var p_a_s_y = army_instances[selected_army.x][selected_army.y].my_coords.y
+		
 	if Input.is_action_just_released("army_left"):
-		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x - 1, playersArmies[selected_army.x][selected_army.y].y + 1):
-			playersArmies[selected_army.x][selected_army.y].x -= 1
-			playersArmies[selected_army.x][selected_army.y].y += 1
-			command_given = true
+		if isTileAccessible(p_a_s_x - 1, p_a_s_y + 1):
+#			playersArmies[selected_army.x][selected_army.y].x -= 1
+#			playersArmies[selected_army.x][selected_army.y].y += 1
+#			command_given = true
+			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x - 1, p_a_s_y + 1)
 	if Input.is_action_just_released("army_right"):
-		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x + 1, playersArmies[selected_army.x][selected_army.y].y - 1):
-			playersArmies[selected_army.x][selected_army.y].x += 1
-			playersArmies[selected_army.x][selected_army.y].y -= 1
-			command_given = true
+		if isTileAccessible(p_a_s_x + 1, p_a_s_y - 1):
+#			playersArmies[selected_army.x][selected_army.y].x += 1
+#			playersArmies[selected_army.x][selected_army.y].y -= 1
+#			command_given = true
+			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x + 1, p_a_s_y - 1)
 	if Input.is_action_just_released("army_up"):
-		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x - 1, playersArmies[selected_army.x][selected_army.y].y - 1):
-			playersArmies[selected_army.x][selected_army.y].x -= 1
-			playersArmies[selected_army.x][selected_army.y].y -= 1
-			command_given = true
+		if isTileAccessible(p_a_s_x - 1, p_a_s_y - 1):
+#			playersArmies[selected_army.x][selected_army.y].x -= 1
+#			playersArmies[selected_army.x][selected_army.y].y -= 1
+#			command_given = true
+			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x - 1, p_a_s_y - 1)
 	if Input.is_action_just_released("army_down"):
-		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x + 1, playersArmies[selected_army.x][selected_army.y].y + 1):
-			playersArmies[selected_army.x][selected_army.y].x += 1
-			playersArmies[selected_army.x][selected_army.y].y += 1
-			command_given = true
+		if isTileAccessible(p_a_s_x + 1, p_a_s_y + 1):
+#			playersArmies[selected_army.x][selected_army.y].x += 1
+#			playersArmies[selected_army.x][selected_army.y].y += 1
+#			command_given = true
+			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x + 1, p_a_s_y + 1)
 	if Input.is_action_just_released("army_up_left"):
-		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x - 1, playersArmies[selected_army.x][selected_army.y].y):
-			playersArmies[selected_army.x][selected_army.y].x -= 1
-			command_given = true
+		if isTileAccessible(p_a_s_x - 1, p_a_s_y):
+#			playersArmies[selected_army.x][selected_army.y].x -= 1
+#			command_given = true
+			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x - 1, p_a_s_y)
 	if Input.is_action_just_released("army_up_right"):
-		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y - 1):
-			playersArmies[selected_army.x][selected_army.y].y -= 1
-			command_given = true
+		if isTileAccessible(p_a_s_x, p_a_s_y - 1):
+#			playersArmies[selected_army.x][selected_army.y].y -= 1
+#			command_given = true
+			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x, p_a_s_y - 1)
 	if Input.is_action_just_released("army_down_left"):
-		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y + 1):
-			playersArmies[selected_army.x][selected_army.y].y += 1
-			command_given = true
+		if isTileAccessible(p_a_s_x, p_a_s_y + 1):
+#			playersArmies[selected_army.x][selected_army.y].y += 1
+#			command_given = true
+			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x, p_a_s_y + 1)
 	if Input.is_action_just_released("army_down_right"):
-		if isTileAccessible(playersArmies[selected_army.x][selected_army.y].x + 1, playersArmies[selected_army.x][selected_army.y].y):
-			playersArmies[selected_army.x][selected_army.y].x += 1
-			command_given = true
+		if isTileAccessible(p_a_s_x + 1, p_a_s_y):
+#			playersArmies[selected_army.x][selected_army.y].x += 1
+#			command_given = true
+			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x + 1, p_a_s_y)
 	if Input.is_action_just_released("select_tile"):
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
-		if (tile.x != playersArmies[selected_army.x][selected_army.y].x || tile.y != playersArmies[selected_army.x][selected_army.y].y) && isTileAccessible(tile.x, tile.y):
+		if (tile.x != p_a_s_x || tile.y != p_a_s_y) && isTileAccessible(tile.x, tile.y):
 			if army_instances[selected_army.x][selected_army.y].selected_coords == tile:
 				command_given = true
 			else:
-				army_instances[selected_army.x][selected_army.y].selected_coords = tile
+				army_instances[selected_army.x][selected_army.y].calculateFastestPath(tile)
 		
 	if command_given:
 		executeMoveArmyCommand()
@@ -179,7 +190,7 @@ func executeMoveArmyCommand():
 	var selected_army_pos
 	selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
 	army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
-	camera.followNode(selected_army_pos)
+	#camera.followNode(selected_army_pos)
 	
 func isTileAccessible(x, y):
 	if x < 0 || x >= mapWidth || y < 0 || y >= mapHeight:
