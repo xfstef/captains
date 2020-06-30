@@ -181,17 +181,7 @@ func _input(event):
 				command_given = true
 			else:
 				army_instances[selected_army.x][selected_army.y].calculateFastestPath(tile)
-		
-	if command_given:
-		executeMoveArmyCommand()
-		command_given = false
 
-func executeMoveArmyCommand():
-	var selected_army_pos
-	selected_army_pos = propsTileMap.map_to_world(Vector2(playersArmies[selected_army.x][selected_army.y].x, playersArmies[selected_army.x][selected_army.y].y))
-	army_instances[selected_army.x][selected_army.y].moveTo(selected_army_pos)
-	#camera.followNode(selected_army_pos)
-	
 func isTileAccessible(x, y):
 	if x < 0 || x >= mapWidth || y < 0 || y >= mapHeight:
 		return false

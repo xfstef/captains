@@ -9,7 +9,7 @@ var groundWalkProp = "res://Data/groundWalkableProperties.json"
 var ground_travel_properties
 var propsBlockedTiles = "res://Data/propsBlockedTiles.json"
 var props_blocked_tiles
-var tile_move_expense
+var tile_move_expense = []
 
 func _ready():
 	groundTileMap = get_node("../TM-Ground")
@@ -24,8 +24,11 @@ func setSize(x, y):
 
 func setCells(data):
 	for x in range(height):
+		tile_move_expense.append([])
 		for y in range(width):
+			tile_move_expense[x].append([])
 			set_cell(x, y, data[x][y])
+			tile_move_expense[x][y] = ground_travel_properties[groundTileMap.get_cell(x,y)][1]
 
 func determineCells():
 	var temp_cell = 0

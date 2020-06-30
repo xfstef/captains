@@ -11,6 +11,9 @@ var fastest_path = []
 var adventure_map
 var executeMoveCommand = false
 var currentMoveCommandStep = 0
+var my_flooded_tiles = []
+var tm_movement
+var tm_ground
 
 func _ready():
 	my_animation = get_node("AnimatedSprite")
@@ -20,12 +23,23 @@ func _ready():
 	# TODO: Add a means of loading what type of travel this army does: Land march, Sailing, Flying, Tunneling.
 	travel_type = 0
 	adventure_map = get_node("/root/AdventureMap")
+	for x in range(adventure_map.mapHeight):
+		my_flooded_tiles.append([])
+		for y in range(adventure_map.mapWidth):
+			my_flooded_tiles[x].append([])
+			my_flooded_tiles[x][y] = -1
+	tm_movement = get_node("../TM-Movement")
+	#my_flooded_tiles[my_coords.x][my_coords.y] = 0
+	#floodFillTiles(my_coords)
 
 func _process(delta):
 	if !tween.is_active() && my_animation.playing:
 		my_animation.playing = false
 		my_animation.frame = 0
 		my_coords = adventure_map.propsTileMap.world_to_map(self.position)
+		#if !executeMoveCommand:
+			#my_flooded_tiles[my_coords.x][my_coords.y] = 0
+			#floodFillTiles(my_coords)
 	
 	if executeMoveCommand:
 		moveTo(adventure_map.propsTileMap.map_to_world(Vector2(fastest_path[currentMoveCommandStep].x, fastest_path[currentMoveCommandStep].y)))
@@ -52,21 +66,35 @@ func calculateFastestPath(x, y):
 	fastest_path.clear()
 	fastest_path.push_back(Vector2(x, y))
 	var shortest_path_found = 1000
-	
-	var x_diff
-	var y_diff
-	if fastest_path[0].x > my_coords.x:
-		x_diff = fastest_path[0].x - my_coords.x
-	elif fastest_path[0].x < my_coords.x:
-		x_diff = my_coords.x - fastest_path[0].x
-	else:
-		 x_diff = my_coords.x
-	if fastest_path[0].y > my_coords.y:
-		y_diff = fastest_path[0].y - my_coords.y
-	elif fastest_path[0].y < my_coords.y:
-		y_diff = my_coords.y - fastest_path[0].y
-	else:
-		 y_diff = my_coords.y
-	
-	if (x_diff > -2 || x_diff < 2) && (y_diff > -2 || y_diff < 2):
+	var x_y_diffs = getXYDiff(fastest_path[0].x, fastest_path[0].y)
+		
+	if (x_y_diffs.x > -2 || x_y_diffs.x < 2) && (x_y_diffs.y > -2 || x_y_diffs.y < 2):
 		executeMoveCommand = true
+
+func getXYDiff(f_p_x, f_p_y):
+	var x_y_diffs = Vector2(0, 0)
+	if f_p_x > my_coords.x:
+		x_y_diffs.x = f_p_x - my_coords.x
+	elif f_p_x < my_coords.x:
+		x_y_diffs.x = my_coords.x - f_p_x
+	else:
+		 x_y_diffs.x = my_coords.x
+	if f_p_y > my_coords.y:
+		x_y_diffs.y = f_p_y - my_coords.y
+	elif f_p_y < my_coords.y:
+		x_y_diffs.y = my_coords.y - f_p_y
+	else:
+		 x_y_diffs.y = my_coords.y
+	
+	return x_y_diffs
+
+func floodFillTiles(start_coords):
+	if start_coords:
+		var x_search = start_coords.x + 1
+		var y_search = start_coords.y - 1
+		var cell_movement_type = tm_movement.get_cell(x_search, y_search)
+		if x_search >= 0 && x_search < adventure_map.mapWidth && y_search >= 0 && y_search < adventure_map.mapHeight:
+			if cell_movement_type == travel_type || cell_movement_type == 3:
+				print("bla")
+			else:
+				my_flooded_tiles[x_search][y_search] = 0
