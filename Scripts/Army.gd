@@ -29,8 +29,9 @@ func _ready():
 			my_flooded_tiles[x].append([])
 			my_flooded_tiles[x][y] = -1
 	tm_movement = get_node("../TM-Movement")
-	#my_flooded_tiles[my_coords.x][my_coords.y] = 0
-	#floodFillTiles(my_coords)
+	if my_coords:
+		my_flooded_tiles[my_coords.x][my_coords.y] = 0
+		floodFillTiles(my_coords)
 
 func _process(delta):
 	if !tween.is_active() && my_animation.playing:
