@@ -92,66 +92,36 @@ func floodFillTiles(start_coords, previous_node_cost):
 	if start_coords:
 		var x_search = start_coords.x + 1
 		var y_search = start_coords.y - 1
-		var cell_movement_type = tm_movement.get_cell(x_search, y_search)
-		if x_search >= 0 && x_search < adventure_map.mapWidth && y_search >= 0 && y_search < adventure_map.mapHeight:
-			if cell_movement_type == travel_type || cell_movement_type == 3:
-				my_flooded_tiles[x_search][y_search] = tm_movement.tile_move_expense[x_search][y_search] + previous_node_cost
-			else:
-				my_flooded_tiles[x_search][y_search] = 0
+		floodFillHelper(x_search, y_search, previous_node_cost)
 		x_search = start_coords.x + 1
 		y_search = start_coords.y
-		cell_movement_type = tm_movement.get_cell(x_search, y_search)
-		if x_search >= 0 && x_search < adventure_map.mapWidth && y_search >= 0 && y_search < adventure_map.mapHeight:
-			if cell_movement_type == travel_type || cell_movement_type == 3:
-				my_flooded_tiles[x_search][y_search] = tm_movement.tile_move_expense[x_search][y_search] + previous_node_cost
-			else:
-				my_flooded_tiles[x_search][y_search] = 0
+		floodFillHelper(x_search, y_search, previous_node_cost)
 		x_search = start_coords.x + 1
 		y_search = start_coords.y + 1
-		cell_movement_type = tm_movement.get_cell(x_search, y_search)
-		if x_search >= 0 && x_search < adventure_map.mapWidth && y_search >= 0 && y_search < adventure_map.mapHeight:
-			if cell_movement_type == travel_type || cell_movement_type == 3:
-				my_flooded_tiles[x_search][y_search] = tm_movement.tile_move_expense[x_search][y_search] + previous_node_cost
-			else:
-				my_flooded_tiles[x_search][y_search] = 0
+		floodFillHelper(x_search, y_search, previous_node_cost)
 		x_search = start_coords.x
 		y_search = start_coords.y + 1
-		cell_movement_type = tm_movement.get_cell(x_search, y_search)
-		if x_search >= 0 && x_search < adventure_map.mapWidth && y_search >= 0 && y_search < adventure_map.mapHeight:
-			if cell_movement_type == travel_type || cell_movement_type == 3:
-				my_flooded_tiles[x_search][y_search] = tm_movement.tile_move_expense[x_search][y_search] + previous_node_cost
-			else:
-				my_flooded_tiles[x_search][y_search] = 0
+		floodFillHelper(x_search, y_search, previous_node_cost)
 		x_search = start_coords.x - 1
 		y_search = start_coords.y + 1
-		cell_movement_type = tm_movement.get_cell(x_search, y_search)
-		if x_search >= 0 && x_search < adventure_map.mapWidth && y_search >= 0 && y_search < adventure_map.mapHeight:
-			if cell_movement_type == travel_type || cell_movement_type == 3:
-				my_flooded_tiles[x_search][y_search] = tm_movement.tile_move_expense[x_search][y_search] + previous_node_cost
-			else:
-				my_flooded_tiles[x_search][y_search] = 0
+		floodFillHelper(x_search, y_search, previous_node_cost)
 		x_search = start_coords.x - 1
 		y_search = start_coords.y
-		cell_movement_type = tm_movement.get_cell(x_search, y_search)
-		if x_search >= 0 && x_search < adventure_map.mapWidth && y_search >= 0 && y_search < adventure_map.mapHeight:
-			if cell_movement_type == travel_type || cell_movement_type == 3:
-				my_flooded_tiles[x_search][y_search] = tm_movement.tile_move_expense[x_search][y_search] + previous_node_cost
-			else:
-				my_flooded_tiles[x_search][y_search] = 0
+		floodFillHelper(x_search, y_search, previous_node_cost)
 		x_search = start_coords.x - 1
 		y_search = start_coords.y - 1
-		cell_movement_type = tm_movement.get_cell(x_search, y_search)
-		if x_search >= 0 && x_search < adventure_map.mapWidth && y_search >= 0 && y_search < adventure_map.mapHeight:
-			if cell_movement_type == travel_type || cell_movement_type == 3:
-				my_flooded_tiles[x_search][y_search] = tm_movement.tile_move_expense[x_search][y_search] + previous_node_cost
-			else:
-				my_flooded_tiles[x_search][y_search] = 0
+		floodFillHelper(x_search, y_search, previous_node_cost)
 		x_search = start_coords.x
 		y_search = start_coords.y - 1
-		cell_movement_type = tm_movement.get_cell(x_search, y_search)
-		if x_search >= 0 && x_search < adventure_map.mapWidth && y_search >= 0 && y_search < adventure_map.mapHeight:
-			if cell_movement_type == travel_type || cell_movement_type == 3:
-				my_flooded_tiles[x_search][y_search] = tm_movement.tile_move_expense[x_search][y_search] + previous_node_cost
-			else:
-				my_flooded_tiles[x_search][y_search] = 0
+		floodFillHelper(x_search, y_search, previous_node_cost)
 		print(my_flooded_tiles)
+
+func floodFillHelper(x, y, p_n_c):
+	var cell_movement_type = tm_movement.get_cell(x, y)
+	if x >= 0 && x < adventure_map.mapWidth && y >= 0 && y < adventure_map.mapHeight:
+			if cell_movement_type == travel_type || cell_movement_type == 3:
+				var new_cost = tm_movement.tile_move_expense[x][y] + p_n_c
+				if my_flooded_tiles[x][y] == -1 || my_flooded_tiles[x][y] > new_cost:
+					my_flooded_tiles[x][y] = new_cost
+			else:
+				my_flooded_tiles[x][y] = 0
