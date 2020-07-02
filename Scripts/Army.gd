@@ -114,7 +114,6 @@ func floodFillTiles(start_coords, previous_node_cost):
 		x_search = start_coords.x
 		y_search = start_coords.y - 1
 		floodFillHelper(x_search, y_search, previous_node_cost)
-		print(my_flooded_tiles)
 
 func floodFillHelper(x, y, p_n_c):
 	var cell_movement_type = tm_movement.get_cell(x, y)

@@ -180,7 +180,7 @@ func _input(event):
 			if army_instances[selected_army.x][selected_army.y].selected_coords == tile:
 				command_given = true
 			else:
-				army_instances[selected_army.x][selected_army.y].calculateFastestPath(tile)
+				army_instances[selected_army.x][selected_army.y].calculateFastestPath(tile.x, tile.y)
 
 func isTileAccessible(x, y):
 	if x < 0 || x >= mapWidth || y < 0 || y >= mapHeight:
