@@ -13,6 +13,7 @@ var executeMoveCommand = false
 var currentMoveCommandStep = 0
 var my_flooded_tiles = []
 var tm_movement
+var current_land_mass
 
 func _ready():
 	my_animation = get_node("AnimatedSprite")
