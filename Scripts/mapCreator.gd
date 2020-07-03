@@ -46,6 +46,7 @@ var groundTileMap
 var propsTileMap
 var movementTileMap
 var adventureMap
+var current_mass_type = -1
 
 func _ready():
 	groundTileMap = get_node("../TM-Ground")
@@ -108,15 +109,18 @@ func floodFillLandMasses():
 				if mapMovementMatrix[x][y] == 2:
 					landMassMatrix[x][y] = 0
 				else:
+					if mapGroundMatrix[x][y] == 1:
+						current_mass_type = 1
+					else:
+						current_mass_type = 0
 					floodFillPortion(x, y, current_land_mass_nr)
 					current_land_mass_nr += 1
-	print(landMassMatrix)
 
 func floodFillPortion(x, y, c_l_m_nr):
 	if x >= 0 && x < data.width && y >= 0 && y < data.height && landMassMatrix[x][y] == -1:
 		if mapMovementMatrix[x][y] == 2:
 			landMassMatrix[x][y] = 0
-		else:
+		elif (mapGroundMatrix[x][y] == 1 && current_mass_type == 1) || (mapGroundMatrix[x][y] != 1 && current_mass_type == 0):
 			landMassMatrix[x][y] = c_l_m_nr
 			floodFillPortion(x + 1, y, c_l_m_nr)
 			floodFillPortion(x + 1, y + 1, c_l_m_nr)
