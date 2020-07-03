@@ -3,24 +3,24 @@ extends Node2D
 # Paths
 var mapPath = "res://Maps/test4.json"
 var interactablesPath = "res://Data/mapInteractables.json"
-# Preloaded resources
-var m_pointer_go = preload("res://Assets/Sprites/pointerGo.png")
-var m_pointer_blocked = preload("res://Assets/Sprites/pointerBlocked.png")
+# World Object References
+var camera
+var armyNode
+var groundTileMap
+var propsTileMap
+var movementTileMap
+var mouseCtrl
+var info
+# Instanced Objects
+var playersArmies = []
+var army_instances = []
 # Other
 var mapGroundMatrix = []
 var mapPropsMatrix = []
 var mapMovementMatrix = []
 var landMassesMatrix = []
-var info
 var mapWidth = 0
 var mapHeight = 0
-var groundTileMap
-var propsTileMap
-var movementTileMap
-var camera
-var armyNode
-var playersArmies = []
-var army_instances = []
 var selected_army = Vector2()
 var command_given = false
 
@@ -30,6 +30,7 @@ func _ready():
 	groundTileMap = get_node("TM-Ground")
 	propsTileMap = get_node("TM-Props")
 	movementTileMap = get_node("TM-Movement")
+	mouseCtrl = get_node("MouseCtrl")
 	info = get_node("UI/info")
 	armyNode = get_node("Army")
 	loadMapData()
@@ -54,6 +55,8 @@ func loadMapData():
 	var payload = loadFilePayload(mapPath)
 	mapWidth = payload.width
 	mapHeight = payload.height
+	mouseCtrl.mapWidth = mapWidth
+	mouseCtrl.mapHeight = mapHeight
 	prepCamera()
 	
 	for x in range(mapHeight):
@@ -108,32 +111,32 @@ func instantiate_player_armies(player_nr, player_armies):
 			selected_army.y = h
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	var mouse_pos = get_global_mouse_position()
-	var tile = groundTileMap.world_to_map(mouse_pos)
-	var move_tile = movementTileMap.get_cell(tile.x, tile.y)
-	var selected_land_mass
-	if tile.x >= 0 && tile.x < mapWidth && tile.y >= 0 && tile.y < mapHeight:
-		selected_land_mass = landMassesMatrix[tile.x][tile.y]
-	else:
-		selected_land_mass = 0
-	var c_s_a = army_instances[selected_army.x][selected_army.y]
-	if tile.x == c_s_a.my_coords.x && tile.y == c_s_a.my_coords.y:
-		Input.set_default_cursor_shape(Input.CURSOR_HELP)
-	elif move_tile == 0 && selected_land_mass == c_s_a.current_land_mass:
-		#Input.set_default_cursor_shape(Input.CURSOR_MOVE)
-		Input.set_custom_mouse_cursor(m_pointer_go)
-	elif move_tile == 1 || selected_land_mass != c_s_a.current_land_mass:
-		#Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
-		Input.set_custom_mouse_cursor(m_pointer_blocked)
-	elif move_tile == 2 || selected_land_mass != c_s_a.current_land_mass:
-		#Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
-		Input.set_custom_mouse_cursor(m_pointer_blocked)
-	elif move_tile == 3:
-		Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
-	# TODO: Finish implementing the mouse cursor changes.
-	var text = "tile: %s, pos: %s" % [tile, mouse_pos]
-	info.set_text(text)
+#func _process(delta):
+#	var mouse_pos = get_global_mouse_position()
+#	var tile = groundTileMap.world_to_map(mouse_pos)
+#	var move_tile = movementTileMap.get_cell(tile.x, tile.y)
+#	var selected_land_mass
+#	if tile.x >= 0 && tile.x < mapWidth && tile.y >= 0 && tile.y < mapHeight:
+#		selected_land_mass = landMassesMatrix[tile.x][tile.y]
+#	else:
+#		selected_land_mass = 0
+#	var c_s_a = army_instances[selected_army.x][selected_army.y]
+#	if tile.x == c_s_a.my_coords.x && tile.y == c_s_a.my_coords.y:
+#		mouseCtrl.changeMousePointer(m_pointer_ui, 0)
+#	elif move_tile == 0 && selected_land_mass == c_s_a.current_land_mass:
+#		#Input.set_default_cursor_shape(Input.CURSOR_MOVE)
+#		mouseCtrl.changeMousePointer(m_pointer_go, 0)
+#	elif move_tile == 1 || selected_land_mass != c_s_a.current_land_mass:
+#		#Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
+#		mouseCtrl.changeMousePointer(m_pointer_blocked, 0)
+#	elif move_tile == 2 || selected_land_mass != c_s_a.current_land_mass:
+#		#Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
+#		mouseCtrl.changeMousePointer(m_pointer_blocked, 0)
+#	elif move_tile == 3:
+#		mouseCtrl.changeMousePointer(m_pointer_interact, 0)
+#	# TODO: Finish implementing the mouse cursor changes.
+#	var text = "tile: %s, pos: %s" % [tile, mouse_pos]
+#	info.set_text(text)
 	
 func _input(event):
 	if camera.tween.is_active():

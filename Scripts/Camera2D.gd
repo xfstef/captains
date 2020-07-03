@@ -19,7 +19,7 @@ func _ready():
 
 func _process(delta):
 	var move_vector = Vector2()
-	var mouse_pos = get_viewport().get_mouse_position()
+	#var mouse_pos = get_viewport().get_mouse_position()
 	
 	if Input.is_action_pressed("map_left") && self.position.x - w_h_times_zoom > self.limit_left:
 		move_vector.x -= 1
@@ -56,17 +56,11 @@ func _process(delta):
 		w_h_times_zoom = width_half * self.zoom.x
 		h_h_times_zoom = height_half * self.zoom.y
 	
-	if mouse_pos.x < 30 && self.position.x - w_h_times_zoom > self.limit_left:
-		move_vector.x = -1
-	elif mouse_pos.x > viewport_size.x - 30 && self.position.x + w_h_times_zoom < self.limit_right:
-		move_vector.x = 1
-	if mouse_pos.y < 30 && self.position.y - h_h_times_zoom > self.limit_top:
-		move_vector.y = -1
-	elif mouse_pos.y > viewport_size.y - 30 && self.position.y + h_h_times_zoom < self.limit_bottom:
-		move_vector.y = 1
-	
 	if move_vector.x != 0 || move_vector.y != 0:
-		global_translate(move_vector * delta * 300 * self.zoom.x)
+		scrollCamera(move_vector, delta)
+		
+func scrollCamera(move_vector, delta):
+	global_translate(move_vector * delta * 300 * self.zoom.x)
 	
 func followNode(target_pos):
 	tween.interpolate_property(self, 'position', self.position, target_pos, 1, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
