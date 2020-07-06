@@ -112,31 +112,7 @@ func instantiate_player_armies(player_nr, player_armies):
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
-#	var mouse_pos = get_global_mouse_position()
-#	var tile = groundTileMap.world_to_map(mouse_pos)
-#	var move_tile = movementTileMap.get_cell(tile.x, tile.y)
-#	var selected_land_mass
-#	if tile.x >= 0 && tile.x < mapWidth && tile.y >= 0 && tile.y < mapHeight:
-#		selected_land_mass = landMassesMatrix[tile.x][tile.y]
-#	else:
-#		selected_land_mass = 0
-#	var c_s_a = army_instances[selected_army.x][selected_army.y]
-#	if tile.x == c_s_a.my_coords.x && tile.y == c_s_a.my_coords.y:
-#		mouseCtrl.changeMousePointer(m_pointer_ui, 0)
-#	elif move_tile == 0 && selected_land_mass == c_s_a.current_land_mass:
-#		#Input.set_default_cursor_shape(Input.CURSOR_MOVE)
-#		mouseCtrl.changeMousePointer(m_pointer_go, 0)
-#	elif move_tile == 1 || selected_land_mass != c_s_a.current_land_mass:
-#		#Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
-#		mouseCtrl.changeMousePointer(m_pointer_blocked, 0)
-#	elif move_tile == 2 || selected_land_mass != c_s_a.current_land_mass:
-#		#Input.set_default_cursor_shape(Input.CURSOR_FORBIDDEN)
-#		mouseCtrl.changeMousePointer(m_pointer_blocked, 0)
-#	elif move_tile == 3:
-#		mouseCtrl.changeMousePointer(m_pointer_interact, 0)
-#	# TODO: Finish implementing the mouse cursor changes.
-#	var text = "tile: %s, pos: %s" % [tile, mouse_pos]
-#	info.set_text(text)
+
 	
 func _input(event):
 	if camera.tween.is_active():

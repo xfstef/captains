@@ -31,8 +31,9 @@ func _ready():
 	info = get_node("../UI/info")
 
 func _process(delta):
-	var mouse_pos = get_global_mouse_position()
-	var tile = groundTileMap.world_to_map(mouse_pos)
+	var mouse_pos_global = get_global_mouse_position()
+	var mouse_pos_local = get_viewport().get_mouse_position()
+	var tile = groundTileMap.world_to_map(mouse_pos_global)
 	var move_tile = movementTileMap.get_cell(tile.x, tile.y)
 	var selected_land_mass
 	
@@ -41,23 +42,40 @@ func _process(delta):
 	else:
 		selected_land_mass = 0
 	
-	var move_vector = Vector2()
 	var c_s_a = adventure_map.army_instances[adventure_map.selected_army.x][adventure_map.selected_army.y]
 	
-	if mouse_pos.x < 30 && camera.position.x - camera.w_h_times_zoom > camera.limit_left:
-		move_vector.x = -1
-		Input.set_custom_mouse_cursor(m_p_scroll_left)
-	elif mouse_pos.x > camera.viewport_size.x - 30 && camera.position.x + camera.w_h_times_zoom < camera.limit_right:
-		move_vector.x = 1
-		Input.set_custom_mouse_cursor(m_p_scroll_right)
-	if mouse_pos.y < 30 && camera.position.y - camera.h_h_times_zoom > camera.limit_top:
-		move_vector.y = -1
-		Input.set_custom_mouse_cursor(m_p_scroll_up)
-	elif mouse_pos.y > camera.viewport_size.y - 30 && camera.position.y + camera.h_h_times_zoom < camera.limit_bottom:
-		move_vector.y = 1
-		Input.set_custom_mouse_cursor(m_p_scroll_right)
-	elif move_vector.x != 0 || move_vector.y != 0:
+	if mouse_pos_local.x < 30 || mouse_pos_local.x > camera.viewport_size.x - 30 || mouse_pos_local.y < 30 || mouse_pos_local.y > camera.viewport_size.y - 30:
+		var move_vector = Vector2()
+		if mouse_pos_local.x < 30 && camera.position.x - camera.w_h_times_zoom > camera.limit_left:
+			move_vector.x = -1
+		elif mouse_pos_local.x > camera.viewport_size.x - 30 && camera.position.x + camera.w_h_times_zoom < camera.limit_right:
+			move_vector.x = 1
+		if mouse_pos_local.y < 30 && camera.position.y - camera.h_h_times_zoom > camera.limit_top:
+			move_vector.y = -1
+		elif mouse_pos_local.y > camera.viewport_size.y - 30 && camera.position.y + camera.h_h_times_zoom < camera.limit_bottom:
+			move_vector.y = 1
+		
+		if move_vector.x > 0:
+			if move_vector.y > 0:
+				Input.set_custom_mouse_cursor(m_p_scroll_down_right)
+			elif move_vector.y < 0:
+				Input.set_custom_mouse_cursor(m_p_scroll_up_right)
+			else:
+				Input.set_custom_mouse_cursor(m_p_scroll_right)
+		elif move_vector.x == 0:
+			if move_vector.y > 0:
+				Input.set_custom_mouse_cursor(m_p_scroll_down)
+			elif move_vector.y < 0:
+				Input.set_custom_mouse_cursor(m_p_scroll_up)
+		elif move_vector.x < 0:
+			if move_vector.y > 0:
+				Input.set_custom_mouse_cursor(m_p_scroll_down_left)
+			elif move_vector.y < 0:
+				Input.set_custom_mouse_cursor(m_p_scroll_up_left)
+			else:
+				Input.set_custom_mouse_cursor(m_p_scroll_left)
 		camera.scrollCamera(move_vector, delta)
+		
 	elif tile.x == c_s_a.my_coords.x && tile.y == c_s_a.my_coords.y:
 		Input.set_custom_mouse_cursor(m_pointer_ui)
 	elif move_tile == 0 && selected_land_mass == c_s_a.current_land_mass:
@@ -68,6 +86,6 @@ func _process(delta):
 		Input.set_custom_mouse_cursor(m_pointer_blocked)
 	elif move_tile == 3:
 		Input.set_custom_mouse_cursor(m_pointer_interact)
-		
-	var text = "tile: %s, pos: %s" % [tile, mouse_pos]
+	
+	var text = "tile: %s, pos: %s" % [tile, mouse_pos_global]
 	info.set_text(text)
