@@ -11,7 +11,6 @@ var fastest_path = []
 var adventure_map
 var executeMoveCommand = false
 var currentMoveCommandStep = 0
-var my_flooded_tiles = []
 var tm_movement
 var current_land_mass
 
@@ -23,31 +22,21 @@ func _ready():
 	# TODO: Add a means of loading what type of travel this army does: Land march, Sailing, Flying, Tunneling.
 	travel_type = 0
 	adventure_map = get_node("/root/AdventureMap")
-	for x in range(adventure_map.mapHeight):
-		my_flooded_tiles.append([])
-		for y in range(adventure_map.mapWidth):
-			my_flooded_tiles[x].append([])
-			my_flooded_tiles[x][y] = -1
 	tm_movement = get_node("../../TM-Movement")
-	if my_coords:
-		my_flooded_tiles[my_coords.x][my_coords.y] = 0
-		floodFillTiles(my_coords, 0)
 
 func _process(delta):
-	if !tween.is_active() && my_animation.playing:
-		my_animation.playing = false
-		my_animation.frame = 0
-		my_coords = adventure_map.propsTileMap.world_to_map(self.position)
-		#if !executeMoveCommand:
-			#my_flooded_tiles[my_coords.x][my_coords.y] = 0
-			#floodFillTiles(my_coords)
+	if !tween.is_active():
+		if my_animation.playing:
+			my_animation.playing = false
+			my_animation.frame = 0
+			my_coords = adventure_map.propsTileMap.world_to_map(self.position)
 	
-	if executeMoveCommand:
-		moveTo(adventure_map.propsTileMap.map_to_world(Vector2(fastest_path[currentMoveCommandStep].x, fastest_path[currentMoveCommandStep].y)))
-		currentMoveCommandStep += 1
-		if fastest_path.size() >= currentMoveCommandStep:
-			currentMoveCommandStep = 0
-			executeMoveCommand = false
+		if executeMoveCommand:
+			moveTo(adventure_map.propsTileMap.map_to_world(Vector2(fastest_path[currentMoveCommandStep].x, fastest_path[currentMoveCommandStep].y)))
+			currentMoveCommandStep += 1
+			if fastest_path.size() == currentMoveCommandStep:
+				currentMoveCommandStep = 0
+				executeMoveCommand = false
 
 func moveTo(x_y):
 	x_y.y += 37
@@ -65,63 +54,75 @@ func calculateFastestPath(x, y):
 	selected_coords.x = x
 	selected_coords.y = y
 	fastest_path.clear()
-	fastest_path.push_back(Vector2(x, y))
-	var shortest_path_found = 1000
-	var x_y_diffs = getXYDiff(fastest_path[0].x, fastest_path[0].y)
+	aStarSearch(x, y)
+	print(fastest_path)
+
+func aStarSearch(x, y):
+	var open_nodes = []
+	open_nodes.append({x = my_coords.x, y = my_coords.y, g_cost = 0, h_cost = 0, f_cost = 0, parent = {}})
+	var evaluated_nodes = []
+	var current_node
+	
+	while open_nodes.size() > 0:
+		var current_lowest_node_index = getLowestFCostNode(open_nodes)
+		current_node = open_nodes[current_lowest_node_index]
+		evaluated_nodes.append(open_nodes[current_lowest_node_index])
+		open_nodes.remove(current_lowest_node_index)
 		
-	if (x_y_diffs.x > -2 || x_y_diffs.x < 2) && (x_y_diffs.y > -2 || x_y_diffs.y < 2):
-		executeMoveCommand = true
+		if current_node.x == selected_coords.x && current_node.y == selected_coords.y:
+			while current_node.parent:
+				fastest_path.push_front(Vector2(current_node.x, current_node.y))
+				current_node = current_node.parent
+			return
+		
+		var neighbour_pos = adventure_map.getNodeNeighbours(current_node, travel_type, current_land_mass)
+		var node_neighbours = prepNeighbours(neighbour_pos, open_nodes)
+		
+		for x in range(node_neighbours.size()):
+			if !evaluated_nodes.has(node_neighbours[x]):
+				var newMoveCostToNeightbour = current_node.g_cost + tm_movement.tile_move_expense[node_neighbours[x].x][node_neighbours[x].y]
+				if newMoveCostToNeightbour < node_neighbours[x].g_cost || !open_nodes.has(node_neighbours[x]):
+					node_neighbours[x].g_cost = newMoveCostToNeightbour
+					node_neighbours[x].h_cost = calcDistanceOf2Nodes(node_neighbours[x], selected_coords)
+					node_neighbours[x].f_cost = node_neighbours[x].g_cost + node_neighbours[x].h_cost
+					node_neighbours[x].parent = current_node
+					if !open_nodes.has(node_neighbours[x]):
+						open_nodes.append(node_neighbours[x])
+
+func getLowestFCostNode(temp_list):
+	var lowest = 0
+	for x in range(1, temp_list.size()):
+		if temp_list[lowest].f_cost > temp_list[x].f_cost || temp_list[lowest].f_cost == temp_list[x].f_cost && temp_list[lowest].h_cost > temp_list[x].h_cost:
+			lowest = x
+	
+	return lowest
+
+func prepNeighbours(positions, open_nodes):
+	var neighbours = []
+	for x in range(positions.size()):
+		var node_found = false
+		for y in range(open_nodes.size()):
+			if positions[x].x == open_nodes[y].x && positions[x].y == open_nodes[y].y:
+				neighbours.append(open_nodes[y])
+				node_found = true
+				break
+		if !node_found:
+			neighbours.append({x = positions[x].x, y = positions[x].y, g_cost = 0, h_cost = 0, f_cost = 0, parent = {}})
+		
+	return neighbours
 
 func getXYDiff(f_p_x, f_p_y):
 	var x_y_diffs = Vector2(0, 0)
-	if f_p_x > my_coords.x:
-		x_y_diffs.x = f_p_x - my_coords.x
-	elif f_p_x < my_coords.x:
-		x_y_diffs.x = my_coords.x - f_p_x
-	else:
-		 x_y_diffs.x = my_coords.x
-	if f_p_y > my_coords.y:
-		x_y_diffs.y = f_p_y - my_coords.y
-	elif f_p_y < my_coords.y:
-		x_y_diffs.y = my_coords.y - f_p_y
-	else:
-		 x_y_diffs.y = my_coords.y
+	x_y_diffs.x = f_p_x - my_coords.x
+	x_y_diffs.y = f_p_y - my_coords.y
 	
 	return x_y_diffs
 
-func floodFillTiles(start_coords, previous_node_cost):
-	if start_coords:
-		var x_search = start_coords.x + 1
-		var y_search = start_coords.y - 1
-		floodFillHelper(x_search, y_search, previous_node_cost)
-		x_search = start_coords.x + 1
-		y_search = start_coords.y
-		floodFillHelper(x_search, y_search, previous_node_cost)
-		x_search = start_coords.x + 1
-		y_search = start_coords.y + 1
-		floodFillHelper(x_search, y_search, previous_node_cost)
-		x_search = start_coords.x
-		y_search = start_coords.y + 1
-		floodFillHelper(x_search, y_search, previous_node_cost)
-		x_search = start_coords.x - 1
-		y_search = start_coords.y + 1
-		floodFillHelper(x_search, y_search, previous_node_cost)
-		x_search = start_coords.x - 1
-		y_search = start_coords.y
-		floodFillHelper(x_search, y_search, previous_node_cost)
-		x_search = start_coords.x - 1
-		y_search = start_coords.y - 1
-		floodFillHelper(x_search, y_search, previous_node_cost)
-		x_search = start_coords.x
-		y_search = start_coords.y - 1
-		floodFillHelper(x_search, y_search, previous_node_cost)
-
-func floodFillHelper(x, y, p_n_c):
-	var cell_movement_type = tm_movement.get_cell(x, y)
-	if x >= 0 && x < adventure_map.mapWidth && y >= 0 && y < adventure_map.mapHeight:
-			if cell_movement_type == travel_type || cell_movement_type == 3:
-				var new_cost = tm_movement.tile_move_expense[x][y] + p_n_c
-				if my_flooded_tiles[x][y] == -1 || my_flooded_tiles[x][y] > new_cost:
-					my_flooded_tiles[x][y] = new_cost
-			else:
-				my_flooded_tiles[x][y] = 0
+func calcDistanceOf2Nodes(node_a, node_b):
+	var distance_x = abs(node_a.x - node_b.x)
+	var distance_y = abs(node_a.y - node_b.y)
+	
+	if distance_x > distance_y:
+		return 14 * distance_y + 10 * (distance_x - distance_y)
+	else:
+		return 14 * distance_x + 10 * (distance_y - distance_x)

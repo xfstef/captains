@@ -113,59 +113,77 @@ func instantiate_player_armies(player_nr, player_armies):
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 
-	
 func _input(event):
 	if camera.tween.is_active():
 		return
 		
 	var p_a_s_x = army_instances[selected_army.x][selected_army.y].my_coords.x
 	var p_a_s_y = army_instances[selected_army.x][selected_army.y].my_coords.y
+	var army_travel_type = army_instances[selected_army.x][selected_army.y].travel_type
+	var army_land_mass = army_instances[selected_army.x][selected_army.y].current_land_mass
 		
 	if Input.is_action_just_released("army_left"):
-		if isTileAccessible(p_a_s_x - 1, p_a_s_y + 1):
-			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x - 1, p_a_s_y + 1)
+		if isTileAccessible(p_a_s_x - 1, p_a_s_y + 1, army_travel_type, army_land_mass):
+			army_instances[selected_army.x][selected_army.y].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x - 1, p_a_s_y + 1)))
 	if Input.is_action_just_released("army_right"):
-		if isTileAccessible(p_a_s_x + 1, p_a_s_y - 1):
-			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x + 1, p_a_s_y - 1)
+		if isTileAccessible(p_a_s_x + 1, p_a_s_y - 1, army_travel_type, army_land_mass):
+			army_instances[selected_army.x][selected_army.y].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + 1, p_a_s_y - 1)))
 	if Input.is_action_just_released("army_up"):
-		if isTileAccessible(p_a_s_x - 1, p_a_s_y - 1):
-			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x - 1, p_a_s_y - 1)
+		if isTileAccessible(p_a_s_x - 1, p_a_s_y - 1, army_travel_type, army_land_mass):
+			army_instances[selected_army.x][selected_army.y].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x - 1, p_a_s_y - 1)))
 	if Input.is_action_just_released("army_down"):
-		if isTileAccessible(p_a_s_x + 1, p_a_s_y + 1):
-			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x + 1, p_a_s_y + 1)
+		if isTileAccessible(p_a_s_x + 1, p_a_s_y + 1, army_travel_type, army_land_mass):
+			army_instances[selected_army.x][selected_army.y].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + 1, p_a_s_y + 1)))
 	if Input.is_action_just_released("army_up_left"):
-		if isTileAccessible(p_a_s_x - 1, p_a_s_y):
-			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x - 1, p_a_s_y)
+		if isTileAccessible(p_a_s_x - 1, p_a_s_y, army_travel_type, army_land_mass):
+			army_instances[selected_army.x][selected_army.y].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x - 1, p_a_s_y)))
 	if Input.is_action_just_released("army_up_right"):
-		if isTileAccessible(p_a_s_x, p_a_s_y - 1):
-			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x, p_a_s_y - 1)
+		if isTileAccessible(p_a_s_x, p_a_s_y - 1, army_travel_type, army_land_mass):
+			army_instances[selected_army.x][selected_army.y].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x, p_a_s_y - 1)))
 	if Input.is_action_just_released("army_down_left"):
-		if isTileAccessible(p_a_s_x, p_a_s_y + 1):
-			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x, p_a_s_y + 1)
+		if isTileAccessible(p_a_s_x, p_a_s_y + 1, army_travel_type, army_land_mass):
+			army_instances[selected_army.x][selected_army.y].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x, p_a_s_y + 1)))
 	if Input.is_action_just_released("army_down_right"):
-		if isTileAccessible(p_a_s_x + 1, p_a_s_y):
-			army_instances[selected_army.x][selected_army.y].calculateFastestPath(p_a_s_x + 1, p_a_s_y)
+		if isTileAccessible(p_a_s_x + 1, p_a_s_y, army_travel_type, army_land_mass):
+			army_instances[selected_army.x][selected_army.y].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + 1, p_a_s_y)))
 	if Input.is_action_just_released("select_tile"):
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
-		if (tile.x != p_a_s_x || tile.y != p_a_s_y) && isTileAccessible(tile.x, tile.y):
+		if (tile.x != p_a_s_x || tile.y != p_a_s_y) && isTileAccessible(tile.x, tile.y, army_travel_type, army_land_mass):
 			if army_instances[selected_army.x][selected_army.y].selected_coords == tile:
-				command_given = true
+				army_instances[selected_army.x][selected_army.y].executeMoveCommand = true
 			else:
 				army_instances[selected_army.x][selected_army.y].calculateFastestPath(tile.x, tile.y)
 
-func isTileAccessible(x, y):
+# TODO: Improve this function so that it takes into consideration the army travel type and land masses and portals
+func isTileAccessible(x, y, travel_type, land_mass):
 	if x < 0 || x >= mapWidth || y < 0 || y >= mapHeight:
 		return false
-	elif army_instances[selected_army.x][selected_army.y].travel_type == 0:
+	elif land_mass != landMassesMatrix[x][y]:
+		return false
+	elif travel_type == 0:
 		if movementTileMap.get_cell(x,y) == 0 || movementTileMap.get_cell(x,y) == 3:
 			return true
 		else:
 			return false
-	elif army_instances[selected_army.x][selected_army.y].travel_type == 1:
+	elif travel_type == 1:
 		if movementTileMap.get_cell(x,y) == 1 || movementTileMap.get_cell(x,y) == 3:
 			return true
 		else:
 			return false
 	else:
 		return false
+
+func getNodeNeighbours(node, army_travel_type, land_mass):
+	var valid_neighbours = []
+	var new_x
+	var new_y
 	
+	for x in range(-1, 2):
+		for y in range(-1, 2):
+			if !(x == 0 && y == 0):
+				new_x = node.x + x
+				new_y = node.y + y
+				if isTileAccessible(new_x, new_y, army_travel_type, land_mass):
+					valid_neighbours.append(Vector2(new_x, new_y))
+	
+	return valid_neighbours
