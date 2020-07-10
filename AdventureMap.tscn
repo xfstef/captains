@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://Assets/TileResources/TMGround.tres" type="TileSet" id=1]
 [ext_resource path="res://Scripts/AdventureMap.gd" type="Script" id=2]
@@ -12,6 +12,7 @@
 [ext_resource path="res://Scripts/TM-Props.gd" type="Script" id=10]
 [ext_resource path="res://Scripts/TM-Ground.gd" type="Script" id=11]
 [ext_resource path="res://MouseCtrl.gd" type="Script" id=12]
+[ext_resource path="res://Assets/Sprites/moveTrackers.png" type="Texture" id=13]
 
 [sub_resource type="AtlasTexture" id=1]
 flags = 4
@@ -126,4 +127,10 @@ offset = Vector2( 0, 18 )
 [node name="MouseCtrl" type="Node2D" parent="."]
 visible = false
 script = ExtResource( 12 )
+
+[node name="MoveTracker" type="Sprite" parent="."]
+position = Vector2( -273.91, -536.13 )
+texture = ExtResource( 13 )
+vframes = 4
+hframes = 8
 [connection signal="pressed" from="UI/saveMapButton" to="UI" method="_on_saveMapButton_pressed"]

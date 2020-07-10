@@ -13,6 +13,7 @@ var executeMoveCommand = false
 var currentMoveCommandStep = 0
 var tm_movement
 var current_land_mass
+var my_id
 
 func _ready():
 	my_animation = get_node("AnimatedSprite")
@@ -55,7 +56,7 @@ func calculateFastestPath(x, y):
 	selected_coords.y = y
 	fastest_path.clear()
 	aStarSearch(x, y)
-	print(fastest_path)
+	adventure_map.drawPath(my_id)
 
 func aStarSearch(x, y):
 	var open_nodes = []
