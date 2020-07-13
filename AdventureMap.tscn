@@ -132,5 +132,5 @@ script = ExtResource( 12 )
 position = Vector2( -273.91, -536.13 )
 texture = ExtResource( 13 )
 vframes = 4
-hframes = 8
+hframes = 13
 [connection signal="pressed" from="UI/saveMapButton" to="UI" method="_on_saveMapButton_pressed"]

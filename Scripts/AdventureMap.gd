@@ -15,6 +15,7 @@ var moveTracker
 # Instanced Objects
 var playersArmies = []
 var army_instances = []
+var movement_trackers = []
 # Other
 var mapGroundMatrix = []
 var mapPropsMatrix = []
@@ -154,6 +155,8 @@ func _input(event):
 			if army_instances[selected_army.player_id][selected_army.army_id].selected_coords == tile:
 				army_instances[selected_army.player_id][selected_army.army_id].executeMoveCommand = true
 			else:
+				for h in range(movement_trackers.size()):
+					movement_trackers[h].visible = false
 				army_instances[selected_army.player_id][selected_army.army_id].calculateFastestPath(tile.x, tile.y)
 
 # TODO: Improve this function so that it takes into consideration the army travel type and land masses and portals
@@ -192,6 +195,20 @@ func getNodeNeighbours(node, army_travel_type, land_mass):
 
 func drawPath(army_id):
 	var nodes = army_instances[selected_army.player_id][army_id].fastest_path
-	nodes.push_front(Vector2(army_instances[selected_army.player_id][army_id].my_coords.x, army_instances[selected_army.player_id][army_id].my_coords.y))
-	print(nodes)
-	
+	for x in range(nodes.size()):
+		if movement_trackers.size() < x + 1:
+			movement_trackers.append(moveTracker.duplicate())
+			propsTileMap.add_child(movement_trackers[x])
+		movement_trackers[x].position = propsTileMap.map_to_world(Vector2(nodes[x].x, nodes[x].y))
+		movement_trackers[x].position.y += 36
+		if x + 1 < nodes.size():
+			TODO
+			movement_trackers[x].frame = establishDirection(nodes[x], nodes[x+1])
+		else:
+			movement_trackers[x].frame = 12
+		movement_trackers[x].visible = true
+
+func establishDirection(start_node, end_node):
+	var x_dif = start_node.x - end_node.y
+	var y_dif = start_node.x - end_node.y
+	return 0

@@ -14,6 +14,8 @@ var currentMoveCommandStep = 0
 var tm_movement
 var current_land_mass
 var my_id
+var my_movement_points
+var my_remaining_movement_today
 
 func _ready():
 	my_animation = get_node("AnimatedSprite")
@@ -24,6 +26,8 @@ func _ready():
 	travel_type = 0
 	adventure_map = get_node("/root/AdventureMap")
 	tm_movement = get_node("../../TM-Movement")
+	my_movement_points = 100
+	my_remaining_movement_today = 100
 
 func _process(delta):
 	if !tween.is_active():
@@ -33,16 +37,18 @@ func _process(delta):
 			my_coords = adventure_map.propsTileMap.world_to_map(self.position)
 	
 		if executeMoveCommand:
-			moveTo(adventure_map.propsTileMap.map_to_world(Vector2(fastest_path[currentMoveCommandStep].x, fastest_path[currentMoveCommandStep].y)))
-			currentMoveCommandStep += 1
-			if fastest_path.size() == currentMoveCommandStep:
-				currentMoveCommandStep = 0
-				executeMoveCommand = false
+			var step = fastest_path[currentMoveCommandStep]
+			if step.move_cost <= my_remaining_movement_today:
+				moveTo(adventure_map.propsTileMap.map_to_world(Vector2(step.x, step.y)), step.move_cost)
+				currentMoveCommandStep += 1
+				if fastest_path.size() == currentMoveCommandStep:
+					currentMoveCommandStep = 0
+					executeMoveCommand = false
 
-func moveTo(x_y):
+func moveTo(x_y, cost):
 	x_y.y += 37
 	move_coords = x_y
-
+	#my_remaining_movement_today -= cost
 	tween.interpolate_property(self, 'position', self.position, move_coords, 1, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 	tween.start()
 	my_animation.playing = true
@@ -52,6 +58,8 @@ func changeTravelType(new_travel_type):
 	travel_type = new_travel_type
 
 func calculateFastestPath(x, y):
+	currentMoveCommandStep = 0
+	executeMoveCommand = false
 	selected_coords.x = x
 	selected_coords.y = y
 	fastest_path.clear()
@@ -72,7 +80,7 @@ func aStarSearch(x, y):
 		
 		if current_node.x == selected_coords.x && current_node.y == selected_coords.y:
 			while current_node.parent:
-				fastest_path.push_front(Vector2(current_node.x, current_node.y))
+				fastest_path.push_front({x = current_node.x, y = current_node.y, move_cost = tm_movement.tile_move_expense[current_node.x][current_node.y]})
 				current_node = current_node.parent
 			return
 		
@@ -81,10 +89,10 @@ func aStarSearch(x, y):
 		
 		for x in range(node_neighbours.size()):
 			if !evaluated_nodes.has(node_neighbours[x]):
-				var newMoveCostToNeightbour = current_node.g_cost + tm_movement.tile_move_expense[node_neighbours[x].x][node_neighbours[x].y]
+				var newMoveCostToNeightbour = current_node.g_cost + calcDistanceOf2Nodes(current_node, node_neighbours[x], tm_movement.tile_move_expense[node_neighbours[x].x][node_neighbours[x].y])
 				if newMoveCostToNeightbour < node_neighbours[x].g_cost || !open_nodes.has(node_neighbours[x]):
 					node_neighbours[x].g_cost = newMoveCostToNeightbour
-					node_neighbours[x].h_cost = calcDistanceOf2Nodes(node_neighbours[x], selected_coords)
+					node_neighbours[x].h_cost = calcDistanceOf2Nodes(node_neighbours[x], selected_coords, 10)
 					node_neighbours[x].f_cost = node_neighbours[x].g_cost + node_neighbours[x].h_cost
 					node_neighbours[x].parent = current_node
 					if !open_nodes.has(node_neighbours[x]):
@@ -112,18 +120,8 @@ func prepNeighbours(positions, open_nodes):
 		
 	return neighbours
 
-func getXYDiff(f_p_x, f_p_y):
-	var x_y_diffs = Vector2(0, 0)
-	x_y_diffs.x = f_p_x - my_coords.x
-	x_y_diffs.y = f_p_y - my_coords.y
-	
-	return x_y_diffs
-
-func calcDistanceOf2Nodes(node_a, node_b):
+func calcDistanceOf2Nodes(node_a, node_b, cost):
 	var distance_x = abs(node_a.x - node_b.x)
 	var distance_y = abs(node_a.y - node_b.y)
 	
-	if distance_x > distance_y:
-		return 14 * distance_y + 10 * (distance_x - distance_y)
-	else:
-		return 14 * distance_x + 10 * (distance_y - distance_x)
+	return cost * (distance_x + distance_y) + ((1.4 * cost) - (2 * cost)) * min(distance_x, distance_y)
