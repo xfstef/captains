@@ -195,20 +195,21 @@ func getNodeNeighbours(node, army_travel_type, land_mass):
 
 func drawPath(army_id):
 	var nodes = army_instances[selected_army.player_id][army_id].fastest_path
-	for x in range(nodes.size()):
-		if movement_trackers.size() < x + 1:
+	nodes.push_front({x = army_instances[selected_army.player_id][army_id].my_coords.x, y = army_instances[selected_army.player_id][army_id].my_coords.y})
+	for x in range(1, nodes.size()):
+		if movement_trackers.size() < x:
 			movement_trackers.append(moveTracker.duplicate())
-			propsTileMap.add_child(movement_trackers[x])
-		movement_trackers[x].position = propsTileMap.map_to_world(Vector2(nodes[x].x, nodes[x].y))
-		movement_trackers[x].position.y += 36
+			propsTileMap.add_child(movement_trackers[x - 1])
+		movement_trackers[x - 1].position = propsTileMap.map_to_world(Vector2(nodes[x].x, nodes[x].y))
+		movement_trackers[x - 1].position.y += 36
 		if x + 1 < nodes.size():
-			TODO
-			movement_trackers[x].frame = establishDirection(nodes[x], nodes[x+1])
+			movement_trackers[x - 1].frame = establishDirection(nodes[x - 1], nodes[x + 1])
 		else:
-			movement_trackers[x].frame = 12
-		movement_trackers[x].visible = true
+			movement_trackers[x - 1].frame = 12
+		movement_trackers[x - 1].visible = true
 
-func establishDirection(start_node, end_node):
-	var x_dif = start_node.x - end_node.y
-	var y_dif = start_node.x - end_node.y
+func establishDirection(source_node, target_node):
+	var x_d = source_node.x - target_node.x
+	var y_d = source_node.y - target_node.y
+	print(x_d, y_d)
 	return 0

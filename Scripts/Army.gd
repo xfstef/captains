@@ -124,4 +124,4 @@ func calcDistanceOf2Nodes(node_a, node_b, cost):
 	var distance_x = abs(node_a.x - node_b.x)
 	var distance_y = abs(node_a.y - node_b.y)
 	
-	return cost * (distance_x + distance_y) + ((1.4 * cost) - (2 * cost)) * min(distance_x, distance_y)
+	return cost * (distance_x + distance_y) + ((1.2 * cost) - (2 * cost)) * min(distance_x, distance_y)
