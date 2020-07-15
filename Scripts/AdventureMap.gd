@@ -3,6 +3,7 @@ extends Node2D
 # Paths
 var mapPath = "res://Maps/test4.json"
 var interactablesPath = "res://Data/mapInteractables.json"
+var directionIndexesPath = "res://Data/directionIndexes.json"
 # World Object References
 var camera
 var armyNode
@@ -16,6 +17,7 @@ var moveTracker
 var playersArmies = []
 var army_instances = []
 var movement_trackers = []
+var direction_indexes = {}
 # Other
 var mapGroundMatrix = []
 var mapPropsMatrix = []
@@ -37,6 +39,7 @@ func _ready():
 	armyNode = get_node("Army")
 	moveTracker = get_node("MoveTracker")
 	loadMapData()
+	direction_indexes = loadFilePayload(directionIndexesPath)
 
 func prepCamera():
 	var half_width_pixels = (mapWidth / 2) * 144
@@ -203,13 +206,15 @@ func drawPath(army_id):
 		movement_trackers[x - 1].position = propsTileMap.map_to_world(Vector2(nodes[x].x, nodes[x].y))
 		movement_trackers[x - 1].position.y += 36
 		if x + 1 < nodes.size():
-			movement_trackers[x - 1].frame = establishDirection(nodes[x - 1], nodes[x + 1])
+			movement_trackers[x - 1].frame = establishDirection(nodes[x - 1], nodes[x], nodes[x + 1])
 		else:
 			movement_trackers[x - 1].frame = 12
 		movement_trackers[x - 1].visible = true
 
-func establishDirection(source_node, target_node):
-	var x_d = source_node.x - target_node.x
-	var y_d = source_node.y - target_node.y
-	print(x_d, y_d)
-	return 0
+func establishDirection(n_1, n_2, n_3):
+	var x_d_1 = String(n_1.x - n_2.x)
+	var y_d_1 = String(n_1.y - n_2.y)
+	var x_d_2 = String(n_3.x - n_2.x)
+	var y_d_2 = String(n_3.y - n_2.y)
+	
+	return direction_indexes.get(x_d_1).get(y_d_1).get(x_d_2).get(y_d_2)
