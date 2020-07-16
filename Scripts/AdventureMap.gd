@@ -130,28 +130,28 @@ func _input(event):
 	
 	if Input.is_action_just_released("army_left"):
 		if isTileAccessible(p_a_s_x - 1, p_a_s_y + 1, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x - 1, p_a_s_y + 1)))
+			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x - 1, p_a_s_y + 1)), movementTileMap.tile_move_expense[p_a_s_x - 1][p_a_s_y + 1])
 	if Input.is_action_just_released("army_right"):
 		if isTileAccessible(p_a_s_x + 1, p_a_s_y - 1, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + 1, p_a_s_y - 1)))
+			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + 1, p_a_s_y - 1)), movementTileMap.tile_move_expense[p_a_s_x + 1][p_a_s_y - 1])
 	if Input.is_action_just_released("army_up"):
 		if isTileAccessible(p_a_s_x - 1, p_a_s_y - 1, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x - 1, p_a_s_y - 1)))
+			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x - 1, p_a_s_y - 1)), movementTileMap.tile_move_expense[p_a_s_x - 1][p_a_s_y - 1])
 	if Input.is_action_just_released("army_down"):
 		if isTileAccessible(p_a_s_x + 1, p_a_s_y + 1, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + 1, p_a_s_y + 1)))
+			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + 1, p_a_s_y + 1)), movementTileMap.tile_move_expense[p_a_s_x + 1][p_a_s_y + 1])
 	if Input.is_action_just_released("army_up_left"):
 		if isTileAccessible(p_a_s_x - 1, p_a_s_y, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x - 1, p_a_s_y)))
+			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x - 1, p_a_s_y)), movementTileMap.tile_move_expense[p_a_s_x - 1][p_a_s_y])
 	if Input.is_action_just_released("army_up_right"):
 		if isTileAccessible(p_a_s_x, p_a_s_y - 1, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x, p_a_s_y - 1)))
+			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x, p_a_s_y - 1)), movementTileMap.tile_move_expense[p_a_s_x][p_a_s_y - 1])
 	if Input.is_action_just_released("army_down_left"):
 		if isTileAccessible(p_a_s_x, p_a_s_y + 1, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x, p_a_s_y + 1)))
+			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x, p_a_s_y + 1)), movementTileMap.tile_move_expense[p_a_s_x][p_a_s_y + 1])
 	if Input.is_action_just_released("army_down_right"):
 		if isTileAccessible(p_a_s_x + 1, p_a_s_y, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + 1, p_a_s_y)))
+			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + 1, p_a_s_y)), movementTileMap.tile_move_expense[p_a_s_x + 1][p_a_s_y])
 	if Input.is_action_just_released("select_tile"):
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
 		if (tile.x != p_a_s_x || tile.y != p_a_s_y) && isTileAccessible(tile.x, tile.y, army_travel_type, army_land_mass):
@@ -198,7 +198,7 @@ func getNodeNeighbours(node, army_travel_type, land_mass):
 
 func drawPath(army_id):
 	var nodes = army_instances[selected_army.player_id][army_id].fastest_path
-	nodes.push_front({x = army_instances[selected_army.player_id][army_id].my_coords.x, y = army_instances[selected_army.player_id][army_id].my_coords.y})
+	nodes.push_front({x = army_instances[selected_army.player_id][army_id].my_coords.x, y = army_instances[selected_army.player_id][army_id].my_coords.y, move_cost = 0})
 	for x in range(1, nodes.size()):
 		if movement_trackers.size() < x:
 			movement_trackers.append(moveTracker.duplicate())

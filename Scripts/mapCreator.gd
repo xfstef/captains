@@ -47,20 +47,29 @@ var propsTileMap
 var movementTileMap
 var adventureMap
 var current_mass_type = -1
+# Object References
+var save_name_input
+var save_map_button
+# Startup Flags
+var showEditor = false
 
 func _ready():
 	groundTileMap = get_node("../TM-Ground")
 	propsTileMap = get_node("../TM-Props")
 	movementTileMap = get_node("../TM-Movement")
+	save_name_input = get_node("saveMapName")
+	save_map_button = get_node("saveMapButton")
+	if showEditor == true:
+		save_name_input.visible = true
+		save_map_button.visible = true
 
 func _on_saveMapButton_pressed():
 	movementTileMap.determineCells()
 	initPaintedMatrix()
 	floodFillLandMasses()
-	var saveNameInput = get_node("saveMapName")
 	var saveName = "test1"
-	if saveNameInput.text != "":
-		saveName = saveNameInput.text
+	if save_name_input.text != "":
+		saveName = save_name_input.text
 	var filePath = str("res://Maps/", saveName, ".json")
 	
 	data.name = saveName

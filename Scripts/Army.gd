@@ -10,7 +10,7 @@ var travel_type = 0
 var fastest_path = []
 var adventure_map
 var executeMoveCommand = false
-var currentMoveCommandStep = 0
+var currentMoveCommandStep = 1
 var tm_movement
 var current_land_mass
 var my_id
@@ -38,11 +38,14 @@ func _process(delta):
 	
 		if executeMoveCommand:
 			var step = fastest_path[currentMoveCommandStep]
+#			if step.x == my_coords.x && step.y == my_coords.y:
+#				currentMoveCommandStep += 1
+#				step = fastest_path[currentMoveCommandStep]
 			if step.move_cost <= my_remaining_movement_today:
 				moveTo(adventure_map.propsTileMap.map_to_world(Vector2(step.x, step.y)), step.move_cost)
 				currentMoveCommandStep += 1
 				if fastest_path.size() == currentMoveCommandStep:
-					currentMoveCommandStep = 0
+					currentMoveCommandStep = 1
 					executeMoveCommand = false
 
 func moveTo(x_y, cost):
@@ -58,7 +61,7 @@ func changeTravelType(new_travel_type):
 	travel_type = new_travel_type
 
 func calculateFastestPath(x, y):
-	currentMoveCommandStep = 0
+	currentMoveCommandStep = 1
 	executeMoveCommand = false
 	selected_coords.x = x
 	selected_coords.y = y
