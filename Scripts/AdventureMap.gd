@@ -4,6 +4,7 @@ extends Node2D
 var mapPath = "res://Maps/test4.json"
 var interactablesPath = "res://Data/mapInteractables.json"
 var directionIndexesPath = "res://Data/directionIndexes.json"
+var mapMoveIndesexPath = "res://Data/mapMoveIndexes.json"
 # World Object References
 var camera
 var armyNode
@@ -18,6 +19,7 @@ var playersArmies = []
 var army_instances = []
 var movement_trackers = []
 var direction_indexes = {}
+var map_move_indexes = {}
 # Other
 var mapGroundMatrix = []
 var mapPropsMatrix = []
@@ -40,6 +42,7 @@ func _ready():
 	moveTracker = get_node("MoveTracker")
 	loadMapData()
 	direction_indexes = loadFilePayload(directionIndexesPath)
+	map_move_indexes = loadFilePayload(mapMoveIndesexPath)
 
 func prepCamera():
 	var half_width_pixels = (mapWidth / 2) * 144
@@ -122,45 +125,26 @@ func instantiate_player_armies(player_nr, player_armies):
 func _input(event):
 	if camera.tween.is_active():
 		return
-		
-	var p_a_s_x = army_instances[selected_army.player_id][selected_army.army_id].my_coords.x
-	var p_a_s_y = army_instances[selected_army.player_id][selected_army.army_id].my_coords.y
-	var army_travel_type = army_instances[selected_army.player_id][selected_army.army_id].travel_type
-	var army_land_mass = army_instances[selected_army.player_id][selected_army.army_id].current_land_mass
 	
-	if Input.is_action_just_released("army_left"):
-		if isTileAccessible(p_a_s_x - 1, p_a_s_y + 1, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x - 1, p_a_s_y + 1)), movementTileMap.tile_move_expense[p_a_s_x - 1][p_a_s_y + 1])
-	if Input.is_action_just_released("army_right"):
-		if isTileAccessible(p_a_s_x + 1, p_a_s_y - 1, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + 1, p_a_s_y - 1)), movementTileMap.tile_move_expense[p_a_s_x + 1][p_a_s_y - 1])
-	if Input.is_action_just_released("army_up"):
-		if isTileAccessible(p_a_s_x - 1, p_a_s_y - 1, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x - 1, p_a_s_y - 1)), movementTileMap.tile_move_expense[p_a_s_x - 1][p_a_s_y - 1])
-	if Input.is_action_just_released("army_down"):
-		if isTileAccessible(p_a_s_x + 1, p_a_s_y + 1, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + 1, p_a_s_y + 1)), movementTileMap.tile_move_expense[p_a_s_x + 1][p_a_s_y + 1])
-	if Input.is_action_just_released("army_up_left"):
-		if isTileAccessible(p_a_s_x - 1, p_a_s_y, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x - 1, p_a_s_y)), movementTileMap.tile_move_expense[p_a_s_x - 1][p_a_s_y])
-	if Input.is_action_just_released("army_up_right"):
-		if isTileAccessible(p_a_s_x, p_a_s_y - 1, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x, p_a_s_y - 1)), movementTileMap.tile_move_expense[p_a_s_x][p_a_s_y - 1])
-	if Input.is_action_just_released("army_down_left"):
-		if isTileAccessible(p_a_s_x, p_a_s_y + 1, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x, p_a_s_y + 1)), movementTileMap.tile_move_expense[p_a_s_x][p_a_s_y + 1])
-	if Input.is_action_just_released("army_down_right"):
-		if isTileAccessible(p_a_s_x + 1, p_a_s_y, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + 1, p_a_s_y)), movementTileMap.tile_move_expense[p_a_s_x + 1][p_a_s_y])
-	if Input.is_action_just_released("select_tile"):
-		var tile = groundTileMap.world_to_map(get_global_mouse_position())
-		if (tile.x != p_a_s_x || tile.y != p_a_s_y) && isTileAccessible(tile.x, tile.y, army_travel_type, army_land_mass):
-			if army_instances[selected_army.player_id][selected_army.army_id].selected_coords == tile:
-				army_instances[selected_army.player_id][selected_army.army_id].executeMoveCommand = true
-			else:
-				for h in range(movement_trackers.size()):
-					movement_trackers[h].visible = false
-				army_instances[selected_army.player_id][selected_army.army_id].calculateFastestPath(tile.x, tile.y)
+	if event is InputEventKey && event.pressed == false:
+		var p_a_s_x = army_instances[selected_army.player_id][selected_army.army_id].my_coords.x
+		var p_a_s_y = army_instances[selected_army.player_id][selected_army.army_id].my_coords.y
+		var army_travel_type = army_instances[selected_army.player_id][selected_army.army_id].travel_type
+		var army_land_mass = army_instances[selected_army.player_id][selected_army.army_id].current_land_mass
+		var d_modifier = establishMapMoveDirectionModifiers(event.scancode)
+		
+		if isTileAccessible(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y, army_travel_type, army_land_mass):
+			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y)), movementTileMap.tile_move_expense[p_a_s_x + d_modifier.x][p_a_s_y + d_modifier.y])
+		
+	#	if Input.is_action_just_released("select_tile"):
+	#		var tile = groundTileMap.world_to_map(get_global_mouse_position())
+	#		if (tile.x != p_a_s_x || tile.y != p_a_s_y) && isTileAccessible(tile.x, tile.y, army_travel_type, army_land_mass):
+	#			if army_instances[selected_army.player_id][selected_army.army_id].selected_coords == tile:
+	#				army_instances[selected_army.player_id][selected_army.army_id].executeMoveCommand = true
+	#			else:
+	#				for h in range(movement_trackers.size()):
+	#					movement_trackers[h].visible = false
+	#				army_instances[selected_army.player_id][selected_army.army_id].calculateFastestPath(tile.x, tile.y)
 
 # TODO: Improve this function so that it takes into consideration the army travel type and land masses and portals
 func isTileAccessible(x, y, travel_type, land_mass):
@@ -218,3 +202,8 @@ func establishDirection(n_1, n_2, n_3):
 	var y_d_2 = String(n_3.y - n_2.y)
 	
 	return direction_indexes.get(x_d_1).get(y_d_1).get(x_d_2).get(y_d_2)
+
+func establishMapMoveDirectionModifiers(key_stroke):
+	var modifiers = map_move_indexes.get(String(key_stroke))
+	
+	return Vector2(modifiers[0], modifiers[1])
