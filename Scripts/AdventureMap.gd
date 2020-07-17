@@ -136,15 +136,15 @@ func _input(event):
 		if isTileAccessible(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y, army_travel_type, army_land_mass):
 			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y)), movementTileMap.tile_move_expense[p_a_s_x + d_modifier.x][p_a_s_y + d_modifier.y])
 		
-	#	if Input.is_action_just_released("select_tile"):
-	#		var tile = groundTileMap.world_to_map(get_global_mouse_position())
-	#		if (tile.x != p_a_s_x || tile.y != p_a_s_y) && isTileAccessible(tile.x, tile.y, army_travel_type, army_land_mass):
-	#			if army_instances[selected_army.player_id][selected_army.army_id].selected_coords == tile:
-	#				army_instances[selected_army.player_id][selected_army.army_id].executeMoveCommand = true
-	#			else:
-	#				for h in range(movement_trackers.size()):
-	#					movement_trackers[h].visible = false
-	#				army_instances[selected_army.player_id][selected_army.army_id].calculateFastestPath(tile.x, tile.y)
+#	if Input.is_action_just_released("select_tile"):
+#		var tile = groundTileMap.world_to_map(get_global_mouse_position())
+#		if (tile.x != p_a_s_x || tile.y != p_a_s_y) && isTileAccessible(tile.x, tile.y, army_travel_type, army_land_mass):
+#			if army_instances[selected_army.player_id][selected_army.army_id].selected_coords == tile:
+#				army_instances[selected_army.player_id][selected_army.army_id].executeMoveCommand = true
+#			else:
+#				for h in range(movement_trackers.size()):
+#					movement_trackers[h].visible = false
+#				army_instances[selected_army.player_id][selected_army.army_id].calculateFastestPath(tile.x, tile.y)
 
 # TODO: Improve this function so that it takes into consideration the army travel type and land masses and portals
 func isTileAccessible(x, y, travel_type, land_mass):
