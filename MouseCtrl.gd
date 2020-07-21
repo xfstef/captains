@@ -13,16 +13,19 @@ var m_p_scroll_up_left = preload("res://Assets/Sprites/scrollUL.png")
 var m_p_scroll_up_right = preload("res://Assets/Sprites/scrollUR.png")
 var m_p_scroll_down_left = preload("res://Assets/Sprites/scrollDL.png")
 var m_p_scroll_down_right = preload("res://Assets/Sprites/scrollDR.png")
+var m_m_s_i = "res://Data/mapMouseScrollIndexes.json"
 # Instances
 var adventure_map
 var groundTileMap
 var movementTileMap
 var camera
 var info
+var m_m_s_i_
 # Other
 var mapWidth
 var mapHeight
 var pointerState = 0
+var map_move_pointers = []
 
 func _ready():
 	adventure_map = get_node("/root/AdventureMap")
@@ -30,6 +33,15 @@ func _ready():
 	movementTileMap = get_node("../TM-Movement")
 	camera = get_node("../Camera2D")
 	info = get_node("../UI/info")
+	m_m_s_i_ = adventure_map.loadFilePayload(m_m_s_i)
+	map_move_pointers.append(m_p_scroll_up)
+	map_move_pointers.append(m_p_scroll_down)
+	map_move_pointers.append(m_p_scroll_left)
+	map_move_pointers.append(m_p_scroll_right)
+	map_move_pointers.append(m_p_scroll_up_left)
+	map_move_pointers.append(m_p_scroll_up_right)
+	map_move_pointers.append(m_p_scroll_down_left)
+	map_move_pointers.append(m_p_scroll_down_right)
 
 func _process(delta):
 	var mouse_pos_global = get_global_mouse_position()
@@ -56,33 +68,11 @@ func _process(delta):
 		elif mouse_pos_local.y > camera.viewport_size.y - 30 && camera.position.y + camera.h_h_times_zoom < camera.limit_bottom:
 			move_vector.y = 1
 		
-		if move_vector.x > 0:
-			if move_vector.y > 0:
-				Input.set_custom_mouse_cursor(m_p_scroll_down_right)
-				pointerState = -1
-			elif move_vector.y < 0:
-				Input.set_custom_mouse_cursor(m_p_scroll_up_right)
-				pointerState = -1
-			else:
-				Input.set_custom_mouse_cursor(m_p_scroll_right)
-				pointerState = -1
-		elif move_vector.x == 0:
-			if move_vector.y > 0:
-				Input.set_custom_mouse_cursor(m_p_scroll_down)
-				pointerState = -1
-			elif move_vector.y < 0:
-				Input.set_custom_mouse_cursor(m_p_scroll_up)
-				pointerState = -1
-		elif move_vector.x < 0:
-			if move_vector.y > 0:
-				Input.set_custom_mouse_cursor(m_p_scroll_down_left)
-				pointerState = -1
-			elif move_vector.y < 0:
-				Input.set_custom_mouse_cursor(m_p_scroll_up_left)
-				pointerState = -1
-			else:
-				Input.set_custom_mouse_cursor(m_p_scroll_left)
-				pointerState = -1
+		var mouse_cursor_index = m_m_s_i_.get(String(move_vector.x)).get(String(move_vector.y))
+		if mouse_cursor_index != null:
+			Input.set_custom_mouse_cursor(map_move_pointers[mouse_cursor_index])
+			pointerState = -1
+
 		camera.scrollCamera(move_vector, delta)
 		
 	elif tile.x == c_s_a.my_coords.x && tile.y == c_s_a.my_coords.y:

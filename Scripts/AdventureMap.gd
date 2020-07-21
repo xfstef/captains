@@ -14,6 +14,7 @@ var movementTileMap
 var mouseCtrl
 var info
 var moveTracker
+var mapCreator
 # Instanced Objects
 var playersArmies = []
 var army_instances = []
@@ -40,6 +41,7 @@ func _ready():
 	info = get_node("UI/info")
 	armyNode = get_node("Army")
 	moveTracker = get_node("MoveTracker")
+	mapCreator = get_node("UI")
 	loadMapData()
 	direction_indexes = loadFilePayload(directionIndexesPath)
 	map_move_indexes = loadFilePayload(mapMoveIndesexPath)
@@ -61,12 +63,25 @@ func loadFilePayload(fileName):
 	return payload
 
 func loadMapData():
-	var payload = loadFilePayload(mapPath)
-	mapWidth = payload.width
-	mapHeight = payload.height
+	var payload
+	if mapCreator.showEditor == true:
+		mapWidth = mapCreator.data.width
+		mapHeight = mapCreator.data.height
+	else:
+		payload = loadFilePayload(mapPath)
+		mapWidth = payload.width
+		mapHeight = payload.height
 	mouseCtrl.mapWidth = mapWidth
 	mouseCtrl.mapHeight = mapHeight
 	prepCamera()
+	groundTileMap.setSize(mapWidth, mapHeight)
+	propsTileMap.setSize(mapWidth, mapHeight)
+	movementTileMap.setSize(mapWidth, mapHeight)
+	
+	if mapCreator.showEditor == true:
+		mapCreator.readMapData()
+		payload = mapCreator.data
+	
 	
 	for x in range(mapHeight):
 		mapGroundMatrix.append([])
@@ -87,9 +102,7 @@ func loadMapData():
 			landMassesMatrix[x].append([])
 			landMassesMatrix[x][y] = payload.tiles[x][y][3]
 	
-	groundTileMap.setSize(mapWidth, mapHeight)
-	propsTileMap.setSize(mapWidth, mapHeight)
-	movementTileMap.setSize(mapWidth, mapHeight)
+	
 	groundTileMap.setCells(mapGroundMatrix)
 	propsTileMap.setCells(mapPropsMatrix)
 	movementTileMap.setCells(mapMovementMatrix)

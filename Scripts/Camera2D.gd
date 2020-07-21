@@ -19,7 +19,6 @@ func _ready():
 
 func _process(delta):
 	var move_vector = Vector2()
-	#var mouse_pos = get_viewport().get_mouse_position()
 	
 	if Input.is_action_pressed("map_left") && self.position.x - w_h_times_zoom > self.limit_left:
 		move_vector.x -= 1

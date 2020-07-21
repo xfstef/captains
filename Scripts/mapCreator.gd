@@ -64,9 +64,6 @@ func _ready():
 		save_map_button.visible = true
 
 func _on_saveMapButton_pressed():
-	movementTileMap.determineCells()
-	initPaintedMatrix()
-	floodFillLandMasses()
 	var saveName = "test1"
 	if save_name_input.text != "":
 		saveName = save_name_input.text
@@ -74,18 +71,23 @@ func _on_saveMapButton_pressed():
 	
 	data.name = saveName
 	
+	var file
+	file = File.new()
+	file.open(filePath, File.WRITE)
+	file.store_line(to_json(data))
+	file.close()
+
+func readMapData():
+	movementTileMap.determineCells()
+	initPaintedMatrix()
+	floodFillLandMasses()
+	
 	for y in range(data.width):
 		data.tiles.append([])
 		data.tiles[y] = []
 		for x in range(data.height):
 			data.tiles[y].append([])
 			data.tiles[y][x] = [mapGroundMatrix[y][x], mapPropsMatrix[y][x], mapMovementMatrix[y][x], landMassMatrix[y][x]]
-	
-	var file
-	file = File.new()
-	file.open(filePath, File.WRITE)
-	file.store_line(to_json(data))
-	file.close()
 
 # Temporary function used to save maps made with Godot before starting the game.
 func initPaintedMatrix():
