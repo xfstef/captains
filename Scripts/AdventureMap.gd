@@ -15,6 +15,8 @@ var mouseCtrl
 var info
 var moveTracker
 var mapCreator
+var armiesContainer
+var armyButton
 # Instanced Objects
 var playersArmies = []
 var army_instances = []
@@ -42,6 +44,8 @@ func _ready():
 	armyNode = get_node("Army")
 	moveTracker = get_node("MoveTracker")
 	mapCreator = get_node("UI")
+	armiesContainer = get_node("UI/ArmiesContainer")
+	armyButton = get_node("ArmyButton")
 	loadMapData()
 	direction_indexes = loadFilePayload(directionIndexesPath)
 	map_move_indexes = loadFilePayload(mapMoveIndesexPath)
@@ -131,6 +135,9 @@ func instantiate_player_armies(player_nr, player_armies):
 			camera.followNode(army_instances[player_nr][h].position)
 		if player_armies[h].get("selected") && player_armies[h].selected == true:
 			selected_army = {player_id = player_nr, army_id = h}
+		var new_portrait_button = armyButton.duplicate()
+		new_portrait_button.setID(army_instances[player_nr][h].my_id)
+		armiesContainer.add_child(new_portrait_button)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
@@ -224,3 +231,7 @@ func establishMapMoveDirectionModifiers(key_stroke):
 	if modifiers != null:
 		return Vector2(modifiers[0], modifiers[1])
 	return null
+
+func armySelected(army_id):
+	selected_army.army_id = army_id
+	camera.followNode(army_instances[selected_army.player_id][selected_army.army_id].position)

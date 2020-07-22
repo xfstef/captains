@@ -19,6 +19,13 @@ var data = {
 					"cameraStartPosition": true,
 					"selected": true,
 					"heroId": 0
+				},
+				{
+					"x": 1,
+					"y": 2,
+					"cameraStartPosition": false,
+					"selected": false,
+					"heroId": 1
 				}
 			],
 			"castles": []

@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=21 format=2]
 
 [ext_resource path="res://Assets/TileResources/TMGround.tres" type="TileSet" id=1]
 [ext_resource path="res://Scripts/AdventureMap.gd" type="Script" id=2]
@@ -13,6 +13,9 @@
 [ext_resource path="res://Scripts/TM-Ground.gd" type="Script" id=11]
 [ext_resource path="res://MouseCtrl.gd" type="Script" id=12]
 [ext_resource path="res://Assets/Sprites/moveTrackers.png" type="Texture" id=13]
+[ext_resource path="res://Assets/Sprites/portraitsSheet.png" type="Texture" id=14]
+[ext_resource path="res://ArmyButton.gd" type="Script" id=15]
+[ext_resource path="res://Assets/Sprites/portraitButtonIcon.png" type="Texture" id=16]
 
 [sub_resource type="AtlasTexture" id=1]
 flags = 4
@@ -115,6 +118,37 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="ArmiesContainer" type="VBoxContainer" parent="UI"]
+margin_left = 16.0
+margin_top = 47.0
+margin_right = 196.0
+margin_bottom = 147.0
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MouseCtrl" type="Node2D" parent="."]
+visible = false
+script = ExtResource( 12 )
+
+[node name="ArmyButton" type="Button" parent="."]
+margin_left = -169.648
+margin_top = -566.423
+margin_right = 22.3524
+margin_bottom = -460.423
+icon = ExtResource( 16 )
+script = ExtResource( 15 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="portrait" type="Sprite" parent="ArmyButton"]
+texture = ExtResource( 14 )
+centered = false
+offset = Vector2( 6, 3 )
+hframes = 2
+
 [node name="Army" type="Node2D" parent="."]
 position = Vector2( -500, -500 )
 script = ExtResource( 7 )
@@ -126,13 +160,10 @@ offset = Vector2( 0, 18 )
 
 [node name="Tween" type="Tween" parent="Army"]
 
-[node name="MouseCtrl" type="Node2D" parent="."]
-visible = false
-script = ExtResource( 12 )
-
 [node name="MoveTracker" type="Sprite" parent="."]
 position = Vector2( -273.91, -536.13 )
 texture = ExtResource( 13 )
 vframes = 4
 hframes = 13
 [connection signal="pressed" from="UI/saveMapButton" to="UI" method="_on_saveMapButton_pressed"]
+[connection signal="pressed" from="ArmyButton" to="ArmyButton" method="_on_ArmyButton_pressed"]
