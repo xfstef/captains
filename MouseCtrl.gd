@@ -26,6 +26,7 @@ var mapWidth
 var mapHeight
 var pointerState = 0
 var map_move_pointers = []
+var pointers = []
 
 func _ready():
 	adventure_map = get_node("/root/AdventureMap")
@@ -42,12 +43,17 @@ func _ready():
 	map_move_pointers.append(m_p_scroll_up_right)
 	map_move_pointers.append(m_p_scroll_down_left)
 	map_move_pointers.append(m_p_scroll_down_right)
+	pointers.append(m_pointer_go)
+	pointers.append(m_pointer_blocked)
+	pointers.append(m_pointer_interact)
+	pointers.append(m_pointer_ui)
 
 func _process(delta):
 	var mouse_pos_global = get_global_mouse_position()
 	var mouse_pos_local = get_viewport().get_mouse_position()
 	var tile = groundTileMap.world_to_map(mouse_pos_global)
 	var move_tile = movementTileMap.get_cell(tile.x, tile.y)
+	var army_present = adventure_map.getArmyPresent(tile)
 	var selected_land_mass
 	
 	if tile.x >= 0 && tile.x < mapWidth && tile.y >= 0 && tile.y < mapHeight:
@@ -74,22 +80,32 @@ func _process(delta):
 			pointerState = -1
 
 		camera.scrollCamera(move_vector, delta)
-		
-	elif tile.x == c_s_a.my_coords.x && tile.y == c_s_a.my_coords.y:
-		Input.set_custom_mouse_cursor(m_pointer_ui)
-		pointerState = 1
-	elif move_tile == 0 && selected_land_mass == c_s_a.current_land_mass:
-		Input.set_custom_mouse_cursor(m_pointer_go)
-		pointerState = 0
-	elif move_tile == 1 || selected_land_mass != c_s_a.current_land_mass:
-		Input.set_custom_mouse_cursor(m_pointer_blocked)
-		pointerState = -1
-	elif move_tile == 2 || selected_land_mass != c_s_a.current_land_mass:
-		Input.set_custom_mouse_cursor(m_pointer_blocked)
-		pointerState = -1
-	elif move_tile == 3:
-		Input.set_custom_mouse_cursor(m_pointer_interact)
-		pointerState = 0
+	
+	elif pointerState < 4:
+		if move_tile == 0 && selected_land_mass == c_s_a.current_land_mass:
+			if army_present == true:
+				if tile.x == c_s_a.my_coords.x && tile.y == c_s_a.my_coords.y:
+					Input.set_custom_mouse_cursor(m_pointer_ui)
+					pointerState = 3
+				else:
+					Input.set_custom_mouse_cursor(m_pointer_interact)
+					pointerState = 2
+			else:
+				Input.set_custom_mouse_cursor(m_pointer_go)
+				pointerState = 0
+		elif move_tile == 1 || selected_land_mass != c_s_a.current_land_mass:
+			Input.set_custom_mouse_cursor(m_pointer_blocked)
+			pointerState = 1
+		elif move_tile == 3:
+			Input.set_custom_mouse_cursor(m_pointer_interact)
+			pointerState = 2
 	
 	var text = "tile: %s, pos: %s" % [tile, mouse_pos_global]
 	info.set_text(text)
+
+func setMouseState(new_pointer_state):
+	pointerState = new_pointer_state
+	if pointerState == 4:
+		Input.set_custom_mouse_cursor(pointers[new_pointer_state - 1])
+	else:
+		Input.set_custom_mouse_cursor(pointers[new_pointer_state])

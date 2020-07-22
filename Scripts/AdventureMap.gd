@@ -32,6 +32,9 @@ var mapWidth = 0
 var mapHeight = 0
 var selected_army
 var command_given = false
+# TODO: Add total players objects and instance them at start
+# Also add total player armies within each player instance
+#var total_players
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -85,7 +88,6 @@ func loadMapData():
 	if mapCreator.showEditor == true:
 		mapCreator.readMapData()
 		payload = mapCreator.data
-	
 	
 	for x in range(mapHeight):
 		mapGroundMatrix.append([])
@@ -159,7 +161,7 @@ func _input(event):
 		if isTileAccessible(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y, army_travel_type, army_land_mass):
 			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y)), movementTileMap.tile_move_expense[p_a_s_x + d_modifier.x][p_a_s_y + d_modifier.y])
 	
-	if event is InputEventMouseButton && event.is_pressed() == false && mouseCtrl.pointerState == 0:
+	if event is InputEventMouseButton && event.is_pressed() == false && (mouseCtrl.pointerState == 0 || mouseCtrl.pointerState == 2):
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
 		if (tile.x != p_a_s_x || tile.y != p_a_s_y) && isTileAccessible(tile.x, tile.y, army_travel_type, army_land_mass):
 			if army_instances[selected_army.player_id][selected_army.army_id].selected_coords == tile:
@@ -235,3 +237,12 @@ func establishMapMoveDirectionModifiers(key_stroke):
 func armySelected(army_id):
 	selected_army.army_id = army_id
 	camera.followNode(army_instances[selected_army.player_id][selected_army.army_id].position)
+
+func getArmyPresent(tile):
+	for x in range(army_instances[0].size()):
+		if x != selected_army.army_id && army_instances[0][x].my_coords == tile:
+			return true
+	return false
+
+func interactWithObject(tile, army_id):
+	print("Interaction!")

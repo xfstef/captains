@@ -165,5 +165,11 @@ position = Vector2( -273.91, -536.13 )
 texture = ExtResource( 13 )
 vframes = 4
 hframes = 13
+[connection signal="mouse_entered" from="UI/saveMapName" to="MouseCtrl" method="setMouseState" binds= [ 4 ]]
+[connection signal="mouse_exited" from="UI/saveMapName" to="MouseCtrl" method="setMouseState" binds= [ 0 ]]
+[connection signal="mouse_entered" from="UI/saveMapButton" to="MouseCtrl" method="setMouseState" binds= [ 4 ]]
+[connection signal="mouse_exited" from="UI/saveMapButton" to="MouseCtrl" method="setMouseState" binds= [ 0 ]]
 [connection signal="pressed" from="UI/saveMapButton" to="UI" method="_on_saveMapButton_pressed"]
+[connection signal="mouse_entered" from="ArmyButton" to="ArmyButton" method="_on_ArmyButton_mouse_entered"]
+[connection signal="mouse_exited" from="ArmyButton" to="ArmyButton" method="_on_ArmyButton_mouse_exited"]
 [connection signal="pressed" from="ArmyButton" to="ArmyButton" method="_on_ArmyButton_pressed"]

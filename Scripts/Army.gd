@@ -16,6 +16,8 @@ var current_land_mass
 var my_id
 var my_movement_points
 var my_remaining_movement_today
+var mouse_controller
+var current_prop_code = -1
 
 func _ready():
 	my_animation = get_node("AnimatedSprite")
@@ -28,6 +30,7 @@ func _ready():
 	tm_movement = get_node("../../TM-Movement")
 	my_movement_points = 100
 	my_remaining_movement_today = 100
+	mouse_controller = get_node("../../MouseCtrl")
 
 func _process(delta):
 	if !tween.is_active():
@@ -35,18 +38,23 @@ func _process(delta):
 			my_animation.playing = false
 			my_animation.frame = 0
 			my_coords = adventure_map.propsTileMap.world_to_map(self.position)
-	
+			if currentMoveCommandStep == 1:
+				current_prop_code = adventure_map.propsTileMap.get_cell(my_coords.x, my_coords.y)
+				if current_prop_code == -1 && adventure_map.getArmyPresent(my_coords):
+					current_prop_code = 0
+		
 		if executeMoveCommand:
 			var step = fastest_path[currentMoveCommandStep]
-#			if step.x == my_coords.x && step.y == my_coords.y:
-#				currentMoveCommandStep += 1
-#				step = fastest_path[currentMoveCommandStep]
 			if step.move_cost <= my_remaining_movement_today:
 				moveTo(adventure_map.propsTileMap.map_to_world(Vector2(step.x, step.y)), step.move_cost)
 				currentMoveCommandStep += 1
 				if fastest_path.size() == currentMoveCommandStep:
 					currentMoveCommandStep = 1
 					executeMoveCommand = false
+		
+		if current_prop_code > -1:
+			adventure_map.interactWithObject(my_coords, my_id)
+			current_prop_code = -1
 
 func moveTo(x_y, cost):
 	x_y.y += 37
