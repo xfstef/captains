@@ -14,10 +14,18 @@ var currentMoveCommandStep = 1
 var tm_movement
 var current_land_mass
 var my_id
+var my_player_id
 var my_movement_points
 var my_remaining_movement_today
 var mouse_controller
 var current_prop_code = -1
+var my_cache = {
+	"lumber": 0,
+	"ore": 0,
+	"steam": 0,
+	"gems": 0,
+	"gold": 0
+}
 
 func _ready():
 	my_animation = get_node("AnimatedSprite")
@@ -52,7 +60,7 @@ func _process(delta):
 					currentMoveCommandStep = 1
 					executeMoveCommand = false
 		
-		if current_prop_code > -1:
+		if current_prop_code > -1 && adventure_map.propsTileMap.getPropStilValid(my_coords.x, my_coords.y, my_id, my_player_id) == true:
 			adventure_map.interactWithObject(my_coords, my_id)
 			current_prop_code = -1
 
@@ -136,3 +144,9 @@ func calcDistanceOf2Nodes(node_a, node_b, cost):
 	var distance_y = abs(node_a.y - node_b.y)
 	
 	return cost * (distance_x + distance_y) + ((1.2 * cost) - (2 * cost)) * min(distance_x, distance_y)
+
+func modifyCache(resources_changes):
+	for change in resources_changes:
+		var new_amount = my_cache.get(change) + resources_changes.get(change)
+		my_cache[change] = new_amount
+	print(my_cache)

@@ -17,12 +17,19 @@ var moveTracker
 var mapCreator
 var armiesContainer
 var armyButton
+var event_ctrl
+var adventure_event
 # Instanced Objects
 var playersArmies = []
 var army_instances = []
 var movement_trackers = []
 var direction_indexes = {}
 var map_move_indexes = {}
+var map_interactables = {}
+var action_names = []
+var action_specs = []
+# Availables Scenes
+#
 # Other
 var mapGroundMatrix = []
 var mapPropsMatrix = []
@@ -49,9 +56,12 @@ func _ready():
 	mapCreator = get_node("UI")
 	armiesContainer = get_node("UI/ArmiesContainer")
 	armyButton = get_node("ArmyButton")
-	loadMapData()
 	direction_indexes = loadFilePayload(directionIndexesPath)
 	map_move_indexes = loadFilePayload(mapMoveIndesexPath)
+	map_interactables = loadFilePayload(interactablesPath)
+	adventure_event = get_node("UI/AdventureEvent")
+	event_ctrl = get_node("EventCtrl")
+	loadMapData()
 
 func prepCamera():
 	var half_width_pixels = (mapWidth / 2) * 144
@@ -132,6 +142,7 @@ func instantiate_player_armies(player_nr, player_armies):
 		army_instances[player_nr][h].position.y += 36
 		army_instances[player_nr][h].current_land_mass = landMassesMatrix[pos.x][pos.y]
 		army_instances[player_nr][h].my_id = h
+		army_instances[player_nr][h].my_player_id = player_nr
 		propsTileMap.add_child(army_instances[player_nr][h])
 		if player_armies[h].get("cameraStartPosition") && player_armies[h].cameraStartPosition == true:
 			camera.followNode(army_instances[player_nr][h].position)
@@ -245,4 +256,21 @@ func getArmyPresent(tile):
 	return false
 
 func interactWithObject(tile, army_id):
-	print("Interaction!")
+	var prop_code = propsTileMap.get_cell(tile.x, tile.y)
+	var interactable = map_interactables.get(String(prop_code))
+	adventure_event.setEventTitle(interactable.get("name"))
+	adventure_event.setEventDescription(interactable.get("description"))
+	var event_actions = interactable.get("choices")
+	action_names.clear()
+	action_specs.clear()
+	for x in range(event_actions.size()):
+		if x % 2 == 0:
+			action_names.append(event_actions[x])
+		else:
+			action_specs.append(event_actions[x])
+	adventure_event.buildEventActions(action_names)
+	adventure_event.visible = true
+	propsTileMap.markVisited(tile.x, tile.y, selected_army.army_id, selected_army.player_id)
+
+func eventActionPressed(id):
+	event_ctrl.parseEventAction(action_specs[id], action_names[id], army_instances[selected_army.player_id][selected_army.army_id], adventure_event)

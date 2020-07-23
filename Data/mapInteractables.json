@@ -1,17 +1,36 @@
 {
-    "01": [
-        "Well",
-        1,
-        {
+    "1": {
+        "name": "Refreshing Well",
+        "frequency": 1,
+        "choices": {
             "attack": 2,
             "defence": 2
         }
-    ],
-    "02": [
-        "Treasure",
-        0,
-        {
+    },
+    "6": {
+        "name": "Treasure Chest",
+        "frequency": 0,
+        "choices": {
             "gold": 500
         }
-    ]
+    },
+    "7": {
+        "name": "Abandoned Tower",
+        "frequency": 0,
+        "description": "You come across an old abandoned tower. Although rickety you might be able to salvage some materials from it. Exploring it might also yield promising results.",
+        "choices": [
+            "Salvage",
+            {
+                "ore": 5,
+                "lumber": 3
+            },
+            "Explore",
+            {
+                "10%": "minor Artifact",
+                "20%": "lost some troops",
+                "30%": "found 1000 gold",
+                "40%": "major Artifact"
+            }
+        ]
+    }
 }

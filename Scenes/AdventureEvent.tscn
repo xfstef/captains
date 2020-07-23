@@ -1,0 +1,80 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scenes/AdventureEvent.gd" type="Script" id=1]
+[ext_resource path="res://Scenes/eventActionButton.gd" type="Script" id=2]
+
+[node name="AdventureEvent" type="Control"]
+visible = false
+anchor_left = 0.25
+anchor_top = 0.2
+anchor_right = 0.75
+anchor_bottom = 0.6
+margin_right = -6.10352e-05
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 7.62939e-06
+margin_bottom = 3.05176e-05
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="eventTitle" type="Label" parent="Panel"]
+anchor_left = 0.275
+anchor_top = 0.1
+anchor_right = 0.725
+anchor_bottom = 0.25
+text = "Test"
+align = 1
+valign = 1
+uppercase = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="description" type="RichTextLabel" parent="Panel"]
+anchor_left = 0.098
+anchor_top = 0.312
+anchor_right = 0.902
+anchor_bottom = 0.479
+margin_left = -0.176003
+margin_top = 0.119995
+margin_right = 0.175964
+margin_bottom = 0.0399933
+text = "Test"
+scroll_active = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel"]
+anchor_left = 0.098
+anchor_top = 0.688
+anchor_right = 0.902
+anchor_bottom = 0.896
+margin_left = -0.175999
+margin_top = -0.119995
+margin_right = 0.175995
+margin_bottom = -0.0399933
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="eventActionButton" type="Button" parent="Panel/HBoxContainer"]
+visible = false
+margin_left = 166.0
+margin_top = 5.0
+margin_right = 246.0
+margin_bottom = 45.0
+text = "Test"
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="pressed" from="Panel/HBoxContainer/eventActionButton" to="Panel/HBoxContainer/eventActionButton" method="_on_eventActionButton_pressed"]
