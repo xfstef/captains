@@ -18,18 +18,27 @@ func setCells(data):
 			set_cell(x, y, data[x][y])
 			var prop_props = adventure_map.map_interactables.get(String(data[x][y]))
 			if prop_props != null:
-				interactable_props.append({"x": x, "y": y, "frequency": prop_props.get("frequency"), "stillValid": true, "visitedBy": []})
+				interactable_props.append({x = x, y = y, frequency = prop_props.get("frequency"), stillValid = true, visitedBy = []})
 
 func markVisited(x, y, army_id, player_id):
 	for prop in interactable_props:
 		if prop.x == x && prop.y == y:
-			# TODO: See why match isn't working here and find a solution
-			if prop.frequency == 0:
-				prop.stillValid = false
-				prop.visitedBy.append({"p_id": player_id, "a_id": army_id})
+			match prop.frequency:
+				0.0:
+					prop.stillValid = false
+					prop.visitedBy.append({p_id = player_id, a_id = army_id})
+				1.0:
+					prop.visitedBy.append({p_id = player_id, a_id = army_id})
 			return
 
 func getPropStilValid(x, y, army_id, player_id):
 	for prop in interactable_props:
 		if prop.x == x && prop.y == y:
-			return prop.stillValid
+			match prop.frequency:
+				0.0:
+					return prop.stillValid
+				1.0:
+					for army in prop.visitedBy:
+						if army.a_id == army_id && army.p_id == player_id:
+							return false
+					return true

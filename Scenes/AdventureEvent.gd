@@ -38,6 +38,7 @@ func eventButtonClicked(id):
 		adventure_map.eventActionPressed(id)
 	else:
 		visible = false
+		adventure_map.mouseCtrl.setMouseState(-1)
 
 func showResult(result):
 	event_description.text = result

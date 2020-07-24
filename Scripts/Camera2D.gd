@@ -8,6 +8,7 @@ var viewport_size
 var w_h_times_zoom
 var h_h_times_zoom
 var tween
+var mouse_ctrl
 
 func _ready():
 	viewport_size = get_viewport().size
@@ -16,8 +17,11 @@ func _ready():
 	w_h_times_zoom = width_half * self.zoom.x
 	h_h_times_zoom = height_half * self.zoom.y
 	tween = get_node("Tween")
+	mouse_ctrl = get_node("../MouseCtrl")
 
 func _process(delta):
+	if mouse_ctrl.pointerState == 5:
+		return
 	var move_vector = Vector2()
 	
 	if Input.is_action_pressed("map_left") && self.position.x - w_h_times_zoom > self.limit_left:

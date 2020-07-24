@@ -15,6 +15,8 @@ func setID(new_id):
 	my_sprite.frame = my_id
 
 func _on_ArmyButton_pressed():
+	if mouse_controller.pointerState == 5:
+		return
 	adventure_map.armySelected(my_id)
 
 func _on_ArmyButton_mouse_entered():

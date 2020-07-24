@@ -156,7 +156,7 @@ func instantiate_player_armies(player_nr, player_armies):
 #func _process(delta):
 
 func _input(event):
-	if camera.tween.is_active():
+	if camera.tween.is_active() || mouseCtrl.pointerState == 5:
 		return
 	
 	var p_a_s_x = army_instances[selected_army.player_id][selected_army.army_id].my_coords.x
@@ -218,18 +218,29 @@ func getNodeNeighbours(node, army_travel_type, land_mass):
 
 func drawPath(army_id):
 	var nodes = army_instances[selected_army.player_id][army_id].fastest_path
-	nodes.push_front({x = army_instances[selected_army.player_id][army_id].my_coords.x, y = army_instances[selected_army.player_id][army_id].my_coords.y, move_cost = 0})
 	for x in range(1, nodes.size()):
 		if movement_trackers.size() < x:
 			movement_trackers.append(moveTracker.duplicate())
 			propsTileMap.add_child(movement_trackers[x - 1])
 		movement_trackers[x - 1].position = propsTileMap.map_to_world(Vector2(nodes[x].x, nodes[x].y))
 		movement_trackers[x - 1].position.y += 36
+		movement_trackers[x - 1].tile_x = nodes[x].x
+		movement_trackers[x - 1].tile_y = nodes[x].y
 		if x + 1 < nodes.size():
 			movement_trackers[x - 1].frame = establishDirection(nodes[x - 1], nodes[x], nodes[x + 1])
 		else:
 			movement_trackers[x - 1].frame = 12
 		movement_trackers[x - 1].visible = true
+
+func clearMovementTrackers():
+	for tracker in movement_trackers:
+		tracker.visible = false
+
+func clearMovementTracker(searched_x, searcher_y):
+	for tracker in movement_trackers:
+		if tracker.tile_x == searched_x && tracker.tile_y == searcher_y:
+			tracker.visible = false
+			return
 
 func establishDirection(n_1, n_2, n_3):
 	var x_d_1 = String(n_1.x - n_2.x)
@@ -246,7 +257,11 @@ func establishMapMoveDirectionModifiers(key_stroke):
 	return null
 
 func armySelected(army_id):
-	selected_army.army_id = army_id
+	if selected_army.army_id != army_id:
+		selected_army.army_id = army_id
+		clearMovementTrackers()
+		if army_instances[selected_army.player_id][selected_army.army_id].fastest_path.size() > 0:
+			drawPath(army_id)
 	camera.followNode(army_instances[selected_army.player_id][selected_army.army_id].position)
 
 func getArmyPresent(tile):
@@ -270,6 +285,7 @@ func interactWithObject(tile, army_id):
 			action_specs.append(event_actions[x])
 	adventure_event.buildEventActions(action_names)
 	adventure_event.visible = true
+	mouseCtrl.setMouseState(5)
 	propsTileMap.markVisited(tile.x, tile.y, selected_army.army_id, selected_army.player_id)
 
 func eventActionPressed(id):

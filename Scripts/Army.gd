@@ -52,11 +52,13 @@ func _process(delta):
 					current_prop_code = 0
 		
 		if executeMoveCommand:
-			var step = fastest_path[currentMoveCommandStep]
+			var step = fastest_path[1]#currentMoveCommandStep]
 			if step.move_cost <= my_remaining_movement_today:
 				moveTo(adventure_map.propsTileMap.map_to_world(Vector2(step.x, step.y)), step.move_cost)
 				currentMoveCommandStep += 1
-				if fastest_path.size() == currentMoveCommandStep:
+				adventure_map.clearMovementTracker(step.x, step.y)
+				fastest_path.remove(1)
+				if fastest_path.size() == 1: #currentMoveCommandStep:
 					currentMoveCommandStep = 1
 					executeMoveCommand = false
 		
@@ -83,6 +85,7 @@ func calculateFastestPath(x, y):
 	selected_coords.y = y
 	fastest_path.clear()
 	aStarSearch(x, y)
+	fastest_path.push_front({x = my_coords.x, y = my_coords.y, move_cost = 0})
 	adventure_map.drawPath(my_id)
 
 func aStarSearch(x, y):
