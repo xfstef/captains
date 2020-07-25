@@ -52,7 +52,7 @@ func _ready():
 	mouseCtrl = get_node("MouseCtrl")
 	info = get_node("UI/info")
 	armyNode = get_node("Army")
-	moveTracker = get_node("MoveTracker")
+	moveTracker = get_node("MovementTracker")
 	mapCreator = get_node("UI")
 	armiesContainer = get_node("UI/ArmiesContainer")
 	armyButton = get_node("ArmyButton")
@@ -218,7 +218,10 @@ func getNodeNeighbours(node, army_travel_type, land_mass):
 
 func drawPath(army_id):
 	var nodes = army_instances[selected_army.player_id][army_id].fastest_path
+	var army_range = army_instances[selected_army.player_id][army_id].my_remaining_movement_today
+	var current_cost = 0
 	for x in range(nodes.size()):
+		current_cost += nodes[x].move_cost
 		if movement_trackers.size() < x + 1:
 			movement_trackers.append(moveTracker.duplicate())
 			propsTileMap.add_child(movement_trackers[x])
@@ -226,13 +229,17 @@ func drawPath(army_id):
 		movement_trackers[x].position.y += 36
 		movement_trackers[x].tile_x = nodes[x].x
 		movement_trackers[x].tile_y = nodes[x].y
+		if current_cost > army_range:
+			movement_trackers[x].setEnabled(false)
+		else:
+			movement_trackers[x].setEnabled(true)
 		if x + 1 < nodes.size():
 			if x != 0:
-				movement_trackers[x].frame = establishDirection(nodes[x - 1], nodes[x], nodes[x + 1], army_id)
+				movement_trackers[x].setTrackerIndex(establishDirection(nodes[x - 1], nodes[x], nodes[x + 1], army_id))
 			else:
-				movement_trackers[x].frame = establishDirection({x = army_instances[selected_army.player_id][army_id].my_coords.x, y = army_instances[selected_army.player_id][army_id].my_coords.y}, nodes[x], nodes[x + 1], army_id)
+				movement_trackers[x].setTrackerIndex(establishDirection({x = army_instances[selected_army.player_id][army_id].my_coords.x, y = army_instances[selected_army.player_id][army_id].my_coords.y}, nodes[x], nodes[x + 1], army_id))
 		else:
-			movement_trackers[x].frame = 12
+			movement_trackers[x].setTrackerIndex(40)
 		movement_trackers[x].visible = true
 
 func clearMovementTrackers():

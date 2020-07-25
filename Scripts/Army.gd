@@ -52,13 +52,13 @@ func _process(delta):
 					current_prop_code = 0
 		
 		if executeMoveCommand:
-			var step = fastest_path[0]#currentMoveCommandStep]
+			var step = fastest_path[0]
 			if step.move_cost <= my_remaining_movement_today:
 				moveTo(adventure_map.propsTileMap.map_to_world(Vector2(step.x, step.y)), step.move_cost)
 				currentMoveCommandStep += 1
 				adventure_map.clearMovementTracker(step.x, step.y)
 				fastest_path.remove(0)
-				if fastest_path.size() == 0: #currentMoveCommandStep:
+				if fastest_path.size() == 0:
 					currentMoveCommandStep = 1
 					executeMoveCommand = false
 		
@@ -73,7 +73,7 @@ func _input(event):
 func moveTo(x_y, cost):
 	x_y.y += 37
 	move_coords = x_y
-	#my_remaining_movement_today -= cost
+	my_remaining_movement_today -= cost
 	tween.interpolate_property(self, 'position', self.position, move_coords, 1, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 	tween.start()
 	my_animation.playing = true
@@ -155,4 +155,3 @@ func modifyCache(resources_changes):
 	for change in resources_changes:
 		var new_amount = my_cache.get(change) + resources_changes.get(change)
 		my_cache[change] = new_amount
-	print(my_cache)
