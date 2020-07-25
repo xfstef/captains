@@ -172,7 +172,7 @@ func _input(event):
 		if isTileAccessible(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y, army_travel_type, army_land_mass):
 			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y)), movementTileMap.tile_move_expense[p_a_s_x + d_modifier.x][p_a_s_y + d_modifier.y])
 	
-	if event is InputEventMouseButton && event.is_pressed() == false && (mouseCtrl.pointerState == 0 || mouseCtrl.pointerState == 2):
+	if event is InputEventMouseButton && event.is_pressed() == false && event.button_index == 1 && (mouseCtrl.pointerState == 0 || mouseCtrl.pointerState == 2):
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
 		if (tile.x != p_a_s_x || tile.y != p_a_s_y) && isTileAccessible(tile.x, tile.y, army_travel_type, army_land_mass):
 			if army_instances[selected_army.player_id][selected_army.army_id].selected_coords == tile:
@@ -218,19 +218,22 @@ func getNodeNeighbours(node, army_travel_type, land_mass):
 
 func drawPath(army_id):
 	var nodes = army_instances[selected_army.player_id][army_id].fastest_path
-	for x in range(1, nodes.size()):
-		if movement_trackers.size() < x:
+	for x in range(nodes.size()):
+		if movement_trackers.size() < x + 1:
 			movement_trackers.append(moveTracker.duplicate())
-			propsTileMap.add_child(movement_trackers[x - 1])
-		movement_trackers[x - 1].position = propsTileMap.map_to_world(Vector2(nodes[x].x, nodes[x].y))
-		movement_trackers[x - 1].position.y += 36
-		movement_trackers[x - 1].tile_x = nodes[x].x
-		movement_trackers[x - 1].tile_y = nodes[x].y
+			propsTileMap.add_child(movement_trackers[x])
+		movement_trackers[x].position = propsTileMap.map_to_world(Vector2(nodes[x].x, nodes[x].y))
+		movement_trackers[x].position.y += 36
+		movement_trackers[x].tile_x = nodes[x].x
+		movement_trackers[x].tile_y = nodes[x].y
 		if x + 1 < nodes.size():
-			movement_trackers[x - 1].frame = establishDirection(nodes[x - 1], nodes[x], nodes[x + 1])
+			if x != 0:
+				movement_trackers[x].frame = establishDirection(nodes[x - 1], nodes[x], nodes[x + 1], army_id)
+			else:
+				movement_trackers[x].frame = establishDirection({x = army_instances[selected_army.player_id][army_id].my_coords.x, y = army_instances[selected_army.player_id][army_id].my_coords.y}, nodes[x], nodes[x + 1], army_id)
 		else:
-			movement_trackers[x - 1].frame = 12
-		movement_trackers[x - 1].visible = true
+			movement_trackers[x].frame = 12
+		movement_trackers[x].visible = true
 
 func clearMovementTrackers():
 	for tracker in movement_trackers:
@@ -242,7 +245,8 @@ func clearMovementTracker(searched_x, searcher_y):
 			tracker.visible = false
 			return
 
-func establishDirection(n_1, n_2, n_3):
+func establishDirection(n_1, n_2, n_3, army_id):
+	
 	var x_d_1 = String(n_1.x - n_2.x)
 	var y_d_1 = String(n_1.y - n_2.y)
 	var x_d_2 = String(n_3.x - n_2.x)

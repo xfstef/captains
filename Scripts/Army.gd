@@ -52,19 +52,23 @@ func _process(delta):
 					current_prop_code = 0
 		
 		if executeMoveCommand:
-			var step = fastest_path[1]#currentMoveCommandStep]
+			var step = fastest_path[0]#currentMoveCommandStep]
 			if step.move_cost <= my_remaining_movement_today:
 				moveTo(adventure_map.propsTileMap.map_to_world(Vector2(step.x, step.y)), step.move_cost)
 				currentMoveCommandStep += 1
 				adventure_map.clearMovementTracker(step.x, step.y)
-				fastest_path.remove(1)
-				if fastest_path.size() == 1: #currentMoveCommandStep:
+				fastest_path.remove(0)
+				if fastest_path.size() == 0: #currentMoveCommandStep:
 					currentMoveCommandStep = 1
 					executeMoveCommand = false
 		
 		if current_prop_code > -1 && adventure_map.propsTileMap.getPropStilValid(my_coords.x, my_coords.y, my_id, my_player_id) == true:
 			adventure_map.interactWithObject(my_coords, my_id)
 			current_prop_code = -1
+
+func _input(event):
+	if event is InputEventMouseButton && event.is_pressed() == true && event.button_index == 1 || event is InputEventKey:
+		executeMoveCommand = false
 
 func moveTo(x_y, cost):
 	x_y.y += 37
@@ -85,7 +89,6 @@ func calculateFastestPath(x, y):
 	selected_coords.y = y
 	fastest_path.clear()
 	aStarSearch(x, y)
-	fastest_path.push_front({x = my_coords.x, y = my_coords.y, move_cost = 0})
 	adventure_map.drawPath(my_id)
 
 func aStarSearch(x, y):
