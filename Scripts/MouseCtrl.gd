@@ -27,13 +27,14 @@ var mapHeight
 var pointerState = 0
 var map_move_pointers = []
 var pointers = []
+var move_vector = Vector2(0, 0)
 
 func _ready():
 	adventure_map = get_node("/root/AdventureMap")
 	groundTileMap = get_node("../TM-Ground")
 	movementTileMap = get_node("../TM-Movement")
 	camera = get_node("../Camera2D")
-	info = get_node("../UI/info")
+	info = get_node("../UI/InfoPanel/info")
 	m_m_s_i_ = adventure_map.loadFilePayload(m_m_s_i)
 	map_move_pointers.append(m_p_scroll_up)
 	map_move_pointers.append(m_p_scroll_down)
@@ -52,12 +53,13 @@ func _process(delta):
 	var mouse_pos_global = get_global_mouse_position()
 	var mouse_pos_local = get_viewport().get_mouse_position()
 	var tile = groundTileMap.world_to_map(mouse_pos_global)
-	info.set_text("tile: %s, pos: %s" % [tile, mouse_pos_global])
+	#var move_expense = movementTileMap.tile_move_expense[tile.x][tile.y]
+	info.set_text("Coordinates: %s \nMove Cost: %s" % [tile, 0])
 	
 	if pointerState == 5:
 		return
-	
-	var move_tile = movementTileMap.get_cell(tile.x, tile.y)
+		
+	var move_tile = movementTileMap.get_cell(tile.x, tile.y)	
 	var army_present = adventure_map.getArmyPresent(tile)
 	var selected_land_mass
 	
@@ -69,7 +71,7 @@ func _process(delta):
 	var c_s_a = adventure_map.army_instances[adventure_map.selected_army.player_id][adventure_map.selected_army.army_id]
 	
 	if mouse_pos_local.x < 30 || mouse_pos_local.x > camera.viewport_size.x - 30 || mouse_pos_local.y < 30 || mouse_pos_local.y > camera.viewport_size.y - 30:
-		var move_vector = Vector2()
+		move_vector = Vector2()
 		if mouse_pos_local.x < 30 && camera.position.x - camera.w_h_times_zoom > camera.limit_left:
 			move_vector.x = -1
 		elif mouse_pos_local.x > camera.viewport_size.x - 30 && camera.position.x + camera.w_h_times_zoom < camera.limit_right:
@@ -85,7 +87,7 @@ func _process(delta):
 			pointerState = -1
 
 		camera.scrollCamera(move_vector, delta)
-	
+
 	elif pointerState < 3:
 		if move_tile == 0 && selected_land_mass == c_s_a.current_land_mass:
 			if army_present == true:

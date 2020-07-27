@@ -5,6 +5,8 @@ var mapPath = "res://Maps/test4.json"
 var interactablesPath = "res://Data/mapInteractables.json"
 var directionIndexesPath = "res://Data/directionIndexes.json"
 var mapMoveIndesexPath = "res://Data/mapMoveIndexes.json"
+var unitsPath = "res://Data/units.json"
+var captainsPath = "res://Data/captains.json"
 # World Object References
 var camera
 var armyNode
@@ -17,10 +19,12 @@ var moveTracker
 var mapCreator
 var armiesContainer
 var armyButton
+var townsContainer
+var townButton
 var event_ctrl
 var adventure_event
+var unitsContainer
 # Instanced Objects
-var playersArmies = []
 var army_instances = []
 var movement_trackers = []
 var direction_indexes = {}
@@ -28,6 +32,8 @@ var map_move_indexes = {}
 var map_interactables = {}
 var action_names = []
 var action_specs = []
+var units_DB
+var captains_DB
 # Availables Scenes
 #
 # Other
@@ -54,13 +60,18 @@ func _ready():
 	armyNode = get_node("Army")
 	moveTracker = get_node("MovementTracker")
 	mapCreator = get_node("UI")
-	armiesContainer = get_node("UI/ArmiesContainer")
-	armyButton = get_node("ArmyButton")
+	armiesContainer = get_node("UI/ArmiesContainer/ArmiesList")
+	armyButton = get_node("UI/ArmiesContainer/ArmiesList/ArmyButton")
+	townsContainer = get_node("UI/TownsContainer/TownsList")
+	townButton = get_node("UI/TownsContainer/TownsList/TownButton")
 	direction_indexes = loadFilePayload(directionIndexesPath)
 	map_move_indexes = loadFilePayload(mapMoveIndesexPath)
 	map_interactables = loadFilePayload(interactablesPath)
+	units_DB = loadFilePayload(unitsPath)
+	captains_DB = loadFilePayload(captainsPath)
 	adventure_event = get_node("UI/AdventureEvent")
 	event_ctrl = get_node("EventCtrl")
+	unitsContainer = get_node("UI/UnitsContainer")
 	loadMapData()
 
 func prepCamera():
@@ -118,23 +129,21 @@ func loadMapData():
 			landMassesMatrix[x].append([])
 			landMassesMatrix[x][y] = payload.tiles[x][y][3]
 	
-	
 	groundTileMap.setCells(mapGroundMatrix)
 	propsTileMap.setCells(mapPropsMatrix)
 	movementTileMap.setCells(mapMovementMatrix)
 	
+	
 	for z in range(payload.playerStartRules.size()):
 		if payload.playerStartRules[z].get("armies"):
 			instantiate_player_armies(z, payload.playerStartRules[z].armies)
+		if payload.playerStartRules[z].get("castles"):
+			instantiate_player_towns(z, payload.playerStartRules[z].castles)
 
 func instantiate_player_armies(player_nr, player_armies):
-	playersArmies.append([])
-	playersArmies[player_nr] = []
 	army_instances.append([])
 	army_instances[player_nr] = []
 	for h in range(player_armies.size()):
-		playersArmies[player_nr].append([])
-		playersArmies[player_nr][h] = player_armies[h]
 		army_instances[player_nr].append(armyNode.duplicate())
 		var pos = Vector2(player_armies[h].x, player_armies[h].y)
 		army_instances[player_nr][h].my_coords = pos
@@ -142,15 +151,24 @@ func instantiate_player_armies(player_nr, player_armies):
 		army_instances[player_nr][h].position.y += 36
 		army_instances[player_nr][h].current_land_mass = landMassesMatrix[pos.x][pos.y]
 		army_instances[player_nr][h].my_id = h
+		army_instances[player_nr][h].my_frame_id = player_armies[h].heroId
 		army_instances[player_nr][h].my_player_id = player_nr
 		propsTileMap.add_child(army_instances[player_nr][h])
 		if player_armies[h].get("cameraStartPosition") && player_armies[h].cameraStartPosition == true:
 			camera.followNode(army_instances[player_nr][h].position)
 		if player_armies[h].get("selected") && player_armies[h].selected == true:
 			selected_army = {player_id = player_nr, army_id = h}
-		var new_portrait_button = armyButton.duplicate()
-		new_portrait_button.setID(army_instances[player_nr][h].my_id)
-		armiesContainer.add_child(new_portrait_button)
+		if armiesContainer.get_child_count() < h + 1:
+			armiesContainer.add_child(armyButton.duplicate())
+		armiesContainer.get_child(h).my_id = h
+		armiesContainer.get_child(h).setFrameID(player_armies[h].heroId)
+
+func instantiate_player_towns(player_nr, player_towns):
+	for h in range(player_towns.size()):
+		if townsContainer.get_child_count() < h + 1:
+			townsContainer.add_child(townButton.duplicate())
+		townsContainer.get_child(h).setID(player_towns[h].townId)
+		townsContainer.get_child(h).visible = true
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
@@ -253,7 +271,6 @@ func clearMovementTracker(searched_x, searcher_y):
 			return
 
 func establishDirection(n_1, n_2, n_3, army_id):
-	
 	var x_d_1 = String(n_1.x - n_2.x)
 	var y_d_1 = String(n_1.y - n_2.y)
 	var x_d_2 = String(n_3.x - n_2.x)
@@ -301,3 +318,6 @@ func interactWithObject(tile, army_id):
 
 func eventActionPressed(id):
 	event_ctrl.parseEventAction(action_specs[id], action_names[id], army_instances[selected_army.player_id][selected_army.army_id], adventure_event)
+
+func endTurn(next_turn):
+	print("Next turn ", next_turn)

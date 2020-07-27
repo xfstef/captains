@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=30 format=2]
 
 [ext_resource path="res://Assets/Sprites/moveTrackersEnabled.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Sprites/army.png" type="Texture" id=2]
@@ -18,8 +18,13 @@
 [ext_resource path="res://Scripts/AdventureMap.gd" type="Script" id=16]
 [ext_resource path="res://Scenes/AdventureEvent.tscn" type="PackedScene" id=17]
 [ext_resource path="res://Scripts/EventCtrl.gd" type="Script" id=18]
+[ext_resource path="res://Scripts/TurnPanel.gd" type="Script" id=19]
 [ext_resource path="res://Assets/Sprites/moveTrackersDisabled.png" type="Texture" id=20]
 [ext_resource path="res://Scripts/MovementTracker.gd" type="Script" id=21]
+[ext_resource path="res://Scripts/Container.gd" type="Script" id=22]
+[ext_resource path="res://Assets/Sprites/townsSheet.png" type="Texture" id=23]
+[ext_resource path="res://Scripts/TownButton.gd" type="Script" id=24]
+[ext_resource path="res://Assets/Sprites/unitsSheet.png" type="Texture" id=25]
 
 [sub_resource type="AtlasTexture" id=1]
 flags = 4
@@ -91,69 +96,214 @@ script = ExtResource( 9 )
 
 [node name="saveMapName" type="LineEdit" parent="UI"]
 visible = false
-margin_left = 11.9705
-margin_top = 545.391
-margin_right = 263.971
-margin_bottom = 587.391
+anchor_left = 0.307
+anchor_top = 0.76
+anchor_right = 0.465
+anchor_bottom = 0.807
+margin_left = 0.114532
+margin_top = 0.0166626
+margin_right = -0.684998
+margin_bottom = -0.283325
 max_length = 20
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="info" type="Label" parent="UI"]
-margin_left = 18.0778
-margin_top = 16.6811
-margin_right = 198.078
-margin_bottom = 68.6812
+[node name="InfoPanel" type="Panel" parent="UI"]
+anchor_left = 0.017
+anchor_top = 0.89
+anchor_right = 0.138
+anchor_bottom = 0.982
+margin_left = 0.799999
+margin_top = -6.10352e-05
+margin_right = 0.199982
+margin_bottom = 0.199951
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="info" type="Label" parent="UI/InfoPanel"]
+anchor_left = 0.093
+anchor_top = 0.193
+anchor_right = 0.907
+anchor_bottom = 0.855
+margin_left = 0.0509987
+margin_top = -0.019001
+margin_right = -0.0510101
+margin_bottom = 0.034996
 text = "Test
 "
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="saveMapButton" type="Button" parent="UI"]
-visible = false
-margin_left = 272.349
-margin_top = 548.837
-margin_right = 348.349
-margin_bottom = 581.837
-text = "Save Map"
+[node name="TurnPanel" type="Panel" parent="UI"]
+anchor_left = 0.862
+anchor_top = 0.89
+anchor_right = 0.983
+anchor_bottom = 0.982
+margin_left = -0.199951
+margin_right = -0.799927
+margin_bottom = 0.200012
+script = ExtResource( 19 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ArmiesContainer" type="VBoxContainer" parent="UI"]
-margin_left = 16.0
-margin_top = 47.0
-margin_right = 196.0
-margin_bottom = 147.0
-size_flags_vertical = 3
+[node name="TurnButton" type="Button" parent="UI/TurnPanel"]
+anchor_left = 0.165
+anchor_top = 0.404
+anchor_right = 0.843
+anchor_bottom = 0.874
+margin_left = -0.0887756
+margin_top = -0.0110054
+margin_right = 0.0572205
+margin_bottom = -0.0210037
+mouse_filter = 1
+text = "End Turn"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TurnLabel" type="Label" parent="UI/TurnPanel"]
+anchor_left = 0.171
+anchor_top = 0.072
+anchor_right = 0.829
+anchor_bottom = 0.325
+margin_left = -0.00300217
+margin_top = 0.0239997
+margin_right = 0.00299072
+margin_bottom = 0.0249977
+text = "Test"
+valign = 1
+
+[node name="saveMapButton" type="Button" parent="UI"]
+visible = false
+anchor_left = 0.478
+anchor_top = 0.766
+anchor_right = 0.526
+anchor_bottom = 0.802
+margin_left = 0.254517
+margin_top = -0.267273
+margin_right = -0.545471
+margin_bottom = 0.332703
+text = "Save Map"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="AdventureEvent" parent="UI" instance=ExtResource( 17 )]
 
-[node name="MouseCtrl" type="Node2D" parent="."]
-visible = false
-script = ExtResource( 10 )
+[node name="UnitsContainer" type="HBoxContainer" parent="UI"]
+anchor_left = 0.187
+anchor_top = 0.878
+anchor_right = 0.812
+anchor_bottom = 0.978
+margin_left = 0.799988
+margin_top = -0.199951
+margin_right = 0.800049
+margin_bottom = -0.199951
+custom_constants/separation = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="ArmyButton" type="Button" parent="."]
-margin_left = -169.648
-margin_top = -566.423
-margin_right = 22.3524
-margin_bottom = -460.423
+[node name="unitButton" type="Button" parent="UI/UnitsContainer"]
+margin_right = 165.0
+margin_bottom = 90.0
+rect_min_size = Vector2( 165, 88 )
+mouse_filter = 1
+
+[node name="Sprite" type="Sprite" parent="UI/UnitsContainer/unitButton"]
+texture = ExtResource( 25 )
+centered = false
+offset = Vector2( 0, 1 )
+hframes = 2
+frame = 1
+
+[node name="ArmiesContainer" type="ScrollContainer" parent="UI"]
+anchor_left = 0.019
+anchor_top = 0.044
+anchor_right = 0.141
+anchor_bottom = 0.524
+margin_left = -0.4
+margin_top = 0.399998
+margin_right = 0.400009
+margin_bottom = 0.399933
+scroll_horizontal_enabled = false
+script = ExtResource( 22 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ArmiesList" type="VBoxContainer" parent="UI/ArmiesContainer"]
+margin_right = 192.0
+margin_bottom = 106.0
+rect_min_size = Vector2( 192, 106 )
+custom_constants/separation = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ArmyButton" type="Button" parent="UI/ArmiesContainer/ArmiesList"]
+margin_right = 192.0
+margin_bottom = 106.0
+mouse_filter = 1
 icon = ExtResource( 3 )
 script = ExtResource( 15 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="portrait" type="Sprite" parent="ArmyButton"]
+[node name="portrait" type="Sprite" parent="UI/ArmiesContainer/ArmiesList/ArmyButton"]
 texture = ExtResource( 4 )
 centered = false
 offset = Vector2( 6, 3 )
 hframes = 2
+
+[node name="TownsContainer" type="ScrollContainer" parent="UI"]
+anchor_left = 0.859
+anchor_top = 0.044
+anchor_right = 0.981
+anchor_bottom = 0.524
+margin_left = -0.400024
+margin_top = 0.399998
+margin_right = 0.399902
+margin_bottom = 0.399994
+scroll_horizontal_enabled = false
+script = ExtResource( 22 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TownsList" type="VBoxContainer" parent="UI/TownsContainer"]
+margin_bottom = 432.0
+size_flags_vertical = 3
+custom_constants/separation = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TownButton" type="Button" parent="UI/TownsContainer/TownsList"]
+visible = false
+margin_right = 192.0
+margin_bottom = 106.0
+mouse_filter = 1
+icon = ExtResource( 3 )
+script = ExtResource( 24 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="portrait" type="Sprite" parent="UI/TownsContainer/TownsList/TownButton"]
+texture = ExtResource( 23 )
+centered = false
+offset = Vector2( 6, 3 )
+hframes = 2
+
+[node name="MouseCtrl" type="Node2D" parent="."]
+visible = false
+script = ExtResource( 10 )
 
 [node name="Army" type="Node2D" parent="."]
 position = Vector2( -500, -500 )
@@ -186,9 +336,14 @@ hframes = 10
 script = ExtResource( 18 )
 [connection signal="mouse_entered" from="UI/saveMapName" to="MouseCtrl" method="setMouseState" binds= [ 4 ]]
 [connection signal="mouse_exited" from="UI/saveMapName" to="MouseCtrl" method="setMouseState" binds= [ 0 ]]
+[connection signal="mouse_entered" from="UI/TurnPanel" to="UI/TurnPanel" method="_on_TurnPanel_mouse_entered"]
+[connection signal="mouse_exited" from="UI/TurnPanel" to="UI/TurnPanel" method="_on_TurnPanel_mouse_exited"]
+[connection signal="pressed" from="UI/TurnPanel/TurnButton" to="UI/TurnPanel" method="_on_TurnButton_pressed"]
 [connection signal="mouse_entered" from="UI/saveMapButton" to="MouseCtrl" method="setMouseState" binds= [ 4 ]]
 [connection signal="mouse_exited" from="UI/saveMapButton" to="MouseCtrl" method="setMouseState" binds= [ 0 ]]
 [connection signal="pressed" from="UI/saveMapButton" to="UI" method="_on_saveMapButton_pressed"]
-[connection signal="mouse_entered" from="ArmyButton" to="ArmyButton" method="_on_ArmyButton_mouse_entered"]
-[connection signal="mouse_exited" from="ArmyButton" to="ArmyButton" method="_on_ArmyButton_mouse_exited"]
-[connection signal="pressed" from="ArmyButton" to="ArmyButton" method="_on_ArmyButton_pressed"]
+[connection signal="mouse_entered" from="UI/ArmiesContainer" to="MouseCtrl" method="setMouseState" binds= [ 4 ]]
+[connection signal="mouse_exited" from="UI/ArmiesContainer" to="MouseCtrl" method="setMouseState" binds= [ 0 ]]
+[connection signal="pressed" from="UI/ArmiesContainer/ArmiesList/ArmyButton" to="UI/ArmiesContainer/ArmiesList/ArmyButton" method="_on_ArmyButton_pressed"]
+[connection signal="mouse_entered" from="UI/TownsContainer" to="MouseCtrl" method="setMouseState" binds= [ 4 ]]
+[connection signal="mouse_exited" from="UI/TownsContainer" to="MouseCtrl" method="setMouseState" binds= [ 0 ]]

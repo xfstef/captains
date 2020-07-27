@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Babylonian",
+        "portrait_id": 0,
+        "faction": 0,
+        "hitpoints": 10
+    },
+    {
+        "name": "Peasant",
+        "portrait_id": 1,
+        "faction": 1,
+        "hitpoints": 2
+    }
+]
