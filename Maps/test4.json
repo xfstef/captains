@@ -3,10 +3,25 @@
         {
             "armies":
                 [
-                    {"cameraStartPosition":true,"heroId":0,"selected":true,"x":6,"y":7, "units":[
-                        {"unitId": 0, "amount": 1, "captainId": -1},
-                        {"unitId": 1, "amount": 5, "captainId": 0}
-                    ]},
+                    {
+                        "cameraStartPosition":true,
+                        "heroId":0,"selected":true,
+                        "x":6,
+                        "y":7, 
+                        "units":[
+                            {"unitId": 0, "amount": 1, "captainId": -1},
+                            {"unitId": 1, "amount": 5, "captainId": 0}
+                        ],
+                        "cache": { 
+                            "lumber": 5, 
+                            "stone": 5, 
+                            "steam": 2, 
+                            "iron": 2, 
+                            "gems": 1, 
+                            "shards": 3, 
+                            "gold": 2000
+                        }
+                    },
                     {"cameraStartPosition":false,"heroId":1,"selected":false,"x":1,"y":2},
                     {"cameraStartPosition":false,"heroId":1,"selected":false,"x":10,"y":4},
                     {"cameraStartPosition":false,"heroId":0,"selected":false,"x":15,"y":12},

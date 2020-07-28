@@ -20,13 +20,17 @@ var my_movement_points
 var my_remaining_movement_today
 var mouse_controller
 var current_prop_code = -1
+var currently_selected = false
 var my_cache = {
 	"lumber": 0,
-	"ore": 0,
+	"stone": 0,
 	"steam": 0,
+	"iron": 0,
 	"gems": 0,
+	"shards": 0,
 	"gold": 0
 }
+var top_panel
 
 func _ready():
 	my_animation = get_node("AnimatedSprite")
@@ -36,6 +40,7 @@ func _ready():
 	# TODO: Add a means of loading what type of travel this army does: Land march, Sailing, Flying, Tunneling.
 	travel_type = 0
 	adventure_map = get_node("/root/AdventureMap")
+	top_panel = adventure_map.topPanel
 	tm_movement = get_node("../../TM-Movement")
 	my_movement_points = 100
 	my_remaining_movement_today = 100
@@ -153,6 +158,9 @@ func calcDistanceOf2Nodes(node_a, node_b, cost):
 	return cost * (distance_x + distance_y) + ((1.2 * cost) - (2 * cost)) * min(distance_x, distance_y)
 
 func modifyCache(resources_changes):
+	print(currently_selected)
 	for change in resources_changes:
 		var new_amount = my_cache.get(change) + resources_changes.get(change)
 		my_cache[change] = new_amount
+	if currently_selected == true:
+		top_panel.updateCache(my_cache)

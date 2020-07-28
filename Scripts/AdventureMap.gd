@@ -21,9 +21,10 @@ var armiesContainer
 var armyButton
 var townsContainer
 var townButton
-var event_ctrl
+var eventCtrl
 var adventure_event
 var unitsContainer
+var topPanel
 # Instanced Objects
 var army_instances = []
 var movement_trackers = []
@@ -70,8 +71,9 @@ func _ready():
 	units_DB = loadFilePayload(unitsPath)
 	captains_DB = loadFilePayload(captainsPath)
 	adventure_event = get_node("UI/AdventureEvent")
-	event_ctrl = get_node("EventCtrl")
+	eventCtrl = get_node("EventCtrl")
 	unitsContainer = get_node("UI/UnitsContainer")
+	topPanel = get_node("UI/topPanel")
 	loadMapData()
 
 func prepCamera():
@@ -156,8 +158,12 @@ func instantiate_player_armies(player_nr, player_armies):
 		propsTileMap.add_child(army_instances[player_nr][h])
 		if player_armies[h].get("cameraStartPosition") && player_armies[h].cameraStartPosition == true:
 			camera.followNode(army_instances[player_nr][h].position)
+		var army_cache = player_armies[h].get("cache")
 		if player_armies[h].get("selected") && player_armies[h].selected == true:
 			selected_army = {player_id = player_nr, army_id = h}
+			army_instances[player_nr][h].currently_selected = true
+		if army_cache != null:
+			army_instances[player_nr][h].modifyCache(army_cache)
 		if armiesContainer.get_child_count() < h + 1:
 			armiesContainer.add_child(armyButton.duplicate())
 		armiesContainer.get_child(h).my_id = h
@@ -286,7 +292,10 @@ func establishMapMoveDirectionModifiers(key_stroke):
 
 func armySelected(army_id):
 	if selected_army.army_id != army_id:
+		army_instances[selected_army.player_id][selected_army.army_id].currently_selected = false
 		selected_army.army_id = army_id
+		army_instances[selected_army.player_id][selected_army.army_id].currently_selected = true
+		topPanel.updateCache(army_instances[selected_army.player_id][selected_army.army_id].my_cache)
 		clearMovementTrackers()
 		if army_instances[selected_army.player_id][selected_army.army_id].fastest_path.size() > 0:
 			drawPath(army_id)
@@ -317,7 +326,7 @@ func interactWithObject(tile, army_id):
 	propsTileMap.markVisited(tile.x, tile.y, selected_army.army_id, selected_army.player_id)
 
 func eventActionPressed(id):
-	event_ctrl.parseEventAction(action_specs[id], action_names[id], army_instances[selected_army.player_id][selected_army.army_id], adventure_event)
+	eventCtrl.parseEventAction(action_specs[id], action_names[id], army_instances[selected_army.player_id][selected_army.army_id], adventure_event)
 
 func endTurn(next_turn):
 	print("Next turn ", next_turn)

@@ -9,16 +9,19 @@ func _ready():
 	rng = RandomNumberGenerator.new()
 
 func parseEventAction(specs, name, army, eventPanel):
+	var resources_changes = {}
+	var result
 	match name:
 		"Salvage":
 			rng.randomize()
-			var resources_changes = {}
-			var result = "You've found"
+			result = "You've found"
 			for item in specs:
 				var random_modifier = rng.randi_range(-2, 1)
 				resources_changes[item] = specs.get(item) + random_modifier
 				result = result + " " + String(resources_changes[item]) + " " + String(item) 
-			army.modifyCache(resources_changes)
 			eventPanel.showResult(result)
 		"Explore":
 			print(specs)
+	
+	if resources_changes.size() > 0:
+		army.modifyCache(resources_changes)

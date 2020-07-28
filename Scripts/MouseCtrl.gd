@@ -70,15 +70,15 @@ func _process(delta):
 	
 	var c_s_a = adventure_map.army_instances[adventure_map.selected_army.player_id][adventure_map.selected_army.army_id]
 	
-	if mouse_pos_local.x < 30 || mouse_pos_local.x > camera.viewport_size.x - 30 || mouse_pos_local.y < 30 || mouse_pos_local.y > camera.viewport_size.y - 30:
+	if mouse_pos_local.x < 10 || mouse_pos_local.x > camera.viewport_size.x - 10 || mouse_pos_local.y < 10 || mouse_pos_local.y > camera.viewport_size.y - 10:
 		move_vector = Vector2()
-		if mouse_pos_local.x < 30 && camera.position.x - camera.w_h_times_zoom > camera.limit_left:
+		if mouse_pos_local.x < 10 && camera.position.x - camera.w_h_times_zoom > camera.limit_left:
 			move_vector.x = -1
-		elif mouse_pos_local.x > camera.viewport_size.x - 30 && camera.position.x + camera.w_h_times_zoom < camera.limit_right:
+		elif mouse_pos_local.x > camera.viewport_size.x - 10 && camera.position.x + camera.w_h_times_zoom < camera.limit_right:
 			move_vector.x = 1
-		if mouse_pos_local.y < 30 && camera.position.y - camera.h_h_times_zoom > camera.limit_top:
+		if mouse_pos_local.y < 10 && camera.position.y - camera.h_h_times_zoom > camera.limit_top:
 			move_vector.y = -1
-		elif mouse_pos_local.y > camera.viewport_size.y - 30 && camera.position.y + camera.h_h_times_zoom < camera.limit_bottom:
+		elif mouse_pos_local.y > camera.viewport_size.y - 10 && camera.position.y + camera.h_h_times_zoom < camera.limit_bottom:
 			move_vector.y = 1
 		
 		var mouse_cursor_index = m_m_s_i_.get(String(move_vector.x)).get(String(move_vector.y))

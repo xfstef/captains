@@ -21,7 +21,7 @@
         "choices": [
             "Salvage",
             {
-                "ore": 5,
+                "stone": 5,
                 "lumber": 3
             },
             "Explore",
