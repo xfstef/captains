@@ -63,6 +63,7 @@ func _physics_process(delta):
 				moveTo(adventure_map.propsTileMap.map_to_world(Vector2(step.x, step.y)), step.move_cost)
 				currentMoveCommandStep += 1
 				adventure_map.clearMovementTracker(step.x, step.y)
+				top_panel.updateMovementLeft(my_remaining_movement_today)
 				fastest_path.remove(0)
 				if fastest_path.size() == 0:
 					currentMoveCommandStep = 1
@@ -158,7 +159,6 @@ func calcDistanceOf2Nodes(node_a, node_b, cost):
 	return cost * (distance_x + distance_y) + ((1.2 * cost) - (2 * cost)) * min(distance_x, distance_y)
 
 func modifyCache(resources_changes):
-	print(currently_selected)
 	for change in resources_changes:
 		var new_amount = my_cache.get(change) + resources_changes.get(change)
 		my_cache[change] = new_amount

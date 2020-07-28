@@ -7,6 +7,7 @@ var directionIndexesPath = "res://Data/directionIndexes.json"
 var mapMoveIndesexPath = "res://Data/mapMoveIndexes.json"
 var unitsPath = "res://Data/units.json"
 var captainsPath = "res://Data/captains.json"
+var dayEventsPath = "res://Data/dayEvents.json"
 # World Object References
 var camera
 var armyNode
@@ -22,9 +23,9 @@ var armyButton
 var townsContainer
 var townButton
 var eventCtrl
-var adventure_event
 var unitsContainer
 var topPanel
+var turnPanel
 # Instanced Objects
 var army_instances = []
 var movement_trackers = []
@@ -35,8 +36,11 @@ var action_names = []
 var action_specs = []
 var units_DB
 var captains_DB
+var selected_army_instance
+var day_events
 # Availables Scenes
-#
+var adventure_event
+var new_day_event
 # Other
 var mapGroundMatrix = []
 var mapPropsMatrix = []
@@ -74,7 +78,11 @@ func _ready():
 	eventCtrl = get_node("EventCtrl")
 	unitsContainer = get_node("UI/UnitsContainer")
 	topPanel = get_node("UI/topPanel")
+	turnPanel = get_node("UI/TurnPanel")
 	loadMapData()
+	day_events = loadFilePayload(dayEventsPath)
+	new_day_event = get_node("UI/NewDayEvent")
+	new_day_event.setNewDay(turnPanel.turn_label_string, null)
 
 func prepCamera():
 	var half_width_pixels = (mapWidth / 2) * 144
@@ -161,9 +169,12 @@ func instantiate_player_armies(player_nr, player_armies):
 		var army_cache = player_armies[h].get("cache")
 		if player_armies[h].get("selected") && player_armies[h].selected == true:
 			selected_army = {player_id = player_nr, army_id = h}
-			army_instances[player_nr][h].currently_selected = true
+			selected_army_instance = army_instances[player_nr][h]
+			selected_army_instance.currently_selected = true
+			topPanel.updateMovementLeft(selected_army_instance.my_remaining_movement_today)
 		if army_cache != null:
-			army_instances[player_nr][h].modifyCache(army_cache)
+			selected_army_instance.modifyCache(army_cache)
+		
 		if armiesContainer.get_child_count() < h + 1:
 			armiesContainer.add_child(armyButton.duplicate())
 		armiesContainer.get_child(h).my_id = h
@@ -179,14 +190,14 @@ func instantiate_player_towns(player_nr, player_towns):
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 
-func _input(event):
+func _unhandled_input(event):
 	if camera.tween.is_active() || mouseCtrl.pointerState == 5:
 		return
 	
-	var p_a_s_x = army_instances[selected_army.player_id][selected_army.army_id].my_coords.x
-	var p_a_s_y = army_instances[selected_army.player_id][selected_army.army_id].my_coords.y
-	var army_land_mass = army_instances[selected_army.player_id][selected_army.army_id].current_land_mass
-	var army_travel_type = army_instances[selected_army.player_id][selected_army.army_id].travel_type
+	var p_a_s_x = selected_army_instance.my_coords.x
+	var p_a_s_y = selected_army_instance.my_coords.y
+	var army_land_mass = selected_army_instance.current_land_mass
+	var army_travel_type = selected_army_instance.travel_type
 	
 	if event is InputEventKey && event.pressed == false:
 		var d_modifier = establishMapMoveDirectionModifiers(event.scancode)
@@ -194,17 +205,17 @@ func _input(event):
 			return
 		
 		if isTileAccessible(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y, army_travel_type, army_land_mass):
-			army_instances[selected_army.player_id][selected_army.army_id].moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y)), movementTileMap.tile_move_expense[p_a_s_x + d_modifier.x][p_a_s_y + d_modifier.y])
+			selected_army_instance.moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y)), movementTileMap.tile_move_expense[p_a_s_x + d_modifier.x][p_a_s_y + d_modifier.y])
 	
-	if event is InputEventMouseButton && event.is_pressed() == false && event.button_index == 1 && (mouseCtrl.pointerState == 0 || mouseCtrl.pointerState == 2):
+	if event is InputEventMouseButton && event.is_pressed() == false && event.button_index == 1:# && (mouseCtrl.pointerState == 0 || mouseCtrl.pointerState == 2):
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
 		if (tile.x != p_a_s_x || tile.y != p_a_s_y) && isTileAccessible(tile.x, tile.y, army_travel_type, army_land_mass):
-			if army_instances[selected_army.player_id][selected_army.army_id].selected_coords == tile:
-				army_instances[selected_army.player_id][selected_army.army_id].executeMoveCommand = true
+			if selected_army_instance.selected_coords == tile:
+				selected_army_instance.executeMoveCommand = true
 			else:
 				for h in range(movement_trackers.size()):
 					movement_trackers[h].visible = false
-				army_instances[selected_army.player_id][selected_army.army_id].calculateFastestPath(tile.x, tile.y)
+				selected_army_instance.calculateFastestPath(tile.x, tile.y)
 
 # TODO: Improve this function so that it takes into consideration the army travel type and land masses and portals
 func isTileAccessible(x, y, travel_type, land_mass):
@@ -292,14 +303,16 @@ func establishMapMoveDirectionModifiers(key_stroke):
 
 func armySelected(army_id):
 	if selected_army.army_id != army_id:
-		army_instances[selected_army.player_id][selected_army.army_id].currently_selected = false
+		selected_army_instance.currently_selected = false
 		selected_army.army_id = army_id
-		army_instances[selected_army.player_id][selected_army.army_id].currently_selected = true
-		topPanel.updateCache(army_instances[selected_army.player_id][selected_army.army_id].my_cache)
+		selected_army_instance = army_instances[selected_army.player_id][selected_army.army_id]
+		selected_army_instance.currently_selected = true
+		topPanel.updateCache(selected_army_instance.my_cache)
+		topPanel.updateMovementLeft(selected_army_instance.my_remaining_movement_today)
 		clearMovementTrackers()
-		if army_instances[selected_army.player_id][selected_army.army_id].fastest_path.size() > 0:
+		if selected_army_instance.fastest_path.size() > 0:
 			drawPath(army_id)
-	camera.followNode(army_instances[selected_army.player_id][selected_army.army_id].position)
+		camera.followNode(selected_army_instance.position)
 
 func getArmyPresent(tile):
 	for x in range(army_instances[0].size()):
@@ -326,7 +339,18 @@ func interactWithObject(tile, army_id):
 	propsTileMap.markVisited(tile.x, tile.y, selected_army.army_id, selected_army.player_id)
 
 func eventActionPressed(id):
-	eventCtrl.parseEventAction(action_specs[id], action_names[id], army_instances[selected_army.player_id][selected_army.army_id], adventure_event)
+	eventCtrl.parseEventAction(action_specs[id], action_names[id], selected_army_instance, adventure_event)
 
 func endTurn(next_turn):
-	print("Next turn ", next_turn)
+	playOtherPlayerTurns()
+	turnPanel.setTurnLabel()
+	var new_event = null
+	for army in army_instances[selected_army.player_id]:
+		army.my_remaining_movement_today = army.my_movement_points
+	drawPath(selected_army.army_id)
+	if day_events.get(String(turnPanel.current_day)) && day_events.get(String(turnPanel.current_day)).get(String(turnPanel.current_week)) && day_events.get(String(turnPanel.current_day)).get(String(turnPanel.current_week)).get(String(turnPanel.current_month)):
+		new_event = day_events.get(String(turnPanel.current_day)).get(String(turnPanel.current_week)).get(String(turnPanel.current_month))
+	new_day_event.setNewDay(turnPanel.turn_label_string, new_event)
+
+func playOtherPlayerTurns():
+	print("Other players are gaming")

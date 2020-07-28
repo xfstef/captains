@@ -1,0 +1,68 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Scripts/newDayEvent.gd" type="Script" id=1]
+
+[node name="NewDayEvent" type="Control"]
+visible = false
+anchor_left = 0.344
+anchor_top = 0.389
+anchor_right = 0.656
+anchor_bottom = 0.611
+margin_left = -0.400024
+margin_top = -0.100006
+margin_right = 0.400024
+margin_bottom = 0.0999756
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 3.05176e-05
+margin_bottom = 4.57764e-05
+mouse_filter = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="dateLabel" type="Label" parent="Panel"]
+anchor_left = 0.149
+anchor_top = 0.103
+anchor_right = 0.829
+anchor_bottom = 0.328
+margin_left = -0.165413
+margin_top = 0.0672951
+margin_right = -0.165466
+margin_bottom = 0.0672913
+text = "Day, Week, Month"
+align = 1
+valign = 1
+uppercase = true
+
+[node name="eventLabel" type="Label" parent="Panel"]
+anchor_left = 0.084
+anchor_top = 0.396
+anchor_right = 0.93
+anchor_bottom = 0.651
+margin_left = 0.00182343
+margin_top = -0.0336609
+margin_right = 0.00177002
+margin_bottom = -0.0336609
+text = "Nothing in particular is happening today."
+align = 1
+valign = 1
+
+[node name="confirm" type="Button" parent="Panel"]
+anchor_left = 0.379
+anchor_top = 0.727
+anchor_right = 0.609
+anchor_bottom = 0.922
+margin_left = -0.0125275
+margin_top = 0.0149536
+margin_right = -0.0125427
+margin_bottom = 0.0149536
+mouse_filter = 1
+text = "OK"
+[connection signal="pressed" from="Panel/confirm" to="." method="_on_confirm_pressed"]

@@ -58,7 +58,7 @@ func _process(delta):
 	
 	if pointerState == 5:
 		return
-		
+	
 	var move_tile = movementTileMap.get_cell(tile.x, tile.y)	
 	var army_present = adventure_map.getArmyPresent(tile)
 	var selected_land_mass

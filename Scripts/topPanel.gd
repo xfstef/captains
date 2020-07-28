@@ -7,15 +7,17 @@ var current_iron
 var current_gems
 var current_shards
 var current_gold
+var current_movement_left
 
 func _ready():
-	current_lumber = get_node("GridContainer/lumber/Label")
-	current_stone = get_node("GridContainer/stone/Label")
-	current_steam = get_node("GridContainer/steam/Label")
-	current_iron = get_node("GridContainer/iron/Label")
-	current_gems = get_node("GridContainer/gems/Label")
-	current_shards = get_node("GridContainer/shards/Label")
-	current_gold = get_node("GridContainer/gold/Label")
+	current_lumber = get_node("GridContainerLeft/lumber/Label")
+	current_stone = get_node("GridContainerLeft/stone/Label")
+	current_steam = get_node("GridContainerLeft/steam/Label")
+	current_iron = get_node("GridContainerLeft/iron/Label")
+	current_gems = get_node("GridContainerLeft/gems/Label")
+	current_shards = get_node("GridContainerLeft/shards/Label")
+	current_gold = get_node("GridContainerLeft/gold/Label")
+	current_movement_left = get_node("GridContainerRight/movement/Label")
 
 func updateCache(new_cache):
 	for resource in new_cache:
@@ -35,3 +37,6 @@ func updateCache(new_cache):
 				current_shards.text = the_amount
 			"gold":
 				current_gold.text = the_amount
+
+func updateMovementLeft(new_movement):
+	current_movement_left.text = String(new_movement)
