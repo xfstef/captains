@@ -8,10 +8,13 @@ var tween
 var camera
 var travel_type = 0
 var fastest_path = []
+var line_of_sight = []
+var l_o_s_range = 2
 var adventure_map
 var executeMoveCommand = false
 var currentMoveCommandStep = 1
 var tm_movement
+var tm_fow
 var current_land_mass
 var my_id
 var my_frame_id
@@ -42,6 +45,7 @@ func _ready():
 	adventure_map = get_node("/root/AdventureMap")
 	top_panel = adventure_map.topPanel
 	tm_movement = get_node("../../TM-Movement")
+	tm_fow = get_node("../../TM-FOW")
 	my_movement_points = 100
 	my_remaining_movement_today = 100
 	mouse_controller = get_node("../../MouseCtrl")
@@ -52,6 +56,7 @@ func _physics_process(delta):
 			my_animation.playing = false
 			my_animation.frame = 0
 			my_coords = adventure_map.propsTileMap.world_to_map(self.position)
+			updateLOS(false)
 			if currentMoveCommandStep == 1:
 				current_prop_code = adventure_map.propsTileMap.get_cell(my_coords.x, my_coords.y)
 				if current_prop_code == -1 && adventure_map.getArmyPresent(my_coords):
@@ -85,7 +90,7 @@ func moveTo(x_y, cost):
 	tween.start()
 	my_animation.playing = true
 	adventure_map.camera.followNode(x_y)
-	
+
 func changeTravelType(new_travel_type):
 	travel_type = new_travel_type
 
@@ -164,3 +169,11 @@ func modifyCache(resources_changes):
 		my_cache[change] = new_amount
 	if currently_selected == true:
 		top_panel.updateCache(my_cache)
+
+func updateLOS(initial_load):
+	line_of_sight.clear()
+	for x in range(-l_o_s_range, l_o_s_range + 1):
+		for y in range(-l_o_s_range, l_o_s_range + 1):
+			line_of_sight.append(Vector2(my_coords.x + x, my_coords.y + y))
+	if initial_load != true:
+		tm_fow.updatePlayerVisibility(my_player_id, my_id)

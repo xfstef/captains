@@ -1,7 +1,7 @@
 extends Node2D
 
 # Paths
-var mapPath = "res://Maps/test4.json"
+var mapPath = "res://Maps/test5.json"
 var interactablesPath = "res://Data/mapInteractables.json"
 var directionIndexesPath = "res://Data/directionIndexes.json"
 var mapMoveIndesexPath = "res://Data/mapMoveIndexes.json"
@@ -14,6 +14,7 @@ var armyNode
 var groundTileMap
 var propsTileMap
 var movementTileMap
+var fowTileMap
 var mouseCtrl
 var info
 var moveTracker
@@ -48,8 +49,9 @@ var mapMovementMatrix = []
 var landMassesMatrix = []
 var mapWidth = 0
 var mapHeight = 0
-var selected_army
+var selected_army = { player_id = 0, army_id = 0}
 var command_given = false
+var current_player = 0
 # TODO: Add total players objects and instance them at start
 # Also add total player armies within each player instance
 #var total_players
@@ -60,6 +62,7 @@ func _ready():
 	groundTileMap = get_node("TM-Ground")
 	propsTileMap = get_node("TM-Props")
 	movementTileMap = get_node("TM-Movement")
+	fowTileMap = get_node("TM-FOW")
 	mouseCtrl = get_node("MouseCtrl")
 	info = get_node("UI/info")
 	armyNode = get_node("Army")
@@ -79,7 +82,7 @@ func _ready():
 	unitsContainer = get_node("UI/UnitsContainer")
 	topPanel = get_node("UI/topPanel")
 	turnPanel = get_node("UI/TurnPanel")
-	loadMapData()
+	loadMapData(mapCreator.showEditor)
 	day_events = loadFilePayload(dayEventsPath)
 	new_day_event = get_node("UI/NewDayEvent")
 	new_day_event.setNewDay(turnPanel.turn_label_string, null)
@@ -100,9 +103,9 @@ func loadFilePayload(fileName):
 	file.close()
 	return payload
 
-func loadMapData():
+func loadMapData(editor_mode):
 	var payload
-	if mapCreator.showEditor == true:
+	if editor_mode == true:
 		mapWidth = mapCreator.data.width
 		mapHeight = mapCreator.data.height
 	else:
@@ -115,8 +118,9 @@ func loadMapData():
 	groundTileMap.setSize(mapWidth, mapHeight)
 	propsTileMap.setSize(mapWidth, mapHeight)
 	movementTileMap.setSize(mapWidth, mapHeight)
+	fowTileMap.setSize(mapWidth, mapHeight)
 	
-	if mapCreator.showEditor == true:
+	if editor_mode == true:
 		mapCreator.readMapData()
 		payload = mapCreator.data
 	
@@ -143,12 +147,14 @@ func loadMapData():
 	propsTileMap.setCells(mapPropsMatrix)
 	movementTileMap.setCells(mapMovementMatrix)
 	
-	
 	for z in range(payload.playerStartRules.size()):
 		if payload.playerStartRules[z].get("armies"):
 			instantiate_player_armies(z, payload.playerStartRules[z].armies)
 		if payload.playerStartRules[z].get("castles"):
 			instantiate_player_towns(z, payload.playerStartRules[z].castles)
+		fowTileMap.addPlayerVisibility(z)
+	
+	fowTileMap.switchToPlayer(current_player)
 
 func instantiate_player_armies(player_nr, player_armies):
 	army_instances.append([])
@@ -168,12 +174,13 @@ func instantiate_player_armies(player_nr, player_armies):
 			camera.followNode(army_instances[player_nr][h].position)
 		var army_cache = player_armies[h].get("cache")
 		if player_armies[h].get("selected") && player_armies[h].selected == true:
-			selected_army = {player_id = player_nr, army_id = h}
+			selected_army.army_id = h # = {player_id = player_nr, army_id = h}
 			selected_army_instance = army_instances[player_nr][h]
 			selected_army_instance.currently_selected = true
 			topPanel.updateMovementLeft(selected_army_instance.my_remaining_movement_today)
 		if army_cache != null:
 			selected_army_instance.modifyCache(army_cache)
+		selected_army_instance.updateLOS(true)
 		
 		if armiesContainer.get_child_count() < h + 1:
 			armiesContainer.add_child(armyButton.duplicate())
@@ -348,6 +355,7 @@ func endTurn(next_turn):
 	for army in army_instances[selected_army.player_id]:
 		army.my_remaining_movement_today = army.my_movement_points
 	drawPath(selected_army.army_id)
+	topPanel.updateMovementLeft(selected_army_instance.my_remaining_movement_today)
 	if day_events.get(String(turnPanel.current_day)) && day_events.get(String(turnPanel.current_day)).get(String(turnPanel.current_week)) && day_events.get(String(turnPanel.current_day)).get(String(turnPanel.current_week)).get(String(turnPanel.current_month)):
 		new_event = day_events.get(String(turnPanel.current_day)).get(String(turnPanel.current_week)).get(String(turnPanel.current_month))
 	new_day_event.setNewDay(turnPanel.turn_label_string, new_event)

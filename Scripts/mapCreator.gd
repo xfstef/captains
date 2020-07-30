@@ -18,17 +18,23 @@ var data = {
 					"y": 7,
 					"cameraStartPosition": true,
 					"selected": true,
-					"heroId": 0
-				},
-				{
-					"x": 1,
-					"y": 2,
-					"cameraStartPosition": false,
-					"selected": false,
-					"heroId": 1
+					"heroId": 0,
+					"units": [
+							{"unitId": 0, "amount": 1, "captainId": -1},
+							{"unitId": 1, "amount": 5, "captainId": 0}
+					],
+					"cache": { 
+						"lumber": 5, 
+						"stone": 5, 
+						"steam": 2, 
+						"iron": 2, 
+						"gems": 1, 
+						"shards": 3, 
+						"gold": 2000
+					}
 				}
 			],
-			"castles": []
+			"castles": [{"cameraStartPosition":false,"townId":0,"selected":false,"x":10,"y":6}]
 		},
 		{
 			"canBeHuman": false,
@@ -41,9 +47,10 @@ var data = {
 	],
 	"winConditions": [0],
 	"lossConditions": [0, 1],
-	"width": 16,
-	"height": 16,
-	"tiles": []
+	"width": 32,
+	"height": 32,
+	"tiles": [],
+	"specialEvents": {}
 }
 var mapGroundMatrix = []
 var mapPropsMatrix = []
