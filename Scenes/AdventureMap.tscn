@@ -21,7 +21,7 @@
 [ext_resource path="res://Scripts/TurnPanel.gd" type="Script" id=19]
 [ext_resource path="res://Assets/Sprites/moveTrackersDisabled.png" type="Texture" id=20]
 [ext_resource path="res://Scripts/MovementTracker.gd" type="Script" id=21]
-[ext_resource path="res://Scenes/ContainerList.gd" type="Script" id=22]
+[ext_resource path="res://Scripts/ContainerList.gd" type="Script" id=22]
 [ext_resource path="res://Assets/Sprites/townsSheet.png" type="Texture" id=23]
 [ext_resource path="res://Scripts/TownButton.gd" type="Script" id=24]
 [ext_resource path="res://Assets/Sprites/unitsSheet.png" type="Texture" id=25]
@@ -31,7 +31,7 @@
 [ext_resource path="res://Scenes/NewDayEvent.tscn" type="PackedScene" id=29]
 [ext_resource path="res://Assets/Sprites/fogOfWar.png" type="Texture" id=30]
 [ext_resource path="res://Scripts/TM-FOW.gd" type="Script" id=31]
-[ext_resource path="res://Scenes/Player.gd" type="Script" id=32]
+[ext_resource path="res://Scripts/Player.gd" type="Script" id=32]
 
 [sub_resource type="TileSet" id=1]
 0/name = "fogOfWar.png 0"
