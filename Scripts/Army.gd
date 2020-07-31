@@ -56,7 +56,7 @@ func _physics_process(delta):
 			my_animation.playing = false
 			my_animation.frame = 0
 			my_coords = adventure_map.propsTileMap.world_to_map(self.position)
-			updateLOS(false)
+			updateLOS()
 			if currentMoveCommandStep == 1:
 				current_prop_code = adventure_map.propsTileMap.get_cell(my_coords.x, my_coords.y)
 				if current_prop_code == -1 && adventure_map.getArmyPresent(my_coords):
@@ -170,10 +170,9 @@ func modifyCache(resources_changes):
 	if currently_selected == true:
 		top_panel.updateCache(my_cache)
 
-func updateLOS(initial_load):
+func updateLOS():
 	line_of_sight.clear()
 	for x in range(-l_o_s_range, l_o_s_range + 1):
 		for y in range(-l_o_s_range, l_o_s_range + 1):
 			line_of_sight.append(Vector2(my_coords.x + x, my_coords.y + y))
-	if initial_load != true:
-		tm_fow.updatePlayerVisibility(my_player_id, my_id)
+	adventure_map.player_instances[my_player_id].updateExploredTiles(line_of_sight)

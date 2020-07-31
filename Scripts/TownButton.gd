@@ -1,6 +1,7 @@
 extends Button
 
 var my_id = 0
+var my_player_id = 0
 var my_sprite
 var adventure_map
 var mouse_controller

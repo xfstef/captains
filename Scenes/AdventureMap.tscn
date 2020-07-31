@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=2]
+[gd_scene load_steps=38 format=2]
 
 [ext_resource path="res://Assets/Sprites/moveTrackersEnabled.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Sprites/army.png" type="Texture" id=2]
@@ -21,7 +21,7 @@
 [ext_resource path="res://Scripts/TurnPanel.gd" type="Script" id=19]
 [ext_resource path="res://Assets/Sprites/moveTrackersDisabled.png" type="Texture" id=20]
 [ext_resource path="res://Scripts/MovementTracker.gd" type="Script" id=21]
-[ext_resource path="res://Scripts/Container.gd" type="Script" id=22]
+[ext_resource path="res://Scenes/ContainerList.gd" type="Script" id=22]
 [ext_resource path="res://Assets/Sprites/townsSheet.png" type="Texture" id=23]
 [ext_resource path="res://Scripts/TownButton.gd" type="Script" id=24]
 [ext_resource path="res://Assets/Sprites/unitsSheet.png" type="Texture" id=25]
@@ -31,6 +31,7 @@
 [ext_resource path="res://Scenes/NewDayEvent.tscn" type="PackedScene" id=29]
 [ext_resource path="res://Assets/Sprites/fogOfWar.png" type="Texture" id=30]
 [ext_resource path="res://Scripts/TM-FOW.gd" type="Script" id=31]
+[ext_resource path="res://Scenes/Player.gd" type="Script" id=32]
 
 [sub_resource type="TileSet" id=1]
 0/name = "fogOfWar.png 0"
@@ -458,6 +459,7 @@ margin_right = 0.800049
 margin_bottom = -0.199951
 mouse_filter = 2
 custom_constants/separation = 1
+script = ExtResource( 22 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -486,7 +488,6 @@ margin_right = 0.400009
 margin_bottom = 0.399933
 mouse_filter = 2
 scroll_horizontal_enabled = false
-script = ExtResource( 22 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -497,25 +498,10 @@ margin_bottom = 106.0
 rect_min_size = Vector2( 192, 106 )
 mouse_filter = 2
 custom_constants/separation = 2
+script = ExtResource( 22 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="ArmyButton" type="Button" parent="UI/ArmiesContainer/ArmiesList"]
-margin_right = 192.0
-margin_bottom = 106.0
-mouse_filter = 1
-icon = ExtResource( 3 )
-script = ExtResource( 15 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="portrait" type="Sprite" parent="UI/ArmiesContainer/ArmiesList/ArmyButton"]
-texture = ExtResource( 4 )
-centered = false
-offset = Vector2( 6, 3 )
-hframes = 2
 
 [node name="TownsContainer" type="ScrollContainer" parent="UI"]
 anchor_left = 0.859
@@ -528,36 +514,19 @@ margin_right = 0.399902
 margin_bottom = 0.399994
 mouse_filter = 2
 scroll_horizontal_enabled = false
-script = ExtResource( 22 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="TownsList" type="VBoxContainer" parent="UI/TownsContainer"]
-margin_right = 192.0
 margin_bottom = 432.0
 mouse_filter = 2
 size_flags_vertical = 3
 custom_constants/separation = 2
+script = ExtResource( 22 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="TownButton" type="Button" parent="UI/TownsContainer/TownsList"]
-margin_right = 192.0
-margin_bottom = 106.0
-mouse_filter = 1
-icon = ExtResource( 3 )
-script = ExtResource( 24 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="portrait" type="Sprite" parent="UI/TownsContainer/TownsList/TownButton"]
-texture = ExtResource( 23 )
-centered = false
-offset = Vector2( 6, 3 )
-hframes = 2
 
 [node name="topPanel" type="Panel" parent="UI"]
 anchor_left = 0.25
@@ -925,6 +894,48 @@ hframes = 10
 
 [node name="EventCtrl" type="Node2D" parent="."]
 script = ExtResource( 18 )
+
+[node name="Player" type="Node2D" parent="."]
+visible = false
+script = ExtResource( 32 )
+
+[node name="ArmyButton" type="Button" parent="."]
+visible = false
+margin_left = 30.0
+margin_top = 40.0
+margin_right = 222.0
+margin_bottom = 146.0
+mouse_filter = 1
+icon = ExtResource( 3 )
+script = ExtResource( 15 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="portrait" type="Sprite" parent="ArmyButton"]
+texture = ExtResource( 4 )
+centered = false
+offset = Vector2( 6, 3 )
+hframes = 2
+
+[node name="TownButton" type="Button" parent="."]
+visible = false
+margin_left = 1374.0
+margin_top = 40.0
+margin_right = 1566.0
+margin_bottom = 146.0
+mouse_filter = 1
+icon = ExtResource( 3 )
+script = ExtResource( 24 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="portrait" type="Sprite" parent="TownButton"]
+texture = ExtResource( 23 )
+centered = false
+offset = Vector2( 6, 3 )
+hframes = 2
 [connection signal="mouse_entered" from="UI/saveMapName" to="MouseCtrl" method="setMouseState" binds= [ 4 ]]
 [connection signal="mouse_exited" from="UI/saveMapName" to="MouseCtrl" method="setMouseState" binds= [ 0 ]]
 [connection signal="mouse_entered" from="UI/TurnPanel" to="UI/TurnPanel" method="_on_TurnPanel_mouse_entered"]
@@ -933,6 +944,6 @@ script = ExtResource( 18 )
 [connection signal="mouse_entered" from="UI/saveMapButton" to="MouseCtrl" method="setMouseState" binds= [ 4 ]]
 [connection signal="mouse_exited" from="UI/saveMapButton" to="MouseCtrl" method="setMouseState" binds= [ 0 ]]
 [connection signal="pressed" from="UI/saveMapButton" to="UI" method="_on_saveMapButton_pressed"]
-[connection signal="pressed" from="UI/ArmiesContainer/ArmiesList/ArmyButton" to="UI/ArmiesContainer/ArmiesList/ArmyButton" method="_on_ArmyButton_pressed"]
 [connection signal="mouse_entered" from="UI/topPanel" to="MouseCtrl" method="setMouseState" binds= [ 4 ]]
 [connection signal="mouse_exited" from="UI/topPanel" to="MouseCtrl" method="setMouseState" binds= [ 0 ]]
+[connection signal="pressed" from="ArmyButton" to="ArmyButton" method="_on_ArmyButton_pressed"]

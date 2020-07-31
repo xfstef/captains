@@ -68,7 +68,7 @@ func _process(delta):
 	else:
 		selected_land_mass = 0
 	
-	var c_s_a = adventure_map.army_instances[adventure_map.selected_army.player_id][adventure_map.selected_army.army_id]
+	var c_s_a = adventure_map.selected_army_instance
 	
 	if mouse_pos_local.x < 10 || mouse_pos_local.x > camera.viewport_size.x - 10 || mouse_pos_local.y < 10 || mouse_pos_local.y > camera.viewport_size.y - 10:
 		move_vector = Vector2()
