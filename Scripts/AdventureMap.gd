@@ -39,6 +39,7 @@ var action_specs = []
 var units_DB
 var captains_DB
 var selected_army_instance
+var current_player_istance
 var day_events
 # Availables Scenes
 var adventure_event
@@ -159,6 +160,7 @@ func loadMapData(editor_mode):
 		if payload.playerStartRules[z].get("castles"):
 			instantiate_player_towns(z, payload.playerStartRules[z].castles)
 	
+	current_player_istance = player_instances[current_player]
 	armiesListContainer.switchPlayer(current_player)
 	fowTileMap.updateVisibility(current_player)
 
@@ -186,7 +188,9 @@ func instantiate_player_armies(player_nr, player_armies):
 			topPanel.updateMovementLeft(selected_army_instance.my_remaining_movement_today)
 		if army_cache != null:
 			player_instances[player_nr].my_armies[h].modifyCache(army_cache)
-		player_instances[player_nr].my_armies[h].updateLOS()
+		player_instances[player_nr].registerLOSPoint(pos, player_instances[player_nr].my_armies[h].l_o_s_range)
+		player_instances[player_nr].updateLOSPoint(pos, pos, player_instances[player_nr].my_armies[h].l_o_s_range)
+		#player_instances[player_nr].my_armies[h].updateLOS()
 		
 		armiesListContainer.add_child(armyButton.duplicate())
 		armiesListContainer.get_child(h).my_player_id = player_nr
@@ -220,7 +224,7 @@ func _unhandled_input(event):
 		if isTileAccessible(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y, army_travel_type, army_land_mass):
 			selected_army_instance.moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y)), movementTileMap.tile_move_expense[p_a_s_x + d_modifier.x][p_a_s_y + d_modifier.y])
 	
-	if event is InputEventMouseButton && event.is_pressed() == false && event.button_index == 1:# && (mouseCtrl.pointerState == 0 || mouseCtrl.pointerState == 2):
+	elif event is InputEventMouseButton && event.is_pressed() == false && event.button_index == 1 && (mouseCtrl.pointerState == 0 || mouseCtrl.pointerState == 2):
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
 		if (tile.x != p_a_s_x || tile.y != p_a_s_y) && isTileAccessible(tile.x, tile.y, army_travel_type, army_land_mass):
 			if selected_army_instance.selected_coords == tile:

@@ -21,14 +21,20 @@ func updateVisibility(player_id):
 	current_player = player_id
 	player_explored_tiles = adventure_map.player_instances[current_player].my_explored_tiles
 	player_visible_tiles = adventure_map.player_instances[current_player].my_visible_tiles
+	var cell_type
 	for x in range(width):
 		for y in range(height):
 			if player_explored_tiles.find(Vector2(x, y)) == -1:
-				set_cell(x, y, 1)
-			elif player_visible_tiles.find(Vector2(x, y)) == -1:
-				set_cell(x, y, 16)
+				cell_type = 1
 			else:
-				set_cell(x, y, -1)
+				cell_type = findVisibleTile(x, y)
+			set_cell(x, y, cell_type)
+
+func findVisibleTile(x, y):
+	for group in player_visible_tiles:
+		if group.find(Vector2(x, y)) > -1:
+			return -1
+	return 16
 
 #func addPlayerVisibility(player_id):
 #	var player_visible_tiles = getPlayerVisibleTiles(player_id)
