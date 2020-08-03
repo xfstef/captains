@@ -8,8 +8,8 @@ var tween
 var camera
 var travel_type = 0
 var fastest_path = []
-var line_of_sight = []
 var l_o_s_range = 2
+var my_explored_mass
 var adventure_map
 var executeMoveCommand = false
 var currentMoveCommandStep = 1
@@ -171,10 +171,3 @@ func modifyCache(resources_changes):
 		my_cache[change] = new_amount
 	if currently_selected == true:
 		top_panel.updateCache(my_cache)
-
-#func updateLOS():
-#	line_of_sight.clear()
-#	for x in range(-l_o_s_range, l_o_s_range + 1):
-#		for y in range(-l_o_s_range, l_o_s_range + 1):
-#			line_of_sight.append(Vector2(my_coords.x + x, my_coords.y + y))
-#	adventure_map.player_instances[my_player_id].updateExploredTiles(line_of_sight)
