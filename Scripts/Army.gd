@@ -24,16 +24,23 @@ var my_remaining_movement_today
 var mouse_controller
 var current_prop_code = -1
 var currently_selected = false
-var my_cache = {
-	"lumber": 0,
-	"stone": 0,
-	"steam": 0,
-	"iron": 0,
-	"gems": 0,
-	"shards": 0,
-	"gold": 0
-}
+
 var top_panel
+var adventure_event
+# Static properties
+var my_cache = {
+	lumber = 0,
+	stone = 0,
+	steam = 0,
+	iron = 0,
+	gems = 0,
+	shards = 0,
+	gold = 0
+}
+var my_general_skills = {
+	charisma = 0,
+	barter = 0
+}
 
 func _ready():
 	my_animation = get_node("AnimatedSprite")
@@ -43,6 +50,7 @@ func _ready():
 	# TODO: Add a means of loading what type of travel this army does: Land march, Sailing, Flying, Tunneling.
 	travel_type = 0
 	adventure_map = get_node("/root/AdventureMap")
+	adventure_event = adventure_map.adventure_event
 	top_panel = adventure_map.topPanel
 	tm_movement = get_node("../../TM-Movement")
 	tm_fow = get_node("../../TM-FOW")
@@ -57,7 +65,6 @@ func _physics_process(delta):
 			my_animation.frame = 0
 			var old_coords = my_coords
 			my_coords = adventure_map.propsTileMap.world_to_map(self.position)
-			#updateLOS()
 			adventure_map.player_instances[my_player_id].updateLOSPoint(old_coords, my_coords, l_o_s_range)
 			if currentMoveCommandStep == 1:
 				current_prop_code = adventure_map.propsTileMap.get_cell(my_coords.x, my_coords.y)
@@ -67,14 +74,20 @@ func _physics_process(delta):
 		if executeMoveCommand:
 			var step = fastest_path[0]
 			if step.move_cost <= my_remaining_movement_today:
-				moveTo(adventure_map.propsTileMap.map_to_world(Vector2(step.x, step.y)), step.move_cost)
-				currentMoveCommandStep += 1
-				adventure_map.clearMovementTracker(step.x, step.y)
-				top_panel.updateMovementLeft(my_remaining_movement_today)
-				fastest_path.remove(0)
-				if fastest_path.size() == 0:
-					currentMoveCommandStep = 1
+				var new_coords = adventure_map.propsTileMap.map_to_world(Vector2(step.x, step.y))
+				var npc_check = adventure_map.checkIfTileHasNPCs(Vector2(step.x, step.y))
+				if typeof(npc_check) == 1:
+					moveTo(new_coords, step.move_cost)
+					currentMoveCommandStep += 1
+					adventure_map.clearMovementTracker(step.x, step.y)
+					top_panel.updateMovementLeft(my_remaining_movement_today)
+					fastest_path.remove(0)
+					if fastest_path.size() == 0:
+						currentMoveCommandStep = 1
+						executeMoveCommand = false
+				else:
 					executeMoveCommand = false
+					interactWithNPC(npc_check)
 		
 		if current_prop_code > -1 && adventure_map.propsTileMap.getPropStilValid(my_coords.x, my_coords.y, my_id, my_player_id) == true:
 			adventure_map.interactWithObject(my_coords, my_id)
@@ -171,3 +184,29 @@ func modifyCache(resources_changes):
 		my_cache[change] = new_amount
 	if currently_selected == true:
 		top_panel.updateCache(my_cache)
+
+func modifyGeneralSkills(skill_changes):
+	my_general_skills = skill_changes
+	print(my_general_skills)
+
+func interactWithNPC(npc):
+	npc.attack()
+	adventure_event.setEventTitle(String(npc.amount) + " " + String(npc.unit_name) + "s")
+	adventure_event.setEventDescription("These " + String(npc.unit_name) + "s have blocked your way and demand tribute if you wish to pass. What shall we do?")
+	var event_actions = getNPCChoices()
+	adventure_event.buildEvent(event_actions)
+
+func getNPCChoices():
+	var actions = [
+		"Attack",
+		{},
+	]
+	if my_general_skills.charisma > 0:
+		actions.append("Negotiate")
+		actions.append({})
+	if my_general_skills.barter > 0:
+		actions.append("Barter")
+		actions.append({})
+	actions.append("Retreat")
+	actions.append({})
+	return actions

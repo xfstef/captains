@@ -27,7 +27,7 @@ func resizeEvent():
 	w_h_times_zoom = width_half * self.zoom.x
 	h_h_times_zoom = height_half * self.zoom.y
 
-func _input(event):
+func _unhandled_input(event):
 	if mouse_ctrl.pointerState < 4 && event is InputEventMouseButton && event.pressed == false:
 		if event.button_index == BUTTON_WHEEL_DOWN && self.zoom.x < 2:
 			self.zoom.x += 0.25

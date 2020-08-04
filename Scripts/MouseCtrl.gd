@@ -88,6 +88,7 @@ func _unhandled_input(event):
 			selected_land_mass = 0
 		var c_s_a = adventure_map.selected_army_instance
 		var army_present = adventure_map.getArmyPresent(tile)
+		var npc_present = adventure_map.checkIfTileHasNPCs(tile)
 		var player_explored_masses = adventure_map.current_player_istance.explored_masses
 		var is_tile_explored = adventure_map.current_player_istance.my_explored_tiles.find(tile)
 		var tile_explored_mass = -1
@@ -99,7 +100,7 @@ func _unhandled_input(event):
 		
 		if move_tile == 0 && selected_land_mass == c_s_a.current_land_mass:
 			if is_path_to_tile_explored == true:
-				if army_present == true:
+				if army_present == true || typeof(npc_present) == 17:
 					if tile.x == c_s_a.my_coords.x && tile.y == c_s_a.my_coords.y:
 						Input.set_custom_mouse_cursor(m_pointer_ui)
 						pointerState = 3

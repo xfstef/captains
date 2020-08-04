@@ -3,12 +3,14 @@
         "name": "Babylonian",
         "portrait_id": 0,
         "faction": 0,
-        "hitpoints": 10
+        "hitpoints": 10,
+        "sprite_name": "AMJinn"
     },
     {
         "name": "Peasant",
         "portrait_id": 1,
         "faction": 1,
-        "hitpoints": 2
+        "hitpoints": 2,
+        "sprite_name": "AMLizard"
     }
 ]

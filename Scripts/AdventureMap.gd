@@ -8,6 +8,10 @@ var mapMoveIndesexPath = "res://Data/mapMoveIndexes.json"
 var unitsPath = "res://Data/units.json"
 var captainsPath = "res://Data/captains.json"
 var dayEventsPath = "res://Data/dayEvents.json"
+# Parameters
+var EconomicDifficulty
+var AIDifficulty
+var MonsterDifficulty = 1
 # World Object References
 var camera
 var armyNode
@@ -41,6 +45,8 @@ var captains_DB
 var selected_army_instance
 var current_player_istance
 var day_events
+var map_npcs = []
+var adventureMapUnit = load("res://Scenes/AdventureMapUnit.tscn")
 # Availables Scenes
 var adventure_event
 var new_day_event
@@ -54,6 +60,7 @@ var mapHeight = 0
 var selected_army = { player_id = 0, army_id = 0}
 var command_given = false
 var current_player = 0
+var rng
 # TODO: Add total players objects and instance them at start
 # Also add total player armies within each player instance
 #var total_players
@@ -85,6 +92,7 @@ func _ready():
 	topPanel = get_node("UI/topPanel")
 	turnPanel = get_node("UI/TurnPanel")
 	player = get_node("Player")
+	rng = RandomNumberGenerator.new()	
 	loadMapData(mapCreator.showEditor)
 	day_events = loadFilePayload(dayEventsPath)
 	new_day_event = get_node("UI/NewDayEvent")
@@ -150,6 +158,8 @@ func loadMapData(editor_mode):
 	propsTileMap.setCells(mapPropsMatrix)
 	movementTileMap.setCells(mapMovementMatrix)
 	
+	loadNPCs(payload.npcs)
+	
 	for z in range(payload.playerStartRules.size()):
 		var new_player = player.duplicate()
 		new_player.my_id = z
@@ -163,6 +173,29 @@ func loadMapData(editor_mode):
 	current_player_istance = player_instances[current_player]
 	armiesListContainer.switchPlayer(current_player)
 	fowTileMap.updateVisibility(current_player)
+
+func loadNPCs(npcs):
+	for npc in npcs:
+		var new_npc = adventureMapUnit.instance()
+		propsTileMap.add_child(new_npc)
+		new_npc.unit_name = npc.name
+		new_npc.my_coords = Vector2(npc.x, npc.y)
+		new_npc.position = propsTileMap.map_to_world(new_npc.my_coords)
+		if "amount" in npc:
+			new_npc.amount = npc.amount
+		else:
+			#TODO: Implement unit_tier_modifier
+			rng.randomize()
+			new_npc.amount = MonsterDifficulty * rng.randi_range(5, 10) # + unit_tier_modifier
+		var sprite_name = getUnitSpriteName(npc.name)
+		new_npc.loadSprite(sprite_name)
+		map_npcs.append(new_npc)
+
+func getUnitSpriteName(name):
+	for unit in units_DB:
+		if unit.name == name:
+			return unit.sprite_name
+	return null
 
 func instantiate_player_armies(player_nr, player_armies):
 	player_instances[player_nr].my_armies.append([])
@@ -178,19 +211,20 @@ func instantiate_player_armies(player_nr, player_armies):
 		player_instances[player_nr].my_armies[h].my_frame_id = player_armies[h].heroId
 		player_instances[player_nr].my_armies[h].my_player_id = player_nr
 		propsTileMap.add_child(player_instances[player_nr].my_armies[h])
-		if player_armies[h].get("cameraStartPosition") && player_armies[h].cameraStartPosition == true:
+		if "cameraStartPosition" in player_armies[h] && player_armies[h].cameraStartPosition == true:
 			camera.followNode(player_instances[player_nr].my_armies[h].position)
 		var army_cache = player_armies[h].get("cache")
-		if player_armies[h].get("selected") && player_armies[h].selected == true:
+		if "selected" in player_armies[h] && player_armies[h].selected == true:
 			selected_army.army_id = h
 			selected_army_instance = player_instances[player_nr].my_armies[h]
 			selected_army_instance.currently_selected = true
 			topPanel.updateMovementLeft(selected_army_instance.my_remaining_movement_today)
-		if army_cache != null:
+		if "cache" in player_armies[h]:
 			player_instances[player_nr].my_armies[h].modifyCache(army_cache)
 		player_instances[player_nr].registerLOSPoint(pos, player_instances[player_nr].my_armies[h].l_o_s_range)
 		player_instances[player_nr].updateLOSPoint(pos, pos, player_instances[player_nr].my_armies[h].l_o_s_range)
-		#player_instances[player_nr].my_armies[h].updateLOS()
+		if "general_skills" in player_armies[h]:
+			player_instances[player_nr].my_armies[h].modifyGeneralSkills(player_armies[h].general_skills)
 		
 		armiesListContainer.add_child(armyButton.duplicate())
 		armiesListContainer.get_child(h).my_player_id = player_nr
@@ -198,6 +232,8 @@ func instantiate_player_armies(player_nr, player_armies):
 		armiesListContainer.get_child(h).setFrameID(player_armies[h].heroId)
 
 func instantiate_player_towns(player_nr, player_towns):
+	player_instances[player_nr].my_towns.append([])
+	player_instances[player_nr].my_towns = []
 	for h in range(player_towns.size()):
 		townsContainer.add_child(townButton.duplicate())
 		townsContainer.get_child(h).setID(player_towns[h].townId)
@@ -344,20 +380,8 @@ func interactWithObject(tile, army_id):
 	adventure_event.setEventTitle(interactable.get("name"))
 	adventure_event.setEventDescription(interactable.get("description"))
 	var event_actions = interactable.get("choices")
-	action_names.clear()
-	action_specs.clear()
-	for x in range(event_actions.size()):
-		if x % 2 == 0:
-			action_names.append(event_actions[x])
-		else:
-			action_specs.append(event_actions[x])
-	adventure_event.buildEventActions(action_names)
-	adventure_event.visible = true
-	mouseCtrl.setMouseState(5)
+	adventure_event.buildEvent(event_actions)
 	propsTileMap.markVisited(tile.x, tile.y, selected_army.army_id, selected_army.player_id)
-
-func eventActionPressed(id):
-	eventCtrl.parseEventAction(action_specs[id], action_names[id], selected_army_instance, adventure_event)
 
 func endTurn(next_turn):
 	playOtherPlayerTurns()
@@ -373,3 +397,9 @@ func endTurn(next_turn):
 
 func playOtherPlayerTurns():
 	print("Other players are gaming")
+
+func checkIfTileHasNPCs(x_y):
+	for npc in map_npcs:
+		if npc.my_coords == x_y:
+			return npc
+	return false

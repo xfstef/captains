@@ -31,6 +31,10 @@ var data = {
 						"gems": 1, 
 						"shards": 3, 
 						"gold": 2000
+					},
+					"general_skills": {
+						"charisma": 2,
+						"barter": 0
 					}
 				}
 			],
@@ -50,6 +54,7 @@ var data = {
 	"width": 32,
 	"height": 32,
 	"tiles": [],
+	"npcs": [],
 	"specialEvents": {}
 }
 var mapGroundMatrix = []
@@ -95,13 +100,18 @@ func readMapData():
 	movementTileMap.determineCells()
 	initPaintedMatrix()
 	floodFillLandMasses()
-	
+	var unit_on_tile = null
 	for y in range(data.width):
 		data.tiles.append([])
 		data.tiles[y] = []
 		for x in range(data.height):
 			data.tiles[y].append([])
 			data.tiles[y][x] = [mapGroundMatrix[y][x], mapPropsMatrix[y][x], mapMovementMatrix[y][x], landMassMatrix[y][x]]
+	getUnits()
+
+func getUnits():
+	for child in propsTileMap.get_children():
+		data.npcs.append({x = child.my_coords.x, y = child.my_coords.y, name = child.unit_name})
 
 # Temporary function used to save maps made with Godot before starting the game.
 func initPaintedMatrix():
