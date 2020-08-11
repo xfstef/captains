@@ -15,7 +15,6 @@ func _ready():
 	adventure_map = get_tree().get_root().get_node("AdventureMap")
 	tm_props = get_parent()
 	my_coords = tm_props.world_to_map(self.position)
-	unit_name = "Babylonian"
 
 func loadSprite(name):
 	unit_animations = load("res://Assets/TileResources/MapUnits/" + name + ".tres")
@@ -31,6 +30,7 @@ func _on_AnimatedSprite_animation_finished():
 		my_sprite.stop()
 
 func npcWon(remaining_amount):
-	amount = remaining_amount
+	if remaining_amount != -1:
+		amount = remaining_amount
 	has_attacked = false
 	my_sprite.play("Idle", false)

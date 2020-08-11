@@ -22,6 +22,9 @@ func parseEventAction(specs, name, army, eventPanel):
 			eventPanel.showResult(result)
 		"Explore":
 			print(specs)
+		"Retreat":
+			eventPanel.object_triggered.npcWon(-1)
+			eventPanel.eventButtonClicked(-1)
 	
 	if resources_changes.size() > 0:
 		army.modifyCache(resources_changes)

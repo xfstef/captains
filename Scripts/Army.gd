@@ -187,14 +187,13 @@ func modifyCache(resources_changes):
 
 func modifyGeneralSkills(skill_changes):
 	my_general_skills = skill_changes
-	print(my_general_skills)
 
 func interactWithNPC(npc):
 	npc.attack()
 	adventure_event.setEventTitle(String(npc.amount) + " " + String(npc.unit_name) + "s")
 	adventure_event.setEventDescription("These " + String(npc.unit_name) + "s have blocked your way and demand tribute if you wish to pass. What shall we do?")
 	var event_actions = getNPCChoices()
-	adventure_event.buildEvent(event_actions)
+	adventure_event.buildEvent(event_actions, npc)
 
 func getNPCChoices():
 	var actions = [

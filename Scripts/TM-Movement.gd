@@ -37,8 +37,8 @@ func determineCells():
 		for y in range(width):
 			temp_cell = propsTileMap.get_cell(x,y)
 			if temp_cell >= 0:
-				if props_blocked_tiles[temp_cell]:
-					temp_prop_blocked_tiles = props_blocked_tiles[temp_cell]
+				if temp_cell in props_blocked_tiles:
+					temp_prop_blocked_tiles = props_blocked_tiles.temp_cell
 					for z in range(temp_prop_blocked_tiles.size()):
 						set_cell(x + temp_prop_blocked_tiles[z][0], y + temp_prop_blocked_tiles[z][1], 2)
 				else:

@@ -12,13 +12,33 @@ func setSize(x, y):
 	width = x
 	height = y
 
-func setCells(data):
+func setCells(data, editor_enabled):
+	var cell_type
+	var prop_props
 	for x in range(height):
 		for y in range(width):
-			set_cell(x, y, data[x][y])
-			var prop_props = adventure_map.map_interactables.get(String(data[x][y]))
-			if prop_props != null:
-				interactable_props.append({x = x, y = y, frequency = prop_props.get("frequency"), stillValid = true, visitedBy = []})
+			cell_type = String(data[x][y])
+			if !editor_enabled && cell_type in adventure_map.mapInteractables:
+				prop_props = null
+				prop_props = adventure_map.mapInteractables.get(cell_type)
+				var the_properties = { x = x, y = y, cell_id = cell_type }
+				if "unit_id" in prop_props:
+					set_cell(x, y, -1)
+					the_properties["unit_id"] = prop_props.get("unit_id")
+				else:
+					the_properties["name"] = prop_props.get("name")
+					the_properties["frequency"] = prop_props.get("frequency")
+					the_properties["still_valid"] = true
+					the_properties["visited_by"] = []
+					if "animation" in prop_props:
+						set_cell(x, y, -1)
+						the_properties["animation"] = prop_props.get("animation")
+						the_properties["adventure_map_offset"] = prop_props.get("adventure_map_offset")
+					else:
+						set_cell(x, y, data[x][y])
+				interactable_props.append(the_properties)
+			else:
+				set_cell(x, y, data[x][y])
 
 func markVisited(x, y, army_id, player_id):
 	for prop in interactable_props:

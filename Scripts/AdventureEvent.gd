@@ -8,6 +8,7 @@ var h_box_container
 var adventure_map
 var action_names = []
 var action_specs = []
+var object_triggered
 
 func _ready():
 	event_title = get_node("Panel/eventTitle")
@@ -23,7 +24,8 @@ func setEventTitle(title):
 func setEventDescription(description):
 	event_description.text = description
 
-func buildEvent(event_actions):
+func buildEvent(event_actions, object_encountered):
+	object_triggered = object_encountered
 	action_names.clear()
 	action_specs.clear()
 	for x in range(event_actions.size()):

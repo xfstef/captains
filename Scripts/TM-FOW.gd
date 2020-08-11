@@ -35,37 +35,3 @@ func findVisibleTile(x, y):
 		if group.find(Vector2(x, y)) > -1:
 			return -1
 	return 16
-
-#func addPlayerVisibility(player_id):
-#	var player_visible_tiles = getPlayerVisibleTiles(player_id)
-#	#print(player_id, player_visible_tiles)
-#	player_visibilities.append([])
-#	player_visibilities[player_id] = []
-#	for x in range(width):
-#		player_visibilities[player_id].append([])
-#		player_visibilities[player_id][x] = []
-#		for y in range(height):
-#			player_visibilities[player_id][x].append([])
-#			if player_visible_tiles.find(Vector2(x, y)) == -1:
-#				player_visibilities[player_id][x][y] = 1
-#			else:
-#				player_visibilities[player_id][x][y] = -1
-#
-#func getPlayerVisibleTiles(player_id):
-#	var return_tiles = []
-#	var player_armies = adventure_map.player_instances[player_id].my_armies
-#	for army in player_armies:
-#		for l_o_s in army.line_of_sight:
-#			if return_tiles.find(l_o_s) == -1:
-#				return_tiles.append(l_o_s)
-#	return return_tiles
-#	# TODO: Add towns and other view generating objects to this calculation
-#
-#func updatePlayerVisibility(player_id, army_id):
-#	var player_vis = player_visibilities[player_id]
-#	var army = adventure_map.player_instances[player_id].my_armies[army_id]
-#	for tile in army.line_of_sight:
-#		var tile_vis = player_vis[tile.x][tile.y]
-#		if tile_vis != -1:
-#			player_vis[tile.x][tile.y] = -1
-#			set_cell(tile.x, tile.y, player_vis[tile.x][tile.y])
