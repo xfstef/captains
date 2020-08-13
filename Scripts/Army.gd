@@ -66,17 +66,13 @@ func _physics_process(delta):
 			var old_coords = my_coords
 			my_coords = adventure_map.propsTileMap.world_to_map(self.position)
 			adventure_map.player_instances[my_player_id].updateLOSPoint(old_coords, my_coords, l_o_s_range)
-			if currentMoveCommandStep == 1:
-				current_prop_code = adventure_map.propsTileMap.get_cell(my_coords.x, my_coords.y)
-				if current_prop_code == -1 && adventure_map.getArmyPresent(my_coords):
-					current_prop_code = 0
 		
 		if executeMoveCommand:
 			var step = fastest_path[0]
 			if step.move_cost <= my_remaining_movement_today:
 				var new_coords = adventure_map.propsTileMap.map_to_world(Vector2(step.x, step.y))
-				var npc_check = adventure_map.checkIfTileHasNPCs(Vector2(step.x, step.y))
-				if typeof(npc_check) == 1:
+				var tile_check = adventure_map.propsTileMap.checkIfTileHasInteractable(Vector2(step.x, step.y))
+				if tile_check == null:
 					moveTo(new_coords, step.move_cost)
 					currentMoveCommandStep += 1
 					adventure_map.clearMovementTracker(step.x, step.y)
@@ -85,13 +81,19 @@ func _physics_process(delta):
 					if fastest_path.size() == 0:
 						currentMoveCommandStep = 1
 						executeMoveCommand = false
-				else:
+				elif "unit_name" in tile_check:
 					executeMoveCommand = false
-					interactWithNPC(npc_check)
-		
-		if current_prop_code > -1 && adventure_map.propsTileMap.getPropStilValid(my_coords.x, my_coords.y, my_id, my_player_id) == true:
-			adventure_map.interactWithObject(my_coords, my_id)
-			current_prop_code = -1
+					interactWithNPC(tile_check)
+				elif "still_valid" in tile_check:
+					interactWithObject(tile_check)
+					moveTo(new_coords, step.move_cost)
+					currentMoveCommandStep += 1
+					adventure_map.clearMovementTracker(step.x, step.y)
+					top_panel.updateMovementLeft(my_remaining_movement_today)
+					fastest_path.remove(0)
+					if fastest_path.size() == 0:
+						currentMoveCommandStep = 1
+						executeMoveCommand = false
 
 func _input(event):
 	if event is InputEventMouseButton && event.is_pressed() == true && event.button_index == 1 || event is InputEventKey:
@@ -187,6 +189,14 @@ func modifyCache(resources_changes):
 
 func modifyGeneralSkills(skill_changes):
 	my_general_skills = skill_changes
+
+func interactWithObject(object):
+	if adventure_map.propsTileMap.getPropStilValid(object.my_coords.x, object.my_coords.y, my_id, my_player_id) == true:
+		adventure_event.setEventTitle(object.name)
+		adventure_event.setEventDescription(object.description)
+		var event_actions = object.choices
+		adventure_event.buildEvent(event_actions, null)
+		adventure_map.propsTileMap.markVisited(object.my_coords.x, object.my_coords.y, my_id, my_player_id)
 
 func interactWithNPC(npc):
 	npc.attack()

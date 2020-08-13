@@ -7,7 +7,10 @@ var my_coords
 var my_animation
 var frequency
 var still_valid
+var description
+var choices
 var visited_by = []
+var cell_id
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

@@ -8,6 +8,7 @@ var unit_name
 var unit_animations
 var has_attacked = false
 var amount = 0
+var cell_id
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

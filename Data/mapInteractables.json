@@ -4,17 +4,21 @@
         "frequency": 1,
         "animation": "refWell",
         "adventure_map_offset": [ 5, 30 ],
-        "choices": {
-            "attack": 2,
-            "defence": 2
-        }
+        "description": "A mechanically driven well with refreshing water.",
+        "choices": [
+            "Drink from the bottom",
+            { "Your army gains +2 Attack": 2 },
+            "Drink from the top",
+            { "Your army gains +2 Defense": 2 }
+        ]
     },
     "6": {
         "name": "Treasure Chest",
         "frequency": 0,
-        "choices": {
-            "gold": 500
-        }
+        "description": "You come across a treasure chest. What marvels await inside?",
+        "choices": [
+            "gold"
+        ]
     },
     "7": {
         "name": "Abandoned Tower",

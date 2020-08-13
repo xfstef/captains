@@ -5,7 +5,7 @@ var mapPath = "res://Maps/test5.json"
 var interactablesPath = "res://Data/mapInteractables.json"
 var directionIndexesPath = "res://Data/directionIndexes.json"
 var mapMoveIndesexPath = "res://Data/mapMoveIndexes.json"
-var unitsPath = "res://Data/units.json"
+#var unitsPath = "res://Data/units.json"
 var captainsPath = "res://Data/captains.json"
 var dayEventsPath = "res://Data/dayEvents.json"
 # Parameters
@@ -37,15 +37,12 @@ var player_instances = []
 var movement_trackers = []
 var action_names = []
 var action_specs = []
-var units_DB
 var captains_DB
 var selected_army_instance
 var current_player_istance
 var day_events
-var map_npcs = []
 var adventureMapUnit = load("res://Scenes/AdventureMapUnit.tscn")
 var aMInteractable = load("res://Scenes/AMInteractable.tscn")
-var map_interactables = []
 # Availables Scenes
 var adventure_event
 var new_day_event
@@ -86,7 +83,6 @@ func _ready():
 	directionIndexes = loadFilePayload(directionIndexesPath)
 	mapMoveIndexes = loadFilePayload(mapMoveIndesexPath)
 	mapInteractables = loadFilePayload(interactablesPath)
-	units_DB = loadFilePayload(unitsPath)
 	captains_DB = loadFilePayload(captainsPath)
 	adventure_event = get_node("UI/AdventureEvent")
 	eventCtrl = get_node("EventCtrl")
@@ -94,7 +90,7 @@ func _ready():
 	topPanel = get_node("UI/topPanel")
 	turnPanel = get_node("UI/TurnPanel")
 	player = get_node("Player")
-	rng = RandomNumberGenerator.new()	
+	rng = RandomNumberGenerator.new()
 	loadMapData(mapCreator.showEditor)
 	day_events = loadFilePayload(dayEventsPath)
 	new_day_event = get_node("UI/NewDayEvent")
@@ -157,9 +153,8 @@ func loadMapData(editor_mode):
 			landMassesMatrix[x][y] = payload.tiles[x][y][3]
 	
 	groundTileMap.setCells(mapGroundMatrix)
-	propsTileMap.setCells(mapPropsMatrix, editor_mode)
+	propsTileMap.setCells(mapPropsMatrix, editor_mode, payload.npcs)
 	movementTileMap.setCells(mapMovementMatrix)
-	loadInteractables(payload.npcs)
 	
 	for z in range(payload.playerStartRules.size()):
 		var new_player = player.duplicate()
@@ -174,45 +169,6 @@ func loadMapData(editor_mode):
 	current_player_istance = player_instances[current_player]
 	armiesListContainer.switchPlayer(current_player)
 	fowTileMap.updateVisibility(current_player)
-
-func loadInteractables(npc_rules):
-	for object in propsTileMap.interactable_props:
-		if "unit_id" in object && object.unit_id != null:
-			var npc_props = units_DB[object.unit_id]
-			var new_npc = adventureMapUnit.instance()
-			propsTileMap.add_child(new_npc)
-			new_npc.unit_name = npc_props.name
-			new_npc.my_coords = Vector2(object.x, object.y)
-			new_npc.position = propsTileMap.map_to_world(new_npc.my_coords)
-			var npc_rule = findNPCRules(npc_rules, new_npc.my_coords)
-			if npc_rule != null && "amount" in npc_rule:
-				new_npc.amount = npc_rule.amount
-			else:
-				#TODO: Implement unit_tier_modifier
-				rng.randomize()
-				new_npc.amount = MonsterDifficulty * rng.randi_range(5, 10) # + unit_tier_modifier
-			new_npc.loadSprite(npc_props.sprite_name)
-			new_npc.my_sprite.offset = Vector2(npc_props.adventure_map_offset[0], npc_props.adventure_map_offset[1])
-			map_npcs.append(new_npc)
-		else:
-			var new_interactable = aMInteractable.instance()
-			propsTileMap.add_child(new_interactable)
-			new_interactable.name = object.name
-			new_interactable.my_coords = Vector2(object.x, object.y)
-			new_interactable.position = propsTileMap.map_to_world(new_interactable.my_coords)
-			new_interactable.frequency = object.frequency
-			new_interactable.still_valid = object.still_valid
-			new_interactable.visited_by = object.visited_by
-			if "animation" in object:
-				new_interactable.loadSprite(object.animation)
-				new_interactable.my_sprite.offset = Vector2(object.adventure_map_offset[0], object.adventure_map_offset[1])
-			map_interactables.append(new_interactable)
-
-func findNPCRules(rules, x_y):
-	for rule in rules:
-		if rule.x == x_y.x && rule.y == x_y.y:
-			return rule
-	return null
 
 func instantiate_player_armies(player_nr, player_armies):
 	player_instances[player_nr].my_armies.append([])
@@ -391,15 +347,6 @@ func getArmyPresent(tile):
 				return true
 	return false
 
-func interactWithObject(tile, army_id):
-	var prop_code = propsTileMap.get_cell(tile.x, tile.y)
-	var interactable = mapInteractables.get(String(prop_code))
-	adventure_event.setEventTitle(interactable.get("name"))
-	adventure_event.setEventDescription(interactable.get("description"))
-	var event_actions = interactable.get("choices")
-	adventure_event.buildEvent(event_actions, null)
-	propsTileMap.markVisited(tile.x, tile.y, selected_army.army_id, selected_army.player_id)
-
 func endTurn(next_turn):
 	playOtherPlayerTurns()
 	turnPanel.setTurnLabel()
@@ -414,9 +361,3 @@ func endTurn(next_turn):
 
 func playOtherPlayerTurns():
 	print("Other players are gaming")
-
-func checkIfTileHasNPCs(x_y):
-	for npc in map_npcs:
-		if npc.my_coords == x_y:
-			return npc
-	return false
