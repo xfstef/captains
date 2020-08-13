@@ -62,6 +62,7 @@ func updateExploredTiles(point, x_pos):
 						else:
 							updateExploredMassIndexes(current_mass, u)
 						break
+	adventure_map.propsTileMap.updateVisibility(my_visible_tiles)
 
 func checkPointInOrAdjacentToGroup(point, group2):
 	if group2.find(point) > -1 || isNeighbourOf(point, group2) == true:

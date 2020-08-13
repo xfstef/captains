@@ -110,3 +110,31 @@ func getPropStilValid(x, y, army_id, player_id):
 						if army.a_id == army_id && army.p_id == player_id:
 							return false
 					return true
+
+func updateVisibility(new_visible_tiles):
+	var tile_found
+	for npc in npcs:
+		for group in new_visible_tiles:
+			tile_found = group.find(npc.my_coords)
+			if tile_found != -1:
+				break
+		if tile_found != -1:
+			if npc.my_sprite.playing == false:
+				npc.my_sprite.play("Idle", false)
+		else:
+			if npc.my_sprite.playing == true:
+				npc.my_sprite.stop()
+	
+	for interactable in interactables:
+		if interactable.my_animation != null:
+			for group in new_visible_tiles:
+				tile_found = group.find(interactable.my_coords)
+				if tile_found != -1:
+					break
+			if tile_found != -1:
+				if interactable.my_sprite.playing == false:
+					interactable.my_sprite.play("Idle", false)
+			else:
+				if interactable.my_sprite.playing == true:
+					interactable.my_sprite.stop()
+
