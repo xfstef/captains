@@ -44,5 +44,23 @@
     },
     "9": {
         "unit_id": 1
+    },
+    "11": {
+        "name": "Gold Mine",
+        "frequency": 0,
+        "description": "You come across a rich gold mine.",
+        "interactableCell": [0, 1],
+        "capturable": true,
+        "flag_offset": [0, 0],
+        "choices": [
+            "Capture",
+            {
+                "gold": 1000
+            },
+            "Plunder",
+            {
+                "gold": 2500
+            }
+        ]
     }
 }

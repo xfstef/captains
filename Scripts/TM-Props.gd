@@ -69,6 +69,14 @@ func setCells(data, editor_enabled, npc_rules):
 						new_interactable.my_sprite.offset = Vector2(prop_props.adventure_map_offset[0], prop_props.adventure_map_offset[1])
 					else:
 						set_cell(x, y, data[x][y])
+					if "interactableCell" in prop_props:
+						new_interactable.interactable_cell = Vector2(new_interactable.my_coords.x + prop_props.interactableCell[0], new_interactable.my_coords.y + prop_props.interactableCell[1])
+					else:
+						new_interactable.interactable_cell = new_interactable.my_coords
+					if "capturable" in prop_props:
+						new_interactable.capturable = prop_props.capturable
+						new_interactable.flag_offset = Vector2(prop_props.flag_offset[0], prop_props.flag_offset[1])
+						new_interactable.loadFlag(15)
 					interactables.append(new_interactable)
 			else:
 				set_cell(x, y, data[x][y])
@@ -84,32 +92,28 @@ func checkIfTileHasInteractable(x_y):
 		if npc.my_coords == x_y:
 			return npc
 	for interactable in interactables:
-		if interactable.my_coords == x_y:
+		if interactable.interactable_cell == x_y:
 			return interactable
 	return null
 
-func markVisited(x, y, army_id, player_id):
-	for prop in interactables:
-		if prop.my_coords.x == x && prop.my_coords.y == y:
-			match prop.frequency:
-				0.0:
-					prop.still_valid = false
-					prop.visited_by.append({p_id = player_id, a_id = army_id})
-				1.0:
-					prop.visited_by.append({p_id = player_id, a_id = army_id})
-			return
+func markVisited(army_id, player_id, the_prop):
+	match the_prop.frequency:
+		0.0:
+			the_prop.still_valid = false
+			the_prop.visited_by.append({p_id = player_id, a_id = army_id})
+		1.0:
+			the_prop.visited_by.append({p_id = player_id, a_id = army_id})
+	return
 
-func getPropStilValid(x, y, army_id, player_id):
-	for prop in interactables:
-		if prop.my_coords.x == x && prop.my_coords.y == y:
-			match prop.frequency:
-				0.0:
-					return prop.still_valid
-				1.0:
-					for army in prop.visited_by:
-						if army.a_id == army_id && army.p_id == player_id:
-							return false
-					return true
+func getPropStilValid(army_id, player_id, the_prop):
+	match the_prop.frequency:
+		0.0:
+			return the_prop.still_valid
+		1.0:
+			for army in the_prop.visited_by:
+				if army.a_id == army_id && army.p_id == player_id:
+					return false
+			return true
 
 func updateVisibility(new_visible_tiles):
 	var tile_found

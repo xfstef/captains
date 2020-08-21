@@ -160,6 +160,7 @@ func loadMapData(editor_mode):
 		var new_player = player.duplicate()
 		new_player.my_id = z
 		new_player.adventure_map = self
+		new_player.my_color = payload.playerStartRules[z].color
 		player_instances.append(new_player)
 		if payload.playerStartRules[z].get("armies"):
 			instantiate_player_armies(z, payload.playerStartRules[z].armies)

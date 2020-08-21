@@ -191,12 +191,13 @@ func modifyGeneralSkills(skill_changes):
 	my_general_skills = skill_changes
 
 func interactWithObject(object):
-	if adventure_map.propsTileMap.getPropStilValid(object.my_coords.x, object.my_coords.y, my_id, my_player_id) == true:
+	if adventure_map.propsTileMap.getPropStilValid(my_id, my_player_id, object) == true:
 		adventure_event.setEventTitle(object.name)
 		adventure_event.setEventDescription(object.description)
 		var event_actions = object.choices
-		adventure_event.buildEvent(event_actions, null)
-		adventure_map.propsTileMap.markVisited(object.my_coords.x, object.my_coords.y, my_id, my_player_id)
+		adventure_event.buildEvent(event_actions, object)
+		#if object.fre
+		adventure_map.propsTileMap.markVisited(my_id, my_player_id, object)
 
 func interactWithNPC(npc):
 	npc.attack()

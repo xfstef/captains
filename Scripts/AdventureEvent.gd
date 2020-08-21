@@ -52,13 +52,17 @@ func eventButtonClicked(id):
 		for x in range(event_action_buttons.size()):
 			event_action_buttons[x].visible = false
 #		adventure_map.eventActionPressed(id)
-		adventure_map.eventCtrl.parseEventAction(action_specs[id], action_names[id], adventure_map.selected_army_instance, self)
+		adventure_map.eventCtrl.parseEventAction(action_specs[id], action_names[id], adventure_map.selected_army_instance, object_triggered, self)
 	else:
 		visible = false
 		adventure_map.mouseCtrl.setMouseState(-1)
 
 func showResult(result):
-	event_description.text = result
-	event_action_buttons[0].text = "Ok"
-	event_action_buttons[0].my_id = -1
-	event_action_buttons[0].visible = true
+	if result != null:
+		event_description.text = result
+		event_action_buttons[0].text = "Ok"
+		event_action_buttons[0].my_id = -1
+		event_action_buttons[0].visible = true
+	else:
+		visible = false
+		adventure_map.mouseCtrl.setMouseState(-1)

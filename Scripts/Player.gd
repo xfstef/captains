@@ -9,6 +9,7 @@ var my_explored_tiles = []
 var explored_masses = []
 var my_visible_tiles = []
 var los_points = []
+var my_color = 0
 # Global Instances
 var adventure_map
 

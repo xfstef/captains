@@ -1,5 +1,8 @@
 extends Node2D
 
+var my_flag = load("res://Scenes/PlayerFlag.tscn")
+var my_flag_instance
+var my_flag_i_sprite
 var my_sprite
 var adventure_map
 var tm_props
@@ -11,6 +14,11 @@ var description
 var choices
 var visited_by = []
 var cell_id
+var interactable_cell
+var my_player_id
+var capturable = false
+var flag_offset = Vector2(0, 0)
+var disabled = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -26,3 +34,10 @@ func loadSprite(name):
 		my_sprite.play("Idle", false)
 	else:
 		my_animation = null
+
+func loadFlag(default_flag):
+	my_flag_instance = my_flag.instance()
+	add_child(my_flag_instance)
+	my_flag_instance.position = flag_offset
+	my_flag_i_sprite = my_flag_instance.get_node("AnimatedSprite")
+	my_flag_i_sprite.frame = default_flag

@@ -101,7 +101,6 @@ func _unhandled_input(event):
 		if move_tile == 0 && selected_land_mass == c_s_a.current_land_mass:
 			if is_path_to_tile_explored == true:
 				if army_present == true || interactable_present != null:
-					print(interactable_present)
 					if tile.x == c_s_a.my_coords.x && tile.y == c_s_a.my_coords.y:
 						Input.set_custom_mouse_cursor(m_pointer_ui)
 						pointerState = 3
