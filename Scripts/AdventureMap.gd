@@ -38,11 +38,14 @@ var movement_trackers = []
 var action_names = []
 var action_specs = []
 var captains_DB
-var selected_army_instance
+#var selected_army_instance
+#var selected_town_instance
+var current_selection_instance
 var current_player_istance
 var day_events
 var adventureMapUnit = load("res://Scenes/AdventureMapUnit.tscn")
 var aMInteractable = load("res://Scenes/AMInteractable.tscn")
+var townObject = load("res://Scenes/Town.tscn")
 # Availables Scenes
 var adventure_event
 var new_day_event
@@ -53,7 +56,9 @@ var mapMovementMatrix = []
 var landMassesMatrix = []
 var mapWidth = 0
 var mapHeight = 0
-var selected_army = { player_id = 0, army_id = 0}
+#var selected_army = { player_id = -1, army_id = -1}
+#var selected_town = { player_id = -1, town_id = -1}
+var current_selection = {player_id = -1, entity_id = -1}
 var command_given = false
 var current_player = 0
 var rng
@@ -189,10 +194,10 @@ func instantiate_player_armies(player_nr, player_armies):
 			camera.followNode(player_instances[player_nr].my_armies[h].position)
 		var army_cache = player_armies[h].get("cache")
 		if "selected" in player_armies[h] && player_armies[h].selected == true:
-			selected_army.army_id = h
-			selected_army_instance = player_instances[player_nr].my_armies[h]
-			selected_army_instance.currently_selected = true
-			topPanel.updateMovementLeft(selected_army_instance.my_remaining_movement_today)
+			current_selection.entity_id = h
+			current_selection_instance = player_instances[player_nr].my_armies[h]
+			current_selection_instance.currently_selected = true
+			topPanel.updateMovementLeft(current_selection_instance.my_remaining_movement_today)
 		if "cache" in player_armies[h]:
 			player_instances[player_nr].my_armies[h].modifyCache(army_cache)
 		player_instances[player_nr].registerLOSPoint(pos, player_instances[player_nr].my_armies[h].l_o_s_range)
@@ -209,22 +214,37 @@ func instantiate_player_towns(player_nr, player_towns):
 	player_instances[player_nr].my_towns.append([])
 	player_instances[player_nr].my_towns = []
 	for h in range(player_towns.size()):
+		var new_town = townObject.instance()
+		var pos = Vector2(player_towns[h].x, player_towns[h].y)
+		new_town.my_coords = pos
+		new_town.position = propsTileMap.map_to_world(pos)
+		new_town.current_land_mass = landMassesMatrix[pos.x][pos.y]
+		new_town.my_id = h
+		new_town.my_player_id = player_nr
+		if "selected" in player_towns[h] && player_towns[h].selected == true:
+			current_selection.entity_id = h
+			current_selection_instance = new_town
+			current_selection_instance.currently_selected = true
+		player_instances[player_nr].registerLOSPoint(pos, new_town.l_o_s_range)
+		player_instances[player_nr].updateLOSPoint(pos, pos, new_town.l_o_s_range)
+		player_instances[player_nr].my_towns.append(new_town)
+		
 		townsContainer.add_child(townButton.duplicate())
-		townsContainer.get_child(h).setID(player_towns[h].townId)
 		townsContainer.get_child(h).my_player_id = player_nr
+		townsContainer.get_child(h).my_town_id = h
 		townsContainer.get_child(h).visible = true
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 
 func _unhandled_input(event):
-	if camera.tween.is_active() || mouseCtrl.pointerState == 5:
+	if camera.tween.is_active() || mouseCtrl.pointerState == 5 || current_selection_instance.travel_type == -1:
 		return
 	
-	var p_a_s_x = selected_army_instance.my_coords.x
-	var p_a_s_y = selected_army_instance.my_coords.y
-	var army_land_mass = selected_army_instance.current_land_mass
-	var army_travel_type = selected_army_instance.travel_type
+	var p_a_s_x = current_selection_instance.my_coords.x
+	var p_a_s_y = current_selection_instance.my_coords.y
+	var army_land_mass = current_selection_instance.current_land_mass
+	var army_travel_type = current_selection_instance.travel_type
 	
 	if event is InputEventKey && event.pressed == false:
 		var d_modifier = establishMapMoveDirectionModifiers(event.scancode)
@@ -232,17 +252,17 @@ func _unhandled_input(event):
 			return
 		
 		if isTileAccessible(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y, army_travel_type, army_land_mass):
-			selected_army_instance.moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y)), movementTileMap.tile_move_expense[p_a_s_x + d_modifier.x][p_a_s_y + d_modifier.y])
+			current_selection_instance.moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y)), movementTileMap.tile_move_expense[p_a_s_x + d_modifier.x][p_a_s_y + d_modifier.y])
 	
 	elif event is InputEventMouseButton && event.is_pressed() == false && event.button_index == 1 && (mouseCtrl.pointerState == 0 || mouseCtrl.pointerState == 2):
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
 		if (tile.x != p_a_s_x || tile.y != p_a_s_y) && isTileAccessible(tile.x, tile.y, army_travel_type, army_land_mass):
-			if selected_army_instance.selected_coords == tile:
-				selected_army_instance.executeMoveCommand = true
+			if current_selection_instance.selected_coords == tile:
+				current_selection_instance.executeMoveCommand = true
 			else:
 				for h in range(movement_trackers.size()):
 					movement_trackers[h].visible = false
-				selected_army_instance.calculateFastestPath(tile.x, tile.y)
+				current_selection_instance.calculateFastestPath(tile.x, tile.y)
 
 # TODO: Improve this function so that it takes into consideration the army travel type and land masses and portals
 func isTileAccessible(x, y, travel_type, land_mass):
@@ -279,8 +299,8 @@ func getNodeNeighbours(node, army_travel_type, land_mass):
 	return valid_neighbours
 
 func drawPath(army_id):
-	var nodes = selected_army_instance.fastest_path
-	var army_range = selected_army_instance.my_remaining_movement_today
+	var nodes = current_selection_instance.fastest_path
+	var army_range = current_selection_instance.my_remaining_movement_today
 	var current_cost = 0
 	for x in range(nodes.size()):
 		current_cost += nodes[x].move_cost
@@ -299,7 +319,7 @@ func drawPath(army_id):
 			if x != 0:
 				movement_trackers[x].setTrackerIndex(establishDirection(nodes[x - 1], nodes[x], nodes[x + 1], army_id))
 			else:
-				movement_trackers[x].setTrackerIndex(establishDirection({x = selected_army_instance.my_coords.x, y = selected_army_instance.my_coords.y}, nodes[x], nodes[x + 1], army_id))
+				movement_trackers[x].setTrackerIndex(establishDirection({x = current_selection_instance.my_coords.x, y = current_selection_instance.my_coords.y}, nodes[x], nodes[x + 1], army_id))
 		else:
 			movement_trackers[x].setTrackerIndex(40)
 		movement_trackers[x].visible = true
@@ -328,23 +348,27 @@ func establishMapMoveDirectionModifiers(key_stroke):
 		return Vector2(modifiers[0], modifiers[1])
 	return null
 
-func armySelected(army_id):
-	if selected_army.army_id != army_id:
-		selected_army_instance.currently_selected = false
-		selected_army.army_id = army_id
-		selected_army_instance = player_instances[current_player].my_armies[selected_army.army_id]
-		selected_army_instance.currently_selected = true
-		topPanel.updateCache(selected_army_instance.my_cache)
-		topPanel.updateMovementLeft(selected_army_instance.my_remaining_movement_today)
+func newSelected(the_id, armyOrTown):
+	var old_id = current_selection.entity_id
+	current_selection_instance.currently_selected = false
+	current_selection.entity_id = the_id
+	if armyOrTown == true:
+		current_selection_instance = player_instances[current_player].my_armies[current_selection.entity_id]
+	else:
+		current_selection_instance = player_instances[current_player].my_towns[current_selection.entity_id]
+	current_selection_instance.currently_selected = true
+	topPanel.updateCache(current_selection_instance.my_cache)
+	if current_selection_instance.travel_type != -1 && old_id != the_id:
+		topPanel.updateMovementLeft(current_selection_instance.my_remaining_movement_today)
 		clearMovementTrackers()
-		if selected_army_instance.fastest_path.size() > 0:
-			drawPath(army_id)
-	camera.followNode(selected_army_instance.position)
+		if current_selection_instance.fastest_path.size() > 0:
+			drawPath(the_id)
+	camera.followNode(current_selection_instance.position)
 
 func getArmyPresent(tile):
 	for x in range(player_instances.size()):
 		for y in range(player_instances[x].my_armies.size()):
-			if y != selected_army.army_id && player_instances[x].my_armies[y].my_coords == tile:
+			if y != current_selection.entity_id && player_instances[x].my_armies[y].my_coords == tile:
 				return true
 	return false
 
@@ -354,8 +378,9 @@ func endTurn(next_turn):
 	var new_event = null
 	for army in player_instances[current_player].my_armies:
 		army.my_remaining_movement_today = army.my_movement_points
-	drawPath(selected_army.army_id)
-	topPanel.updateMovementLeft(selected_army_instance.my_remaining_movement_today)
+	if current_selection_instance.travel_type != -1:
+		drawPath(current_selection.entity_id)
+		topPanel.updateMovementLeft(current_selection_instance.my_remaining_movement_today)
 	if day_events.get(String(turnPanel.current_day)) && day_events.get(String(turnPanel.current_day)).get(String(turnPanel.current_week)) && day_events.get(String(turnPanel.current_day)).get(String(turnPanel.current_week)).get(String(turnPanel.current_month)):
 		new_event = day_events.get(String(turnPanel.current_day)).get(String(turnPanel.current_week)).get(String(turnPanel.current_month))
 	new_day_event.setNewDay(turnPanel.turn_label_string, new_event)

@@ -38,7 +38,7 @@ var data = {
 					}
 				}
 			],
-			"castles": [{"cameraStartPosition":false,"townId":0,"selected":false,"x":10,"y":6}]
+			"castles": [{"cameraStartPosition":false,"townId":0,"selected":false,"x":3,"y":5}]
 		},
 		{
 			"canBeHuman": false,

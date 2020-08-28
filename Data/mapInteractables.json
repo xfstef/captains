@@ -62,5 +62,19 @@
                 "gold": 2500
             }
         ]
+    },
+    "12": {
+        "name": "Town",
+        "frequency": 0,
+        "description": "",
+        "interactableCell": [1, 1],
+        "capturable": true,
+        "flag_offset": [0, 0],
+        "choices": [
+            "Siege!",
+            {
+                "conquered": true
+            }
+        ]
     }
 }

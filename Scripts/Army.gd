@@ -14,14 +14,12 @@ var adventure_map
 var executeMoveCommand = false
 var currentMoveCommandStep = 1
 var tm_movement
-var tm_fow
 var current_land_mass
 var my_id
 var my_frame_id
 var my_player_id
 var my_movement_points
 var my_remaining_movement_today
-var mouse_controller
 var current_prop_code = -1
 var currently_selected = false
 
@@ -53,10 +51,8 @@ func _ready():
 	adventure_event = adventure_map.adventure_event
 	top_panel = adventure_map.topPanel
 	tm_movement = get_node("../../TM-Movement")
-	tm_fow = get_node("../../TM-FOW")
 	my_movement_points = 100
 	my_remaining_movement_today = 100
-	mouse_controller = get_node("../../MouseCtrl")
 
 func _physics_process(delta):
 	if !tween.is_active():

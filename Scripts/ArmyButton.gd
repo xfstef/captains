@@ -19,4 +19,4 @@ func setFrameID(new_id):
 func _on_ArmyButton_pressed():
 	if mouse_controller.pointerState == 5:
 		return
-	adventure_map.armySelected(my_army_id)
+	adventure_map.newSelected(my_army_id, true)

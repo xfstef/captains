@@ -79,6 +79,13 @@ func _process(delta):
 
 func _unhandled_input(event):
 	if event is InputEventMouse:
+		var c_s_a
+		if adventure_map.current_selection_instance.travel_type != -1:
+			c_s_a = adventure_map.current_selection_instance
+		else:
+			Input.set_custom_mouse_cursor(m_pointer_interact)
+			pointerState = 2
+			return
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
 		var move_tile = movementTileMap.get_cell(tile.x, tile.y)
 		var selected_land_mass
@@ -86,7 +93,6 @@ func _unhandled_input(event):
 			selected_land_mass = adventure_map.landMassesMatrix[tile.x][tile.y]
 		else:
 			selected_land_mass = 0
-		var c_s_a = adventure_map.selected_army_instance
 		var army_present = adventure_map.getArmyPresent(tile)
 		var interactable_present = adventure_map.propsTileMap.checkIfTileHasInteractable(tile)
 		var player_explored_masses = adventure_map.current_player_istance.explored_masses
