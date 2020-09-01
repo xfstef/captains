@@ -41,3 +41,7 @@ func loadFlag(default_flag):
 	my_flag_instance.position = flag_offset
 	my_flag_i_sprite = my_flag_instance.get_node("AnimatedSprite")
 	my_flag_i_sprite.frame = default_flag
+
+func setFlag(new_flag_color, new_player_id):
+	my_flag_i_sprite.frame = new_flag_color
+	my_player_id = new_player_id

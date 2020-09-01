@@ -32,10 +32,10 @@
             },
             "Explore",
             {
-                "10%": "minor Artifact",
+                "10%": "major Artifact",
                 "20%": "lost some troops",
                 "30%": "found 1000 gold",
-                "40%": "major Artifact"
+                "40%": "minor Artifact"
             }
         ]
     },
@@ -65,6 +65,7 @@
     },
     "12": {
         "name": "Town",
+        "isTown": true,
         "frequency": 0,
         "description": "",
         "interactableCell": [1, 1],

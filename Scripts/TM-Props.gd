@@ -1,6 +1,7 @@
 extends TileMap
 
 var unitsPath = "res://Data/units.json"
+var town = load("res://Scripts/Town.gd")
 
 var width
 var height
@@ -52,7 +53,11 @@ func setCells(data, editor_enabled, npc_rules):
 					new_npc.my_sprite.offset = Vector2(npc_props.adventure_map_offset[0], npc_props.adventure_map_offset[1])
 					npcs.append(new_npc)
 				else:
-					var new_interactable = aMInteractable.instance()
+					var new_interactable
+					if "isTown" in prop_props && prop_props.isTown == true:
+						new_interactable = town.new()
+					else:
+						new_interactable = aMInteractable.instance()
 					add_child(new_interactable)
 					new_interactable.name = prop_props.name
 					new_interactable.cell_id = cell_type
@@ -142,3 +147,7 @@ func updateVisibility(new_visible_tiles):
 				if interactable.my_sprite.playing == true:
 					interactable.my_sprite.stop()
 
+func findInteractable(x_y):
+	for interactable in interactables:
+		if interactable.my_coords == x_y:
+			return interactable

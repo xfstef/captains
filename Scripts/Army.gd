@@ -187,6 +187,10 @@ func modifyGeneralSkills(skill_changes):
 	my_general_skills = skill_changes
 
 func interactWithObject(object):
+	print(object.my_player_id)
+	if object.my_player_id == my_player_id:
+		#TODO: Open town / captain / PoI interaction view.
+		return
 	if adventure_map.propsTileMap.getPropStilValid(my_id, my_player_id, object) == true:
 		adventure_event.setEventTitle(object.name)
 		adventure_event.setEventDescription(object.description)

@@ -20,6 +20,13 @@ func registerLOSPoint(x_y, los_range):
 			return
 	los_points.append({x_y = x_y, los_range = los_range})
 
+#TODO Make sure the lost LOS point is taken correctly into account.
+func removeLOSPoint(x_y):
+	for point in los_points:
+		if point.x_y == x_y:
+			los_points.erase(point)
+			break
+
 func updateLOSPoint(old_x_y, new_x_y, los_range):
 	for x in range(los_points.size()):
 		var point = los_points[x]

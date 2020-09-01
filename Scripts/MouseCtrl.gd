@@ -95,11 +95,11 @@ func _unhandled_input(event):
 			selected_land_mass = 0
 		var army_present = adventure_map.getArmyPresent(tile)
 		var interactable_present = adventure_map.propsTileMap.checkIfTileHasInteractable(tile)
-		var player_explored_masses = adventure_map.current_player_istance.explored_masses
-		var is_tile_explored = adventure_map.current_player_istance.my_explored_tiles.find(tile)
+		var player_explored_masses = adventure_map.current_player_instance.explored_masses
+		var is_tile_explored = adventure_map.current_player_instance.my_explored_tiles.find(tile)
 		var tile_explored_mass = -1
 		if is_tile_explored > -1:
-			tile_explored_mass = adventure_map.current_player_istance.getTileExploredMass(tile)
+			tile_explored_mass = adventure_map.current_player_instance.getTileExploredMass(tile)
 		var is_path_to_tile_explored = false
 		if c_s_a.my_explored_mass == tile_explored_mass:
 			is_path_to_tile_explored = true

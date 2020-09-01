@@ -41,7 +41,7 @@ var captains_DB
 #var selected_army_instance
 #var selected_town_instance
 var current_selection_instance
-var current_player_istance
+var current_player_instance
 var day_events
 var adventureMapUnit = load("res://Scenes/AdventureMapUnit.tscn")
 var aMInteractable = load("res://Scenes/AMInteractable.tscn")
@@ -172,8 +172,9 @@ func loadMapData(editor_mode):
 		if payload.playerStartRules[z].get("castles"):
 			instantiate_player_towns(z, payload.playerStartRules[z].castles)
 	
-	current_player_istance = player_instances[current_player]
+	current_player_instance = player_instances[current_player]
 	armiesListContainer.switchPlayer(current_player)
+	townsContainer.switchPlayer(current_player)
 	fowTileMap.updateVisibility(current_player)
 
 func instantiate_player_armies(player_nr, player_armies):
@@ -214,25 +215,47 @@ func instantiate_player_towns(player_nr, player_towns):
 	player_instances[player_nr].my_towns.append([])
 	player_instances[player_nr].my_towns = []
 	for h in range(player_towns.size()):
-		var new_town = townObject.instance()
+		#var new_town = townObject.instance()
 		var pos = Vector2(player_towns[h].x, player_towns[h].y)
-		new_town.my_coords = pos
-		new_town.position = propsTileMap.map_to_world(pos)
+		var new_town = propsTileMap.findInteractable(pos)
+		#new_town.my_coords = pos
+		#new_town.position = propsTileMap.map_to_world(pos)
 		new_town.current_land_mass = landMassesMatrix[pos.x][pos.y]
-		new_town.my_id = h
-		new_town.my_player_id = player_nr
+		new_town.my_id = player_towns[h].townId
+		#new_town.my_player_id = player_nr
 		if "selected" in player_towns[h] && player_towns[h].selected == true:
 			current_selection.entity_id = h
 			current_selection_instance = new_town
 			current_selection_instance.currently_selected = true
+		
+		addTownToPlayer(player_nr, new_town, pos)
+
+func addTownToPlayer(player_nr, new_town, pos):
 		player_instances[player_nr].registerLOSPoint(pos, new_town.l_o_s_range)
 		player_instances[player_nr].updateLOSPoint(pos, pos, new_town.l_o_s_range)
 		player_instances[player_nr].my_towns.append(new_town)
-		
-		townsContainer.add_child(townButton.duplicate())
-		townsContainer.get_child(h).my_player_id = player_nr
-		townsContainer.get_child(h).my_town_id = h
-		townsContainer.get_child(h).visible = true
+		new_town.setFlag(player_instances[player_nr].my_color, player_instances[player_nr].my_id)
+		addTownToTownsContainer(player_nr, new_town.my_id)
+
+func removeTownFromPlayer(old_owner, town):
+	for town in player_instances[old_owner].my_towns:
+		if town.my_player_id != old_owner:
+			player_instances[old_owner].my_towns.erase(town)
+			break
+	
+	for town_button in townsContainer.get_children():
+		if town_button.my_town_id == town.my_id:
+			town_button.my_player_id = town.my_player_id
+			break
+	
+	player_instances[old_owner].removeLOSPoint(town.my_coords)
+
+func addTownToTownsContainer(player_id, town_id):
+	var new_town_button = townButton.duplicate()
+	townsContainer.add_child(new_town_button)
+	new_town_button.my_player_id = player_id
+	new_town_button.my_town_id = town_id
+	new_town_button.visible = true
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):

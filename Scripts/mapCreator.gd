@@ -19,6 +19,7 @@ var data = {
 					"cameraStartPosition": true,
 					"selected": true,
 					"heroId": 0,
+					"portraitId": 0,
 					"units": [
 							{"unitId": 0, "amount": 1, "captainId": -1},
 							{"unitId": 1, "amount": 5, "captainId": 0}
@@ -46,8 +47,12 @@ var data = {
 			"forcedCaptain": 0,
 			"forcedStartBonus": 1,
 			"startingAlliance": 0,
-			"color": 1
+			"color": 1,
+			"castles": [{"cameraStartPosition":false,"townId":1,"selected":false,"x":1,"y":1}]
 		}
+	],
+	"neutralStartRules":[
+		
 	],
 	"winConditions": [0],
 	"lossConditions": [0, 1],

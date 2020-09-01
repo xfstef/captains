@@ -25,7 +25,7 @@ func parseEventAction(specs, name, army, object, eventPanel):
 			eventPanel.object_triggered.npcWon(-1)
 			eventPanel.eventButtonClicked(-1)
 		"Capture":
-			object.my_flag_i_sprite.frame = adventure_map.current_player_istance.my_color
+			object.setFlag(adventure_map.current_player_instance.my_color, adventure_map.current_player_instance.my_id)
 			var resource_type = String(specs.keys()[0])
 			var resource_amount = String(specs.values()[0])
 			result = "This mine will now generate " + resource_amount + " " + resource_type + " every day."
@@ -34,6 +34,13 @@ func parseEventAction(specs, name, army, object, eventPanel):
 			var resource_amount = String(specs.values()[0])
 			resources_changes[resource_type] = specs.values()[0]
 			result = "After looting everything you could find, you've gained " + resource_amount + " " + resource_type + "."
+		"Siege!":
+			if object.my_units.size() == 0:
+				var old_owner = object.my_player_id
+				var new_owner = adventure_map.current_player_instance.my_id
+				object.setFlag(adventure_map.current_player_instance.my_color, new_owner)
+				adventure_map.addTownToPlayer(new_owner, object, object.my_coords)
+				adventure_map.removeTownFromPlayer(old_owner, object)
 	
 	eventPanel.showResult(result)
 	
