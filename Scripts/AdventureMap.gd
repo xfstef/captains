@@ -274,9 +274,10 @@ func _unhandled_input(event):
 		if d_modifier == null:
 			return
 		
-		if (current_selection_instance.my_remaining_movement_today >= movementTileMap.tile_move_expense[p_a_s_x + d_modifier.x][p_a_s_y + d_modifier.y]) && isTileAccessible(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y, army_travel_type, army_land_mass):
-			current_selection_instance.moveTo(propsTileMap.map_to_world(Vector2(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y)), movementTileMap.tile_move_expense[p_a_s_x + d_modifier.x][p_a_s_y + d_modifier.y])
+		if isTileAccessible(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y, army_travel_type, army_land_mass):
 			clearMovementTrackers()
+			current_selection_instance.calculateFastestPath(p_a_s_x + d_modifier.x, p_a_s_y + d_modifier.y)
+			current_selection_instance.executeMoveCommand = true
 	
 	elif event is InputEventMouseButton && event.is_pressed() == false && event.button_index == 1 && (mouseCtrl.pointerState == 0 || mouseCtrl.pointerState == 2):
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
@@ -284,8 +285,7 @@ func _unhandled_input(event):
 			if current_selection_instance.selected_coords == tile:
 				current_selection_instance.executeMoveCommand = true
 			else:
-				for h in range(movement_trackers.size()):
-					movement_trackers[h].visible = false
+				clearMovementTrackers()
 				current_selection_instance.calculateFastestPath(tile.x, tile.y)
 
 # TODO: Improve this function so that it takes into consideration the army travel type and land masses and portals
