@@ -72,7 +72,6 @@ func _physics_process(delta):
 					moveTo(new_coords, step.move_cost)
 					currentMoveCommandStep += 1
 					adventure_map.clearMovementTracker(step.x, step.y)
-					top_panel.updateMovementLeft(my_remaining_movement_today)
 					fastest_path.remove(0)
 					if fastest_path.size() == 0:
 						currentMoveCommandStep = 1
@@ -85,7 +84,6 @@ func _physics_process(delta):
 					moveTo(new_coords, step.move_cost)
 					currentMoveCommandStep += 1
 					adventure_map.clearMovementTracker(step.x, step.y)
-					top_panel.updateMovementLeft(my_remaining_movement_today)
 					fastest_path.remove(0)
 					if fastest_path.size() == 0:
 						currentMoveCommandStep = 1
@@ -99,6 +97,7 @@ func moveTo(x_y, cost):
 	x_y.y += 37
 	move_coords = x_y
 	my_remaining_movement_today -= cost
+	top_panel.updateMovementLeft(my_remaining_movement_today)
 	tween.interpolate_property(self, 'position', self.position, move_coords, 1, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 	tween.start()
 	my_animation.playing = true
