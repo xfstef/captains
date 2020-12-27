@@ -29,7 +29,7 @@ func setCells(data, editor_enabled, npc_rules):
 	var prop_props
 	for x in range(height):
 		for y in range(width):
-			cell_type = String(data[x][y])
+			cell_type = String(data[x][y][1])
 			if !editor_enabled && cell_type in adventure_map.mapInteractables:
 				prop_props = null
 				prop_props = adventure_map.mapInteractables.get(cell_type)
@@ -73,7 +73,7 @@ func setCells(data, editor_enabled, npc_rules):
 						new_interactable.loadSprite(prop_props.animation)
 						new_interactable.my_sprite.offset = Vector2(prop_props.adventure_map_offset[0], prop_props.adventure_map_offset[1])
 					else:
-						set_cell(x, y, data[x][y])
+						set_cell(x, y, data[x][y][1])
 					if "interactableCell" in prop_props:
 						new_interactable.interactable_cell = Vector2(new_interactable.my_coords.x + prop_props.interactableCell[0], new_interactable.my_coords.y + prop_props.interactableCell[1])
 					else:
@@ -84,7 +84,7 @@ func setCells(data, editor_enabled, npc_rules):
 						new_interactable.loadFlag(15)
 					interactables.append(new_interactable)
 			else:
-				set_cell(x, y, data[x][y])
+				set_cell(x, y, data[x][y][1])
 
 func findNPCRules(rules, x_y):
 	for rule in rules:

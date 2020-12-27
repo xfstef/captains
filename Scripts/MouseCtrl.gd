@@ -90,7 +90,7 @@ func _unhandled_input(event):
 		var move_tile = movementTileMap.get_cell(tile.x, tile.y)
 		var selected_land_mass
 		if tile.x >= 0 && tile.x < mapWidth && tile.y >= 0 && tile.y < mapHeight:
-			selected_land_mass = adventure_map.landMassesMatrix[tile.x][tile.y]
+			selected_land_mass = movementTileMap.landMassesMatrix[tile.x][tile.y]
 		else:
 			selected_land_mass = 0
 		var army_present = adventure_map.getArmyPresent(tile)

@@ -50,10 +50,6 @@ var townObject = load("res://Scenes/Town.tscn")
 var adventure_event
 var new_day_event
 # Other
-var mapGroundMatrix = []
-var mapPropsMatrix = []
-var mapMovementMatrix = []
-var landMassesMatrix = []
 var mapWidth = 0
 var mapHeight = 0
 #var selected_army = { player_id = -1, army_id = -1}
@@ -138,28 +134,9 @@ func loadMapData(editor_mode):
 		mapCreator.readMapData()
 		payload = mapCreator.data
 	
-	for x in range(mapHeight):
-		mapGroundMatrix.append([])
-		mapGroundMatrix[x] = []
-		mapPropsMatrix.append([])
-		mapPropsMatrix[x] = []
-		mapMovementMatrix.append([])
-		mapMovementMatrix[x] = []
-		landMassesMatrix.append([])
-		landMassesMatrix[x] = []
-		for y in range(mapWidth):
-			mapGroundMatrix[x].append([])
-			mapGroundMatrix[x][y] = payload.tiles[x][y][0]
-			mapPropsMatrix[x].append([])
-			mapPropsMatrix[x][y] = payload.tiles[x][y][1]
-			mapMovementMatrix[x].append([])
-			mapMovementMatrix[x][y] = payload.tiles[x][y][2]
-			landMassesMatrix[x].append([])
-			landMassesMatrix[x][y] = payload.tiles[x][y][3]
-	
-	groundTileMap.setCells(mapGroundMatrix)
-	propsTileMap.setCells(mapPropsMatrix, editor_mode, payload.npcs)
-	movementTileMap.setCells(mapMovementMatrix)
+	groundTileMap.setCells(payload.tiles)
+	propsTileMap.setCells(payload.tiles, editor_mode, payload.npcs)
+	movementTileMap.setCells(payload.tiles)
 	
 	for z in range(payload.playerStartRules.size()):
 		var new_player = player.duplicate()
@@ -186,7 +163,7 @@ func instantiate_player_armies(player_nr, player_armies):
 		player_instances[player_nr].my_armies[h].my_coords = pos
 		player_instances[player_nr].my_armies[h].position = propsTileMap.map_to_world(pos)
 		player_instances[player_nr].my_armies[h].position.y += 36
-		player_instances[player_nr].my_armies[h].current_land_mass = landMassesMatrix[pos.x][pos.y]
+		player_instances[player_nr].my_armies[h].current_land_mass = movementTileMap.landMassesMatrix[pos.x][pos.y]
 		player_instances[player_nr].my_armies[h].my_id = h
 		player_instances[player_nr].my_armies[h].my_frame_id = player_armies[h].heroId
 		player_instances[player_nr].my_armies[h].my_player_id = player_nr
@@ -220,7 +197,7 @@ func instantiate_player_towns(player_nr, player_towns):
 		var new_town = propsTileMap.findInteractable(pos)
 		#new_town.my_coords = pos
 		#new_town.position = propsTileMap.map_to_world(pos)
-		new_town.current_land_mass = landMassesMatrix[pos.x][pos.y]
+		new_town.current_land_mass = movementTileMap.landMassesMatrix[pos.x][pos.y]
 		new_town.my_id = player_towns[h].townId
 		#new_town.my_player_id = player_nr
 		if "selected" in player_towns[h] && player_towns[h].selected == true:
@@ -292,7 +269,7 @@ func _unhandled_input(event):
 func isTileAccessible(x, y, travel_type, land_mass):
 	if x < 0 || x >= mapWidth || y < 0 || y >= mapHeight:
 		return false
-	elif land_mass != landMassesMatrix[x][y]:
+	elif land_mass != movementTileMap.landMassesMatrix[x][y]:
 		return false
 	elif travel_type == 0:
 		if movementTileMap.get_cell(x,y) == 0 || movementTileMap.get_cell(x,y) == 3:
