@@ -151,3 +151,6 @@ func findInteractable(x_y):
 	for interactable in interactables:
 		if interactable.my_coords == x_y:
 			return interactable
+	var zombie_town = town.new()
+	zombie_town.loadFlag(15)
+	return zombie_town

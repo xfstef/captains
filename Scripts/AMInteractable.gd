@@ -19,6 +19,7 @@ var my_player_id
 var capturable = false
 var flag_offset = Vector2(0, 0)
 var disabled = false
+var current_land_mass
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

@@ -1,7 +1,6 @@
 extends "res://Scripts/AMInteractable.gd"
 
 var l_o_s_range = 3
-var current_land_mass
 var my_id
 var currently_selected = false
 var top_panel
