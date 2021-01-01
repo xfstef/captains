@@ -14,7 +14,6 @@ var AIDifficulty
 var MonsterDifficulty = 1
 # World Object References
 var camera
-var armyNode
 var groundTileMap
 var propsTileMap
 var movementTileMap
@@ -46,6 +45,7 @@ var day_events
 var adventureMapUnit = load("res://Scenes/AdventureMapUnit.tscn")
 var aMInteractable = load("res://Scenes/AMInteractable.tscn")
 var townObject = load("res://Scenes/Town.tscn")
+var armyObject = load("res://Scenes/Army.tscn")
 # Availables Scenes
 var adventure_event
 var new_day_event
@@ -74,7 +74,6 @@ func _ready():
 	fowTileMap = get_node("TM-FOW")
 	mouseCtrl = get_node("MouseCtrl")
 	info = get_node("UI/info")
-	armyNode = get_node("Army")
 	moveTracker = get_node("MovementTracker")
 	mapCreator = get_node("UI")
 	armiesListContainer = get_node("UI/ArmiesContainer/ArmiesList")
@@ -158,7 +157,7 @@ func instantiate_player_armies(player_nr, player_armies):
 	player_instances[player_nr].my_armies.append([])
 	player_instances[player_nr].my_armies = []
 	for h in range(player_armies.size()):
-		player_instances[player_nr].my_armies.append(armyNode.duplicate())
+		player_instances[player_nr].my_armies.append(armyObject.instance())
 		var pos = Vector2(player_armies[h].x, player_armies[h].y)
 		player_instances[player_nr].my_armies[h].my_coords = pos
 		player_instances[player_nr].my_armies[h].position = propsTileMap.map_to_world(pos)
