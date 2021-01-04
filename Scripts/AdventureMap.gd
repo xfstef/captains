@@ -1,7 +1,7 @@
 extends Node2D
 
 # Paths
-var mapPath = "res://Maps/test5.json"
+var mapPath = "res://Maps/test1.json"
 var interactablesPath = "res://Data/mapInteractables.json"
 var directionIndexesPath = "res://Data/directionIndexes.json"
 var mapMoveIndesexPath = "res://Data/mapMoveIndexes.json"
