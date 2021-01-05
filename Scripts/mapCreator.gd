@@ -56,8 +56,8 @@ var data = {
 	],
 	"winConditions": [0],
 	"lossConditions": [0, 1],
-	"width": 12,
-	"height": 12,
+	"width": 16,
+	"height": 16,
 	"tiles": [],
 	"npcs": [],
 	"specialEvents": {}
