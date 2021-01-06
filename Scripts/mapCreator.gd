@@ -62,6 +62,8 @@ var data = {
 	"npcs": [],
 	"specialEvents": {}
 }
+var range_x = data.width - 1
+var range_y = data.height - 1
 #var mapGroundMatrix = []
 #var mapPropsMatrix = []
 #var mapMovementMatrix = []
@@ -76,7 +78,7 @@ var current_mass_type = -1
 var save_name_input
 var save_map_button
 # Startup Flags
-var showEditor = false
+var showEditor = true
 
 func _ready():
 	groundTileMap = get_node("../TM-Ground")
@@ -106,13 +108,13 @@ func readMapData():
 	movementTileMap.determineCells()
 	initPaintedMatrix()
 	floodFillLandMasses()
-	var unit_on_tile = null
-	for y in range(data.width):
-		data.tiles.append([])
-		data.tiles[y] = []
-		for x in range(data.height):
-			data.tiles[y].append([])
-			#data.tiles[y][x] = [mapGroundMatrix[y][x], mapPropsMatrix[y][x], mapMovementMatrix[y][x], landMassMatrix[y][x]]
+	data.tiles = cellData
+#	for y in range(data.width):
+#		data.tiles.append([])
+#		data.tiles[y] = []
+#		for x in range(data.height):
+#			data.tiles[y].append([])
+#			data.tiles[y][x] = [mapGroundMatrix[y][x], mapPropsMatrix[y][x], mapMovementMatrix[y][x], landMassMatrix[y][x]]
 	getUnits()
 
 func getUnits():
@@ -121,9 +123,6 @@ func getUnits():
 
 # Temporary function used to save maps made with Godot before starting the game.
 func initPaintedMatrix():
-	var range_x = data.width - 1
-	var range_y = data.height - 1
-	
 	for x in range(-range_x, range_x):
 		for y in range(-range_y, range_y):
 			if groundTileMap.get_cell(x,y) > -1:
@@ -158,7 +157,9 @@ func initPaintedMatrix():
 # CAUTION! This list also includes sea masses!
 func floodFillLandMasses():
 	var current_land_mass_nr = 1
-	for cell in cellData:
+	var cell = []
+	for x in range(cellData.size()):
+		cell = cellData[x]
 		if cell[5] == -1:
 			if cell[4] == 2:
 				cell[5] = 0
@@ -167,7 +168,7 @@ func floodFillLandMasses():
 					current_mass_type = 1
 				else:
 					current_mass_type = 0
-				floodFillLandMasses(cell, current_land_mass_nr)
+				floodFillPortion(cell, current_land_mass_nr)
 				current_land_mass_nr += 1
 #	for x in range(data.width):
 #		for y in range(data.height):
@@ -183,11 +184,27 @@ func floodFillLandMasses():
 #					current_land_mass_nr += 1
 
 func floodFillPortion(cell, c_l_m_nr):
-	if cell[5] == -1:
+	if cell != null && cell[5] == -1:
 		if cell[4] == 2:
 			cell[5] = 0
 		elif (cell[4] == 1 && current_mass_type == 1) || (cell[4] != 1 && current_mass_type == 0):
 			cell[5] = c_l_m_nr
+			if cell[0] + 1 <= range_x:
+				floodFillPortion(findCell(cell[0] + 1, cell[1]), c_l_m_nr)
+			if cell[0] + 1 <= range_x && cell[1] + 1 <= range_y:
+				floodFillPortion(findCell(cell[0] + 1, cell[1] + 1), c_l_m_nr)
+			if cell[1] + 1 <= range_y:
+				floodFillPortion(findCell(cell[0], cell[1] + 1), c_l_m_nr)
+			if cell[0] - 1 >= -range_x:
+				 floodFillPortion(findCell(cell[0] - 1, cell[1]), c_l_m_nr)
+			if cell[0] - 1 >= -range_x && cell[1] + 1 <= range_y:
+				floodFillPortion(findCell(cell[0] - 1, cell[1] + 1), c_l_m_nr)
+			if cell[0] - 1 >= -range_x && cell[1] - 1 >= -range_y:
+				floodFillPortion(findCell(cell[0] - 1, cell[1] - 1), c_l_m_nr)
+			if cell[1] - 1 >= -range_y:
+				floodFillPortion(findCell(cell[0], cell[1] - 1), c_l_m_nr)
+			if cell[0] + 1 <= range_x && cell[1] - 1 >= -range_y:
+				floodFillPortion(findCell(cell[0] + 1, cell[1] - 1), c_l_m_nr)
 			
 #	if x >= 0 && x < data.width && y >= 0 && y < data.height && landMassMatrix[x][y] == -1:
 #		if mapMovementMatrix[x][y] == 2:
@@ -203,5 +220,9 @@ func floodFillPortion(cell, c_l_m_nr):
 #			floodFillPortion(x, y - 1, c_l_m_nr)
 #			floodFillPortion(x + 1, y - 1, c_l_m_nr)
 
-func findViableNeighbour(x, y):
-	for
+func findCell(x, y):
+	var cell = []
+	for z in range(cellData.size()):
+		cell = cellData[z]
+		if cell[0] == x && cell[1] == y:
+			return cell
