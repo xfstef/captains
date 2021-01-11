@@ -78,7 +78,7 @@ var current_mass_type = -1
 var save_name_input
 var save_map_button
 # Startup Flags
-var showEditor = true
+var showEditor = false
 
 func _ready():
 	groundTileMap = get_node("../TM-Ground")
@@ -123,8 +123,8 @@ func getUnits():
 
 # Temporary function used to save maps made with Godot before starting the game.
 func initPaintedMatrix():
-	for x in range(-range_x, range_x):
-		for y in range(-range_y, range_y):
+	for x in range(-range_x, range_x + 1):
+		for y in range(-range_y, range_y + 1):
 			if groundTileMap.get_cell(x,y) > -1:
 				cellData.append(
 					[x,

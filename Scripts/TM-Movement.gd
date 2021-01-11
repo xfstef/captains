@@ -24,15 +24,31 @@ func setSize(x, y):
 	height = y
 
 func setCells(data):
-	for x in range(height):
-		tile_move_expense.append([])
-		landMassesMatrix.append([])
-		for y in range(width):
-			tile_move_expense[x].append([])
-			landMassesMatrix[x].append([])
-			landMassesMatrix[x][y] = data[x][y][3]
-			set_cell(x, y, data[x][y][2])
-			tile_move_expense[x][y] = ground_travel_properties[groundTileMap.get_cell(x,y)][1]
+	for cell in data:
+		landMassesMatrix.append([cell[0], cell[1], cell[5]])
+		tile_move_expense.append([cell[0], cell[1], ground_travel_properties[groundTileMap.get_cell(cell[0],cell[1])][1]])
+		set_cell(cell[0], cell[1], cell[4])
+#	for x in range(height):
+#		tile_move_expense.append([])
+#		landMassesMatrix.append([])
+#		for y in range(width):
+#			tile_move_expense[x].append([])
+#			landMassesMatrix[x].append([])
+#			landMassesMatrix[x][y] = data[x][y][3]
+#			set_cell(x, y, data[x][y][2])
+#			tile_move_expense[x][y] = ground_travel_properties[groundTileMap.get_cell(x,y)][1]
+
+func getLandMassOfCell(x, y):
+	for cell in landMassesMatrix:
+		if cell[0] == x && cell[1] == y:
+			return cell[2]
+	return -1
+
+func getMoveExpenseOfCell(x, y):
+	for cell in tile_move_expense:
+		if cell[0] == x && cell[1] == y:
+			return cell[2]
+	return -1
 
 func determineCells():
 	var temp_cell = 0
