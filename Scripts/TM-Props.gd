@@ -27,8 +27,6 @@ func setSize(x, y):
 func setCells(data, editor_enabled, npc_rules):
 	var cell_type
 	var prop_props
-#	for x in range(height):
-#		for y in range(width):
 	for cell in data:
 		cell_type = String(cell[3])
 		if !editor_enabled && cell_type in adventure_map.mapInteractables:

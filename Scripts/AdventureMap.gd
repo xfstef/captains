@@ -272,7 +272,7 @@ func isTileAccessible(x, y, travel_type, land_mass):
 	var target_land_mass = movementTileMap.getLandMassOfCell(x, y)
 	if target_land_mass == - 1:
 		return false
-	elif land_mass != movementTileMap.getLandMassOfCell(x, y):
+	elif land_mass != target_land_mass:
 		return false
 	elif travel_type == 0:
 		if movementTileMap.get_cell(x,y) == 0 || movementTileMap.get_cell(x,y) == 3:
