@@ -27,64 +27,63 @@ func setSize(x, y):
 func setCells(data, editor_enabled, npc_rules):
 	var cell_type
 	var prop_props
-	for x in range(height):
-		for y in range(width):
-			cell_type = String(data[x][y][1])
-			if !editor_enabled && cell_type in adventure_map.mapInteractables:
-				prop_props = null
-				prop_props = adventure_map.mapInteractables.get(cell_type)
-				if "unit_id" in prop_props:
-					set_cell(x, y, -1)
-					var npc_props = units_DB[prop_props.unit_id]
-					var new_npc = adventureMapUnit.instance()
-					add_child(new_npc)
-					new_npc.unit_name = npc_props.name
-					new_npc.cell_id = cell_type
-					new_npc.my_coords = Vector2(x, y)
-					new_npc.position = map_to_world(new_npc.my_coords)
-					var npc_rule = findNPCRules(npc_rules, new_npc.my_coords)
-					if npc_rule != null && "amount" in npc_rule:
-						new_npc.amount = npc_rule.amount
-					else:
-						#TODO: Implement unit_tier_modifier
-						rng.randomize()
-						new_npc.amount = adventure_map.MonsterDifficulty * rng.randi_range(5, 10) # + unit_tier_modifier
-					new_npc.loadSprite(npc_props.sprite_name)
-					new_npc.my_sprite.offset = Vector2(npc_props.adventure_map_offset[0], npc_props.adventure_map_offset[1])
-					npcs.append(new_npc)
+	for cell in data:
+		cell_type = String(cell[3])
+		if !editor_enabled && cell_type in adventure_map.mapInteractables:
+			prop_props = null
+			prop_props = adventure_map.mapInteractables.get(cell_type)
+			if "unit_id" in prop_props:
+				set_cell(cell[0], cell[1], -1)
+				var npc_props = units_DB[prop_props.unit_id]
+				var new_npc = adventureMapUnit.instance()
+				add_child(new_npc)
+				new_npc.unit_name = npc_props.name
+				new_npc.cell_id = cell_type
+				new_npc.my_coords = Vector2(cell[0], cell[1])
+				new_npc.position = map_to_world(new_npc.my_coords)
+				var npc_rule = findNPCRules(npc_rules, new_npc.my_coords)
+				if npc_rule != null && "amount" in npc_rule:
+					new_npc.amount = npc_rule.amount
 				else:
-					var new_interactable
-					if "isTown" in prop_props && prop_props.isTown == true:
-						new_interactable = town.new()
-					else:
-						new_interactable = aMInteractable.instance()
-					add_child(new_interactable)
-					new_interactable.name = prop_props.name
-					new_interactable.cell_id = cell_type
-					new_interactable.my_coords = Vector2(x, y)
-					new_interactable.position = map_to_world(new_interactable.my_coords)
-					new_interactable.frequency = prop_props.frequency
-					new_interactable.still_valid = true
-					new_interactable.visited_by = []
-					new_interactable.choices = prop_props.choices
-					new_interactable.description = prop_props.description
-					if "animation" in prop_props:
-						set_cell(x, y, -1)
-						new_interactable.loadSprite(prop_props.animation)
-						new_interactable.my_sprite.offset = Vector2(prop_props.adventure_map_offset[0], prop_props.adventure_map_offset[1])
-					else:
-						set_cell(x, y, data[x][y][1])
-					if "interactableCell" in prop_props:
-						new_interactable.interactable_cell = Vector2(new_interactable.my_coords.x + prop_props.interactableCell[0], new_interactable.my_coords.y + prop_props.interactableCell[1])
-					else:
-						new_interactable.interactable_cell = new_interactable.my_coords
-					if "capturable" in prop_props:
-						new_interactable.capturable = prop_props.capturable
-						new_interactable.flag_offset = Vector2(prop_props.flag_offset[0], prop_props.flag_offset[1])
-						new_interactable.loadFlag(15)
-					interactables.append(new_interactable)
+					#TODO: Implement unit_tier_modifier
+					rng.randomize()
+					new_npc.amount = adventure_map.MonsterDifficulty * rng.randi_range(5, 10) # + unit_tier_modifier
+				new_npc.loadSprite(npc_props.sprite_name)
+				new_npc.my_sprite.offset = Vector2(npc_props.adventure_map_offset[0], npc_props.adventure_map_offset[1])
+				npcs.append(new_npc)
 			else:
-				set_cell(x, y, data[x][y][1])
+				var new_interactable
+				if "isTown" in prop_props && prop_props.isTown == true:
+					new_interactable = town.new()
+				else:
+					new_interactable = aMInteractable.instance()
+				add_child(new_interactable)
+				new_interactable.name = prop_props.name
+				new_interactable.cell_id = cell_type
+				new_interactable.my_coords = Vector2(cell[0], cell[1])
+				new_interactable.position = map_to_world(new_interactable.my_coords)
+				new_interactable.frequency = prop_props.frequency
+				new_interactable.still_valid = true
+				new_interactable.visited_by = []
+				new_interactable.choices = prop_props.choices
+				new_interactable.description = prop_props.description
+				if "animation" in prop_props:
+					set_cell(cell[0], cell[1], -1)
+					new_interactable.loadSprite(prop_props.animation)
+					new_interactable.my_sprite.offset = Vector2(prop_props.adventure_map_offset[0], prop_props.adventure_map_offset[1])
+				else:
+					set_cell(cell[0], cell[1], cell[3])
+				if "interactableCell" in prop_props:
+					new_interactable.interactable_cell = Vector2(new_interactable.my_coords.x + prop_props.interactableCell[0], new_interactable.my_coords.y + prop_props.interactableCell[1])
+				else:
+					new_interactable.interactable_cell = new_interactable.my_coords
+				if "capturable" in prop_props:
+					new_interactable.capturable = prop_props.capturable
+					new_interactable.flag_offset = Vector2(prop_props.flag_offset[0], prop_props.flag_offset[1])
+					new_interactable.loadFlag(15)
+				interactables.append(new_interactable)
+		else:
+			set_cell(cell[0], cell[1], cell[3])
 
 func findNPCRules(rules, x_y):
 	for rule in rules:
@@ -151,3 +150,6 @@ func findInteractable(x_y):
 	for interactable in interactables:
 		if interactable.my_coords == x_y:
 			return interactable
+	var zombie_town = town.new()
+	zombie_town.loadFlag(15)
+	return zombie_town

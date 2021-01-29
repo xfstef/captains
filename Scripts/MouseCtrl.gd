@@ -53,8 +53,9 @@ func _process(delta):
 	var mouse_pos_global = get_global_mouse_position()
 	var mouse_pos_local = get_viewport().get_mouse_position()
 	var tile = groundTileMap.world_to_map(mouse_pos_global)
+	var land_mass = movementTileMap.getLandMassOfCell(tile.x, tile.y)
 	
-	info.set_text("Coordinates: %s \nMove Cost: %s" % [tile, 0])
+	info.set_text("Coordinates: %s \nLand Mass: %s" % [tile, land_mass])
 	
 	if pointerState == 5:
 		return
@@ -88,11 +89,12 @@ func _unhandled_input(event):
 			return
 		var tile = groundTileMap.world_to_map(get_global_mouse_position())
 		var move_tile = movementTileMap.get_cell(tile.x, tile.y)
-		var selected_land_mass
-		if tile.x >= 0 && tile.x < mapWidth && tile.y >= 0 && tile.y < mapHeight:
-			selected_land_mass = movementTileMap.landMassesMatrix[tile.x][tile.y]
-		else:
-			selected_land_mass = 0
+#		var selected_land_mass
+#		if tile.x >= 0 && tile.x < mapWidth && tile.y >= 0 && tile.y < mapHeight:
+#			selected_land_mass = movementTileMap.getLandMassOfCell(tile.x, tile.y)
+#		else:
+#			selected_land_mass = 0
+		var selected_land_mass = movementTileMap.getLandMassOfCell(tile.x, tile.y)
 		var army_present = adventure_map.getArmyPresent(tile)
 		var interactable_present = adventure_map.propsTileMap.checkIfTileHasInteractable(tile)
 		var player_explored_masses = adventure_map.current_player_instance.explored_masses

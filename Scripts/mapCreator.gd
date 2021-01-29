@@ -56,16 +56,19 @@ var data = {
 	],
 	"winConditions": [0],
 	"lossConditions": [0, 1],
-	"width": 32,
-	"height": 32,
+	"width": 16,
+	"height": 16,
 	"tiles": [],
 	"npcs": [],
 	"specialEvents": {}
 }
-var mapGroundMatrix = []
-var mapPropsMatrix = []
-var mapMovementMatrix = []
-var landMassMatrix = []
+var range_x = data.width - 1
+var range_y = data.height - 1
+#var mapGroundMatrix = []
+#var mapPropsMatrix = []
+#var mapMovementMatrix = []
+#var landMassMatrix = []
+var cellData = []
 var groundTileMap
 var propsTileMap
 var movementTileMap
@@ -105,13 +108,13 @@ func readMapData():
 	movementTileMap.determineCells()
 	initPaintedMatrix()
 	floodFillLandMasses()
-	var unit_on_tile = null
-	for y in range(data.width):
-		data.tiles.append([])
-		data.tiles[y] = []
-		for x in range(data.height):
-			data.tiles[y].append([])
-			data.tiles[y][x] = [mapGroundMatrix[y][x], mapPropsMatrix[y][x], mapMovementMatrix[y][x], landMassMatrix[y][x]]
+	data.tiles = cellData
+#	for y in range(data.width):
+#		data.tiles.append([])
+#		data.tiles[y] = []
+#		for x in range(data.height):
+#			data.tiles[y].append([])
+#			data.tiles[y][x] = [mapGroundMatrix[y][x], mapPropsMatrix[y][x], mapMovementMatrix[y][x], landMassMatrix[y][x]]
 	getUnits()
 
 func getUnits():
@@ -120,53 +123,106 @@ func getUnits():
 
 # Temporary function used to save maps made with Godot before starting the game.
 func initPaintedMatrix():
-	for x in range(data.width):
-		mapGroundMatrix.append([])
-		mapGroundMatrix[x] = []
-		mapPropsMatrix.append([])
-		mapPropsMatrix[x] = []
-		mapMovementMatrix.append([])
-		mapMovementMatrix[x] = []
-		landMassMatrix.append([])
-		landMassMatrix[x] = []
-		for y in range(data.height):
-			mapGroundMatrix[x].append([])
-			mapGroundMatrix[x][y] = groundTileMap.get_cell(x, y)
-			mapPropsMatrix[x].append([])
-			mapPropsMatrix[x][y] = propsTileMap.get_cell(x, y)
-			mapMovementMatrix[x].append([])
-			mapMovementMatrix[x][y] = movementTileMap.get_cell(x, y)
-			landMassMatrix[x].append([])
-			landMassMatrix[x][y] = -1
+	for x in range(-range_x, range_x + 1):
+		for y in range(-range_y, range_y + 1):
+			if groundTileMap.get_cell(x,y) > -1:
+				cellData.append(
+					[x,
+					 y,
+					 groundTileMap.get_cell(x,y),
+					 propsTileMap.get_cell(x,y),
+					 movementTileMap.get_cell(x,y),
+					 -1])
+	 
+#	for x in range(data.width):
+#		mapGroundMatrix.append([])
+#		mapGroundMatrix[x] = []
+#		mapPropsMatrix.append([])
+#		mapPropsMatrix[x] = []
+#		mapMovementMatrix.append([])
+#		mapMovementMatrix[x] = []
+#		landMassMatrix.append([])
+#		landMassMatrix[x] = []
+#		for y in range(data.height):
+#			mapGroundMatrix[x].append([])
+#			mapGroundMatrix[x][y] = groundTileMap.get_cell(x, y)
+#			mapPropsMatrix[x].append([])
+#			mapPropsMatrix[x][y] = propsTileMap.get_cell(x, y)
+#			mapMovementMatrix[x].append([])
+#			mapMovementMatrix[x][y] = movementTileMap.get_cell(x, y)
+#			landMassMatrix[x].append([])
+#			landMassMatrix[x][y] = -1
 
 # We use a flood fill algorithm to find all the land masses present on the map
 # CAUTION! This list also includes sea masses!
 func floodFillLandMasses():
 	var current_land_mass_nr = 1
-	for x in range(data.width):
-		for y in range(data.height):
-			if landMassMatrix[x][y] == -1:
-				if mapMovementMatrix[x][y] == 2:
-					landMassMatrix[x][y] = 0
+	var cell = []
+	for x in range(cellData.size()):
+		cell = cellData[x]
+		if cell[5] == -1:
+			if cell[4] == 2:
+				cell[5] = 0
+			else:
+				if cell[2] == 1:
+					current_mass_type = 1
 				else:
-					if mapGroundMatrix[x][y] == 1:
-						current_mass_type = 1
-					else:
-						current_mass_type = 0
-					floodFillPortion(x, y, current_land_mass_nr)
-					current_land_mass_nr += 1
+					current_mass_type = 0
+				floodFillPortion(cell, current_land_mass_nr)
+				current_land_mass_nr += 1
+#	for x in range(data.width):
+#		for y in range(data.height):
+#			if landMassMatrix[x][y] == -1:
+#				if mapMovementMatrix[x][y] == 2:
+#					landMassMatrix[x][y] = 0
+#				else:
+#					if mapGroundMatrix[x][y] == 1:
+#						current_mass_type = 1
+#					else:
+#						current_mass_type = 0
+#					floodFillPortion(x, y, current_land_mass_nr)
+#					current_land_mass_nr += 1
 
-func floodFillPortion(x, y, c_l_m_nr):
-	if x >= 0 && x < data.width && y >= 0 && y < data.height && landMassMatrix[x][y] == -1:
-		if mapMovementMatrix[x][y] == 2:
-			landMassMatrix[x][y] = 0
-		elif (mapGroundMatrix[x][y] == 1 && current_mass_type == 1) || (mapGroundMatrix[x][y] != 1 && current_mass_type == 0):
-			landMassMatrix[x][y] = c_l_m_nr
-			floodFillPortion(x + 1, y, c_l_m_nr)
-			floodFillPortion(x + 1, y + 1, c_l_m_nr)
-			floodFillPortion(x, y + 1, c_l_m_nr)
-			floodFillPortion(x - 1, y, c_l_m_nr)
-			floodFillPortion(x - 1, y + 1, c_l_m_nr)
-			floodFillPortion(x - 1, y - 1, c_l_m_nr)
-			floodFillPortion(x, y - 1, c_l_m_nr)
-			floodFillPortion(x + 1, y - 1, c_l_m_nr)
+func floodFillPortion(cell, c_l_m_nr):
+	if cell != null && cell[5] == -1:
+		if cell[4] == 2:
+			cell[5] = 0
+		elif (cell[4] == 1 && current_mass_type == 1) || (cell[4] != 1 && current_mass_type == 0):
+			cell[5] = c_l_m_nr
+			if cell[0] + 1 <= range_x:
+				floodFillPortion(findCell(cell[0] + 1, cell[1]), c_l_m_nr)
+			if cell[0] + 1 <= range_x && cell[1] + 1 <= range_y:
+				floodFillPortion(findCell(cell[0] + 1, cell[1] + 1), c_l_m_nr)
+			if cell[1] + 1 <= range_y:
+				floodFillPortion(findCell(cell[0], cell[1] + 1), c_l_m_nr)
+			if cell[0] - 1 >= -range_x:
+				 floodFillPortion(findCell(cell[0] - 1, cell[1]), c_l_m_nr)
+			if cell[0] - 1 >= -range_x && cell[1] + 1 <= range_y:
+				floodFillPortion(findCell(cell[0] - 1, cell[1] + 1), c_l_m_nr)
+			if cell[0] - 1 >= -range_x && cell[1] - 1 >= -range_y:
+				floodFillPortion(findCell(cell[0] - 1, cell[1] - 1), c_l_m_nr)
+			if cell[1] - 1 >= -range_y:
+				floodFillPortion(findCell(cell[0], cell[1] - 1), c_l_m_nr)
+			if cell[0] + 1 <= range_x && cell[1] - 1 >= -range_y:
+				floodFillPortion(findCell(cell[0] + 1, cell[1] - 1), c_l_m_nr)
+			
+#	if x >= 0 && x < data.width && y >= 0 && y < data.height && landMassMatrix[x][y] == -1:
+#		if mapMovementMatrix[x][y] == 2:
+#			landMassMatrix[x][y] = 0
+#		elif (mapGroundMatrix[x][y] == 1 && current_mass_type == 1) || (mapGroundMatrix[x][y] != 1 && current_mass_type == 0):
+#			landMassMatrix[x][y] = c_l_m_nr
+#			floodFillPortion(x + 1, y, c_l_m_nr)
+#			floodFillPortion(x + 1, y + 1, c_l_m_nr)
+#			floodFillPortion(x, y + 1, c_l_m_nr)
+#			floodFillPortion(x - 1, y, c_l_m_nr)
+#			floodFillPortion(x - 1, y + 1, c_l_m_nr)
+#			floodFillPortion(x - 1, y - 1, c_l_m_nr)
+#			floodFillPortion(x, y - 1, c_l_m_nr)
+#			floodFillPortion(x + 1, y - 1, c_l_m_nr)
+
+func findCell(x, y):
+	var cell = []
+	for z in range(cellData.size()):
+		cell = cellData[z]
+		if cell[0] == x && cell[1] == y:
+			return cell

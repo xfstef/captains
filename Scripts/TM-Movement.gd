@@ -24,29 +24,37 @@ func setSize(x, y):
 	height = y
 
 func setCells(data):
-	for x in range(height):
-		tile_move_expense.append([])
-		landMassesMatrix.append([])
-		for y in range(width):
-			tile_move_expense[x].append([])
-			landMassesMatrix[x].append([])
-			landMassesMatrix[x][y] = data[x][y][3]
-			set_cell(x, y, data[x][y][2])
-			tile_move_expense[x][y] = ground_travel_properties[groundTileMap.get_cell(x,y)][1]
+	for cell in data:
+		landMassesMatrix.append([cell[0], cell[1], cell[5]])
+		tile_move_expense.append([cell[0], cell[1], ground_travel_properties[groundTileMap.get_cell(cell[0],cell[1])][1]])
+		set_cell(cell[0], cell[1], cell[4])
+
+func getLandMassOfCell(x, y):
+	for cell in landMassesMatrix:
+		if cell[0] == x && cell[1] == y:
+			return cell[2]
+	return -1
+
+func getMoveExpenseOfCell(x, y):
+	for cell in tile_move_expense:
+		if cell[0] == x && cell[1] == y:
+			return cell[2]
+	return -1
 
 func determineCells():
 	var temp_cell = 0
 	var temp_prop_blocked_tiles = []
-	for x in range(height):
-		for y in range(width):
-			temp_cell = propsTileMap.get_cell(x,y)
-			if temp_cell >= 0:
-				temp_cell = String(temp_cell)
-				if temp_cell in props_blocked_tiles:
-					temp_prop_blocked_tiles = props_blocked_tiles[temp_cell]
-					for blocked_tile in temp_prop_blocked_tiles:
-						set_cell(x + blocked_tile[0], y + blocked_tile[1], 2)
-				else:
-					set_cell(x, y, 3)
-			elif get_cell(x, y) < 0:
-				set_cell(x, y, ground_travel_properties[groundTileMap.get_cell(x,y)][0])
+	for x in range(-width, width):
+		for y in range(-height, height):
+			if groundTileMap.get_cell(x,y) > -1:
+				temp_cell = propsTileMap.get_cell(x,y)
+				if temp_cell >= 0:
+					temp_cell = String(temp_cell)
+					if temp_cell in props_blocked_tiles:
+						temp_prop_blocked_tiles = props_blocked_tiles[temp_cell]
+						for blocked_tile in temp_prop_blocked_tiles:
+							set_cell(x + blocked_tile[0], y + blocked_tile[1], 2)
+					else:
+						set_cell(x, y, 3)
+				elif get_cell(x, y) < 0:
+					set_cell(x, y, ground_travel_properties[groundTileMap.get_cell(x,y)][0])

@@ -8,6 +8,5 @@ func setSize(x, y):
 	height = y
 
 func setCells(data):
-	for x in range(height):
-		for y in range(width):
-			set_cell(x, y, data[x][y][0])
+	for cell in data:
+		set_cell(cell[0], cell[1], cell[2])

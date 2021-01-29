@@ -1,7 +1,7 @@
 extends Node2D
 
 # Paths
-var mapPath = "res://Maps/test5.json"
+var mapPath = "res://Maps/test1.json"
 var interactablesPath = "res://Data/mapInteractables.json"
 var directionIndexesPath = "res://Data/directionIndexes.json"
 var mapMoveIndesexPath = "res://Data/mapMoveIndexes.json"
@@ -14,7 +14,6 @@ var AIDifficulty
 var MonsterDifficulty = 1
 # World Object References
 var camera
-var armyNode
 var groundTileMap
 var propsTileMap
 var movementTileMap
@@ -46,6 +45,7 @@ var day_events
 var adventureMapUnit = load("res://Scenes/AdventureMapUnit.tscn")
 var aMInteractable = load("res://Scenes/AMInteractable.tscn")
 var townObject = load("res://Scenes/Town.tscn")
+var armyObject = load("res://Scenes/Army.tscn")
 # Availables Scenes
 var adventure_event
 var new_day_event
@@ -74,7 +74,6 @@ func _ready():
 	fowTileMap = get_node("TM-FOW")
 	mouseCtrl = get_node("MouseCtrl")
 	info = get_node("UI/info")
-	armyNode = get_node("Army")
 	moveTracker = get_node("MovementTracker")
 	mapCreator = get_node("UI")
 	armiesListContainer = get_node("UI/ArmiesContainer/ArmiesList")
@@ -99,10 +98,11 @@ func _ready():
 
 func prepCamera():
 	var half_width_pixels = (mapWidth / 2) * 144
+	var half_height_pixels = (mapHeight / 2) * 72
 	camera.limit_left = (half_width_pixels * -1) - 200
-	camera.limit_top = -120
+	camera.limit_top = (half_height_pixels * -1 ) - 120
 	camera.limit_right = half_width_pixels + 200
-	camera.limit_bottom = mapHeight * 72 + 192
+	camera.limit_bottom = half_height_pixels + 192
 
 func loadFilePayload(fileName):
 	var file = File.new()
@@ -158,12 +158,12 @@ func instantiate_player_armies(player_nr, player_armies):
 	player_instances[player_nr].my_armies.append([])
 	player_instances[player_nr].my_armies = []
 	for h in range(player_armies.size()):
-		player_instances[player_nr].my_armies.append(armyNode.duplicate())
+		player_instances[player_nr].my_armies.append(armyObject.instance())
 		var pos = Vector2(player_armies[h].x, player_armies[h].y)
 		player_instances[player_nr].my_armies[h].my_coords = pos
 		player_instances[player_nr].my_armies[h].position = propsTileMap.map_to_world(pos)
 		player_instances[player_nr].my_armies[h].position.y += 36
-		player_instances[player_nr].my_armies[h].current_land_mass = movementTileMap.landMassesMatrix[pos.x][pos.y]
+		player_instances[player_nr].my_armies[h].current_land_mass = movementTileMap.getLandMassOfCell(pos.x, pos.y)
 		player_instances[player_nr].my_armies[h].my_id = h
 		player_instances[player_nr].my_armies[h].my_frame_id = player_armies[h].heroId
 		player_instances[player_nr].my_armies[h].my_player_id = player_nr
@@ -197,7 +197,7 @@ func instantiate_player_towns(player_nr, player_towns):
 		var new_town = propsTileMap.findInteractable(pos)
 		#new_town.my_coords = pos
 		#new_town.position = propsTileMap.map_to_world(pos)
-		new_town.current_land_mass = movementTileMap.landMassesMatrix[pos.x][pos.y]
+		new_town.current_land_mass = movementTileMap.getLandMassOfCell(pos.x, pos.y)
 		new_town.my_id = player_towns[h].townId
 		#new_town.my_player_id = player_nr
 		if "selected" in player_towns[h] && player_towns[h].selected == true:
@@ -267,9 +267,12 @@ func _unhandled_input(event):
 
 # TODO: Improve this function so that it takes into consideration the army travel type and land masses and portals
 func isTileAccessible(x, y, travel_type, land_mass):
-	if x < 0 || x >= mapWidth || y < 0 || y >= mapHeight:
+#	if x < -mapWidth || x > mapWidth || y < -mapHeight || y > mapHeight:
+#		return false
+	var target_land_mass = movementTileMap.getLandMassOfCell(x, y)
+	if target_land_mass == - 1:
 		return false
-	elif land_mass != movementTileMap.landMassesMatrix[x][y]:
+	elif land_mass != target_land_mass:
 		return false
 	elif travel_type == 0:
 		if movementTileMap.get_cell(x,y) == 0 || movementTileMap.get_cell(x,y) == 3:

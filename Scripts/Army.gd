@@ -129,7 +129,7 @@ func aStarSearch(x, y):
 		
 		if current_node.x == selected_coords.x && current_node.y == selected_coords.y:
 			while current_node.parent:
-				fastest_path.push_front({x = current_node.x, y = current_node.y, move_cost = tm_movement.tile_move_expense[current_node.x][current_node.y]})
+				fastest_path.push_front({x = current_node.x, y = current_node.y, move_cost = tm_movement.getMoveExpenseOfCell(current_node.x, current_node.y)})
 				current_node = current_node.parent
 			return
 		
@@ -138,7 +138,7 @@ func aStarSearch(x, y):
 		
 		for x in range(node_neighbours.size()):
 			if !evaluated_nodes.has(node_neighbours[x]):
-				var newMoveCostToNeightbour = current_node.g_cost + calcDistanceOf2Nodes(current_node, node_neighbours[x], tm_movement.tile_move_expense[node_neighbours[x].x][node_neighbours[x].y])
+				var newMoveCostToNeightbour = current_node.g_cost + calcDistanceOf2Nodes(current_node, node_neighbours[x], tm_movement.getMoveExpenseOfCell(node_neighbours[x].x, node_neighbours[x].y))
 				if newMoveCostToNeightbour < node_neighbours[x].g_cost || !open_nodes.has(node_neighbours[x]):
 					node_neighbours[x].g_cost = newMoveCostToNeightbour
 					node_neighbours[x].h_cost = calcDistanceOf2Nodes(node_neighbours[x], selected_coords, 10)
