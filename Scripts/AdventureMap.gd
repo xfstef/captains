@@ -42,8 +42,6 @@ var captains_DB
 var current_selection_instance
 var current_player_instance
 var day_events
-var adventureMapUnit = load("res://Scenes/AdventureMapUnit.tscn")
-var aMInteractable = load("res://Scenes/AMInteractable.tscn")
 var townObject = load("res://Scenes/Town.tscn")
 var armyObject = load("res://Scenes/Army.tscn")
 # Availables Scenes
@@ -155,33 +153,35 @@ func loadMapData(editor_mode):
 	fowTileMap.updateVisibility(current_player)
 
 func instantiate_player_armies(player_nr, player_armies):
-	player_instances[player_nr].my_armies.append([])
-	player_instances[player_nr].my_armies = []
 	for h in range(player_armies.size()):
-		player_instances[player_nr].my_armies.append(armyObject.instance())
+		var new_army = armyObject.instance()
+		player_instances[player_nr].my_armies.append([])
+		player_instances[player_nr].my_armies = []
+		player_instances[player_nr].my_armies.append(new_army)
+		
 		var pos = Vector2(player_armies[h].x, player_armies[h].y)
-		player_instances[player_nr].my_armies[h].my_coords = pos
-		player_instances[player_nr].my_armies[h].position = propsTileMap.map_to_world(pos)
-		player_instances[player_nr].my_armies[h].position.y += 36
-		player_instances[player_nr].my_armies[h].current_land_mass = movementTileMap.getLandMassOfCell(pos.x, pos.y)
-		player_instances[player_nr].my_armies[h].my_id = h
-		player_instances[player_nr].my_armies[h].my_frame_id = player_armies[h].heroId
-		player_instances[player_nr].my_armies[h].my_player_id = player_nr
-		propsTileMap.add_child(player_instances[player_nr].my_armies[h])
+		new_army.my_coords = pos
+		new_army.position = propsTileMap.map_to_world(pos)
+		new_army.position.y += 36
+		new_army.current_land_mass = movementTileMap.getLandMassOfCell(pos.x, pos.y)
+		new_army.my_id = h
+		new_army.my_frame_id = player_armies[h].heroId
+		new_army.my_player_id = player_nr
+		propsTileMap.add_child(new_army)
 		if "cameraStartPosition" in player_armies[h] && player_armies[h].cameraStartPosition == true:
-			camera.followNode(player_instances[player_nr].my_armies[h].position)
+			camera.followNode(new_army.position)
 		var army_cache = player_armies[h].get("cache")
 		if "selected" in player_armies[h] && player_armies[h].selected == true:
 			current_selection.entity_id = h
-			current_selection_instance = player_instances[player_nr].my_armies[h]
+			current_selection_instance = new_army
 			current_selection_instance.currently_selected = true
 			topPanel.updateMovementLeft(current_selection_instance.my_remaining_movement_today)
 		if "cache" in player_armies[h]:
-			player_instances[player_nr].my_armies[h].modifyCache(army_cache)
-		player_instances[player_nr].registerLOSPoint(pos, player_instances[player_nr].my_armies[h].l_o_s_range)
-		player_instances[player_nr].updateLOSPoint(pos, pos, player_instances[player_nr].my_armies[h].l_o_s_range)
+			new_army.modifyCache(army_cache)
+		player_instances[player_nr].registerLOSPoint(pos, new_army.l_o_s_range)
+		player_instances[player_nr].updateLOSPoint(pos, pos, new_army.l_o_s_range)
 		if "general_skills" in player_armies[h]:
-			player_instances[player_nr].my_armies[h].modifyGeneralSkills(player_armies[h].general_skills)
+			new_army.modifyGeneralSkills(player_armies[h].general_skills)
 		
 		armiesListContainer.add_child(armyButton.duplicate())
 		armiesListContainer.get_child(h).my_player_id = player_nr
