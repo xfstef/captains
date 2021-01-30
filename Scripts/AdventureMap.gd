@@ -189,8 +189,6 @@ func instantiate_player_armies(player_nr, player_armies):
 		armiesListContainer.get_child(h).setFrameID(player_armies[h].heroId)
 
 func instantiate_player_towns(player_nr, player_towns):
-	player_instances[player_nr].my_towns.append([])
-	player_instances[player_nr].my_towns = []
 	for h in range(player_towns.size()):
 		#var new_town = townObject.instance()
 		var pos = Vector2(player_towns[h].x, player_towns[h].y)
@@ -208,11 +206,13 @@ func instantiate_player_towns(player_nr, player_towns):
 		addTownToPlayer(player_nr, new_town, pos)
 
 func addTownToPlayer(player_nr, new_town, pos):
-		player_instances[player_nr].registerLOSPoint(pos, new_town.l_o_s_range)
-		player_instances[player_nr].updateLOSPoint(pos, pos, new_town.l_o_s_range)
-		player_instances[player_nr].my_towns.append(new_town)
-		new_town.setFlag(player_instances[player_nr].my_color, player_instances[player_nr].my_id)
-		addTownToTownsContainer(player_nr, new_town.my_id)
+	player_instances[player_nr].my_towns.append([])
+	player_instances[player_nr].my_towns = []
+	player_instances[player_nr].my_towns.append(new_town)	
+	player_instances[player_nr].registerLOSPoint(pos, new_town.l_o_s_range)
+	player_instances[player_nr].updateLOSPoint(pos, pos, new_town.l_o_s_range)
+	new_town.setFlag(player_instances[player_nr].my_color, player_instances[player_nr].my_id)
+	addTownToTownsContainer(player_nr, new_town.my_id)
 
 func removeTownFromPlayer(old_owner, town):
 	for town in player_instances[old_owner].my_towns:
