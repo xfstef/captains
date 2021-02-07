@@ -2,6 +2,8 @@ extends TileMap
 
 var unitsPath = "res://Data/units.json"
 var town = load("res://Scripts/Town.gd")
+var adventureMapUnit = load("res://Scenes/AdventureMapUnit.tscn")
+var aMInteractable = load("res://Scenes/AMInteractable.tscn")
 
 var width
 var height
@@ -9,15 +11,11 @@ var npcs = []
 var interactables = []
 var adventure_map
 var units_DB
-var adventureMapUnit
-var aMInteractable
 var rng
 
 func _ready():
 	adventure_map = get_parent()
 	units_DB = adventure_map.loadFilePayload(unitsPath)
-	adventureMapUnit = adventure_map.adventureMapUnit
-	aMInteractable = adventure_map.aMInteractable
 	rng = RandomNumberGenerator.new()
 
 func setSize(x, y):
