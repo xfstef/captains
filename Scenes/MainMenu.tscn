@@ -1,0 +1,76 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Scripts/MenuControl.gd" type="Script" id=1]
+
+[node name="MainMenu" type="Node"]
+
+[node name="Control" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MenuPanel" type="Panel" parent="Control"]
+anchor_left = 0.75
+anchor_top = 0.1
+anchor_right = 0.95
+anchor_bottom = 0.9
+margin_left = -0.400146
+margin_top = -0.300003
+margin_right = 0.399902
+margin_bottom = -0.400024
+
+[node name="SinglePlayer" type="Button" parent="Control/MenuPanel"]
+anchor_left = 0.1
+anchor_top = 0.1
+anchor_right = 0.9
+anchor_bottom = 0.2
+text = "Single Player"
+
+[node name="Multiplayer" type="Button" parent="Control/MenuPanel"]
+anchor_left = 0.1
+anchor_top = 0.25
+anchor_right = 0.9
+anchor_bottom = 0.35
+disabled = true
+text = "Multi Player"
+
+[node name="MapCreator" type="Button" parent="Control/MenuPanel"]
+anchor_left = 0.1
+anchor_top = 0.4
+anchor_right = 0.9
+anchor_bottom = 0.5
+text = "Map Creator"
+
+[node name="Options" type="Button" parent="Control/MenuPanel"]
+anchor_left = 0.1
+anchor_top = 0.55
+anchor_right = 0.9
+anchor_bottom = 0.65
+disabled = true
+text = "Options"
+
+[node name="Quit" type="Button" parent="Control/MenuPanel"]
+anchor_left = 0.1
+anchor_top = 0.7
+anchor_right = 0.9
+anchor_bottom = 0.8
+text = "Quit"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="Control"]
+anchor_left = 0.3
+anchor_top = 0.1
+anchor_right = 0.7
+anchor_bottom = 0.3
+text = "DeSerrate"
+align = 1
+valign = 1
+
+[connection signal="button_up" from="Control/MenuPanel/SinglePlayer" to="Control" method="_on_SinglePlayer_button_up"]
+[connection signal="button_up" from="Control/MenuPanel/MapCreator" to="Control" method="_on_MapCreator_button_up"]
+[connection signal="button_up" from="Control/MenuPanel/Quit" to="Control" method="_on_Quit_button_up"]
