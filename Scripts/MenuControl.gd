@@ -2,18 +2,30 @@ extends Control
 
 var singlePlayerGame = load("res://Scenes/AdventureMap.tscn")
 var quitButton
-var slideIn
+var slideInSP
+var slideInMC
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	quitButton = get_node("MenuPanel/Quit")
-	slideIn = get_node("SlideIn")
+	slideInSP = get_node("SlideInSP")
+	slideInMC = get_node("SlideInMC")
 
 func _on_Quit_button_up():
 	get_tree().quit()
 
 func _on_SinglePlayer_button_up():
-	slideIn.setContent(1)
+	if slideInSP.isShowing:
+		slideInSP.setContent(false)
+	else:
+		slideInSP.setContent(true)
+	if slideInMC.isShowing:
+		slideInMC.setContent(false)
 
 func _on_MapCreator_button_up():
-	slideIn.setContent(3)
+	if slideInMC.isShowing:
+		slideInMC.setContent(false)
+	else:
+		slideInMC.setContent(true)
+	if slideInSP.isShowing:
+		slideInSP.setContent(false)

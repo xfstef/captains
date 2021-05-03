@@ -77,11 +77,44 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="SlideIn" type="Panel" parent="Control"]
+[node name="SlideInSP" type="Panel" parent="Control"]
 anchor_left = -0.7
 anchor_top = 0.1
 anchor_bottom = 0.9
 script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/SlideInSP"]
+anchor_left = 0.1
+anchor_top = 0.05
+anchor_right = 0.9
+anchor_bottom = 0.1
+text = "Choose a Single Player mode or load a game."
+align = 1
+valign = 1
+
+[node name="SlideInMC" type="Panel" parent="Control"]
+anchor_left = -0.7
+anchor_top = 0.1
+anchor_bottom = 0.9
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/SlideInMC"]
+anchor_left = 0.1
+anchor_top = 0.05
+anchor_right = 0.9
+anchor_bottom = 0.1
+text = "Select your base settings for a new map or load an existing one."
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [connection signal="button_up" from="Control/MenuPanel/SinglePlayer" to="Control" method="_on_SinglePlayer_button_up"]
 [connection signal="button_up" from="Control/MenuPanel/MapCreator" to="Control" method="_on_MapCreator_button_up"]
