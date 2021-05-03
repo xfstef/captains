@@ -116,6 +116,31 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="TabContainer" type="TabContainer" parent="Control/SlideInMC"]
+anchor_left = 0.05
+anchor_top = 0.15
+anchor_right = 0.95
+anchor_bottom = 0.95
+tab_align = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="New Map" type="Panel" parent="Control/SlideInMC/TabContainer"]
+anchor_left = 0.02
+anchor_top = 0.07
+anchor_right = 0.98
+anchor_bottom = 0.98
+
+[node name="Load Map" type="Panel" parent="Control/SlideInMC/TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -4.0
+margin_bottom = -4.0
+
 [connection signal="button_up" from="Control/MenuPanel/SinglePlayer" to="Control" method="_on_SinglePlayer_button_up"]
 [connection signal="button_up" from="Control/MenuPanel/MapCreator" to="Control" method="_on_MapCreator_button_up"]
 [connection signal="button_up" from="Control/MenuPanel/Quit" to="Control" method="_on_Quit_button_up"]
