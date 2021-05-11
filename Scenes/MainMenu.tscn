@@ -127,12 +127,222 @@ __meta__ = {
 }
 
 [node name="New Map" type="Panel" parent="Control/SlideInMC/TabContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -4.0
+margin_bottom = -4.0
+
+[node name="32" type="Button" parent="Control/SlideInMC/TabContainer/New Map"]
+anchor_left = 0.17
+anchor_top = 0.059
+anchor_right = 0.237
+anchor_bottom = 0.152
+margin_top = 0.139997
+margin_bottom = -0.0800095
+rect_min_size = Vector2( 55, 50 )
+text = "  32x32  "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="48" type="Button" parent="Control/SlideInMC/TabContainer/New Map"]
+anchor_left = 0.262
+anchor_top = 0.059
+anchor_right = 0.329
+anchor_bottom = 0.152
+margin_top = 0.139999
+margin_right = -3.05176e-05
+margin_bottom = -0.0800018
+rect_min_size = Vector2( 55, 50 )
+text = "  48x48  "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="64" type="Button" parent="Control/SlideInMC/TabContainer/New Map"]
+anchor_left = 0.354
+anchor_top = 0.059
+anchor_right = 0.421
+anchor_bottom = 0.152
+margin_top = 0.139999
+margin_bottom = -0.0800018
+rect_min_size = Vector2( 55, 50 )
+text = "  64x64  "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="80" type="Button" parent="Control/SlideInMC/TabContainer/New Map"]
+anchor_left = 0.446
+anchor_top = 0.059
+anchor_right = 0.513
+anchor_bottom = 0.152
+margin_top = 0.139999
+margin_bottom = -0.0800018
+rect_min_size = Vector2( 55, 50 )
+text = "  80x80  "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="96" type="Button" parent="Control/SlideInMC/TabContainer/New Map"]
+anchor_left = 0.538
+anchor_top = 0.059
+anchor_right = 0.605
+anchor_bottom = 0.152
+margin_left = -6.10352e-05
+margin_top = 0.139999
+margin_bottom = -0.0800018
+rect_min_size = Vector2( 55, 50 )
+text = "  96x96  "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="112" type="Button" parent="Control/SlideInMC/TabContainer/New Map"]
+anchor_left = 0.63
+anchor_top = 0.059
+anchor_right = 0.697
+anchor_bottom = 0.152
+margin_top = 0.139999
+margin_bottom = -0.0800018
+rect_min_size = Vector2( 55, 50 )
+text = "112x112"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="128" type="Button" parent="Control/SlideInMC/TabContainer/New Map"]
+anchor_left = 0.722
+anchor_top = 0.059
+anchor_right = 0.789
+anchor_bottom = 0.152
+margin_top = 0.139999
+margin_right = -6.10352e-05
+margin_bottom = -0.0800018
+rect_min_size = Vector2( 55, 50 )
+text = "128x128"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="144" type="Button" parent="Control/SlideInMC/TabContainer/New Map"]
+anchor_left = 0.814
+anchor_top = 0.059
+anchor_right = 0.881
+anchor_bottom = 0.152
+margin_top = 0.139999
+margin_bottom = -0.0800018
+rect_min_size = Vector2( 55, 50 )
+text = "144x144"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="160" type="Button" parent="Control/SlideInMC/TabContainer/New Map"]
+anchor_left = 0.906
+anchor_top = 0.059
+anchor_right = 0.973
+anchor_bottom = 0.152
+margin_top = 0.139999
+margin_bottom = -0.0800018
+rect_min_size = Vector2( 55, 50 )
+text = "160x160"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/SlideInMC/TabContainer/New Map"]
+anchor_left = 0.026
+anchor_top = 0.061
+anchor_right = 0.151
+anchor_bottom = 0.148
+margin_top = -0.0491028
+margin_right = -1.52588e-05
+margin_bottom = -0.0290985
+text = "Choose a map size"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label2" type="Label" parent="Control/SlideInMC/TabContainer/New Map"]
 anchor_left = 0.02
-anchor_top = 0.07
-anchor_right = 0.98
-anchor_bottom = 0.98
+anchor_top = 0.206
+anchor_right = 0.167
+anchor_bottom = 0.293
+margin_left = -0.23633
+margin_top = -0.240005
+margin_right = -0.236343
+margin_bottom = -0.220001
+text = "Or use a custom size"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="width" type="TextEdit" parent="Control/SlideInMC/TabContainer/New Map"]
+anchor_left = 0.185
+anchor_top = 0.23
+anchor_right = 0.231
+anchor_bottom = 0.269
+margin_left = -0.215942
+margin_top = -0.200005
+margin_right = -0.215942
+margin_bottom = -0.26001
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="height" type="TextEdit" parent="Control/SlideInMC/TabContainer/New Map"]
+anchor_left = 0.257
+anchor_top = 0.23
+anchor_right = 0.303
+anchor_bottom = 0.269
+margin_left = -0.0264282
+margin_top = 0.190956
+margin_bottom = 0.130951
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="go" type="Button" parent="Control/SlideInMC/TabContainer/New Map"]
+anchor_left = 0.332
+anchor_top = 0.231
+anchor_right = 0.376
+anchor_bottom = 0.268
+margin_left = -0.449432
+margin_top = 0.0397491
+margin_right = -0.449432
+margin_bottom = 0.0597534
+text = "Go"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Load Map" type="Panel" parent="Control/SlideInMC/TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -4.0
+margin_bottom = -4.0
+
+[node name="New Campaign" type="Panel" parent="Control/SlideInMC/TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -4.0
+margin_bottom = -4.0
+
+[node name="Load Campaign" type="Panel" parent="Control/SlideInMC/TabContainer"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -144,3 +354,13 @@ margin_bottom = -4.0
 [connection signal="button_up" from="Control/MenuPanel/SinglePlayer" to="Control" method="_on_SinglePlayer_button_up"]
 [connection signal="button_up" from="Control/MenuPanel/MapCreator" to="Control" method="_on_MapCreator_button_up"]
 [connection signal="button_up" from="Control/MenuPanel/Quit" to="Control" method="_on_Quit_button_up"]
+[connection signal="button_up" from="Control/SlideInMC/TabContainer/New Map/32" to="Control" method="_on_size_button_up" binds= [ 32, 32 ]]
+[connection signal="button_up" from="Control/SlideInMC/TabContainer/New Map/48" to="Control" method="_on_size_button_up" binds= [ 48, 48 ]]
+[connection signal="button_up" from="Control/SlideInMC/TabContainer/New Map/64" to="Control" method="_on_size_button_up" binds= [ 64, 64 ]]
+[connection signal="button_up" from="Control/SlideInMC/TabContainer/New Map/80" to="Control" method="_on_size_button_up" binds= [ 80, 80 ]]
+[connection signal="button_up" from="Control/SlideInMC/TabContainer/New Map/96" to="Control" method="_on_size_button_up" binds= [ 96, 96 ]]
+[connection signal="button_up" from="Control/SlideInMC/TabContainer/New Map/112" to="Control" method="_on_size_button_up" binds= [ 112, 112 ]]
+[connection signal="button_up" from="Control/SlideInMC/TabContainer/New Map/128" to="Control" method="_on_size_button_up" binds= [ 128, 128 ]]
+[connection signal="button_up" from="Control/SlideInMC/TabContainer/New Map/144" to="Control" method="_on_size_button_up" binds= [ 144, 144 ]]
+[connection signal="button_up" from="Control/SlideInMC/TabContainer/New Map/160" to="Control" method="_on_size_button_up" binds= [ 160, 160 ]]
+[connection signal="button_up" from="Control/SlideInMC/TabContainer/New Map/go" to="Control" method="_on_size_button_up" binds= [ 0, 0 ]]

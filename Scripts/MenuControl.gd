@@ -4,12 +4,16 @@ var singlePlayerGame = load("res://Scenes/AdventureMap.tscn")
 var quitButton
 var slideInSP
 var slideInMC
+var customWidth
+var customHeight
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	quitButton = get_node("MenuPanel/Quit")
 	slideInSP = get_node("SlideInSP")
 	slideInMC = get_node("SlideInMC")
+	customWidth = get_node("SlideInMC/TabContainer/New Map/width")
+	customHeight = get_node("SlideInMC/TabContainer/New Map/height")
 
 func _on_Quit_button_up():
 	get_tree().quit()
@@ -29,3 +33,6 @@ func _on_MapCreator_button_up():
 		slideInMC.setContent(true)
 	if slideInSP.isShowing:
 		slideInSP.setContent(false)
+
+func _on_size_button_up(width, height):
+	print(width, height)
