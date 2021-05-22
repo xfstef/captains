@@ -7,7 +7,6 @@ var slideInSP
 var slideInMC
 var customWidth
 var customHeight
-var _params
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -37,9 +36,14 @@ func _on_MapCreator_button_up():
 		slideInSP.setContent(false)
 
 func _on_size_button_up(width, height):
-	if width > 0 && height > 0:
-		var new_scene = mapCreator.instance()
-		new_scene.width = width
-		new_scene.height = height
-		get_tree().get_root().add_child(new_scene)
-		get_node("/root/MainMenu").free()
+	if width && height:
+		go_to_new_map(width, height)
+	elif customWidth.text != "" and customHeight.text != "":
+		go_to_new_map(int(customWidth.text), int(customHeight.text))
+
+func go_to_new_map(width, height):
+	var new_scene = mapCreator.instance()
+	new_scene.width = width
+	new_scene.height = height
+	get_tree().get_root().add_child(new_scene)
+	get_node("/root/MainMenu").free()
